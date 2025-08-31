@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NZ Builder's Calculator</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/1176/1176289.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            --primary-pink: #be185d; /* A deep, dark pink */
+            --dark-grey: #1f2937;
+            --pale-grey: #f3f4f6;
+        }
+        .calculator-card {
+            display: none;
+        }
+        .calculator-card.active {
+            display: block;
+        }
+        .nav-btn {
+            transition: all 0.2s ease-in-out;
+            border-radius: 0.5rem; /* Squarer buttons */
+        }
+        .nav-btn.active {
+            background-color: var(--primary-pink);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            transform: translateY(-2px);
+        }
+        /* Custom styles for input range */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-pink);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary-pink);
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        .result-highlight {
+            color: var(--primary-pink);
+        }
+
+        input:focus, select:focus {
+            --tw-ring-color: var(--primary-pink) !important;
+            border-color: var(--primary-pink) !important;
+        }
+        
+        #settings-modal {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-pale-grey text-dark-grey" style="background-color: var(--pale-grey); color: var(--dark-grey);">
+
+    <div class="container mx-auto max-w-4xl p-4">
+        
+        <!-- Header -->
+        <header class="text-center mb-6 relative">
+            <h1 class="text-3xl sm:text-4xl font-bold" style="color: var(--dark-grey);">NZ Builder's Calc</h1>
+             <button id="settings-btn" title="Settings" class="absolute top-0 right-0 p-2 text-gray-500 hover:text-pink-600">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="mb-8 bg-white p-2 rounded-xl shadow-md">
+            <div id="nav-buttons" class="grid grid-cols-3 gap-2 text-xs sm:text-sm">
+                <button data-target="trig" class="nav-btn active w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h16L4 4v16z" />
+                    </svg>
+                    <span>Trigonometry</span>
+                </button>
+                <button data-target="roof" class="nav-btn w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h14V10" />
+                    </svg>
+                    <span>Roof</span>
+                </button>
+                <button data-target="rafter" class="nav-btn w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5l7 7-7 7-7-7 7-7z" clip-rule="evenodd" />
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M4 20l1.5-1.5M18.5 5.5L20 4" />
+                       <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5l-8 8" />
+                    </svg>
+                    <span>Rafter</span>
+                </button>
+                <button data-target="stair" class="nav-btn w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 20h4v-4h4v-4h4V8h4" />
+                    </svg>
+                    <span>Stairs</span>
+                </button>
+                <button data-target="area" class="nav-btn w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16M6 4v16M12 4v16M18 4v16" />
+                    </svg>
+                    <span>Framing</span>
+                </button>
+                <button data-target="converter" class="nav-btn w-full flex items-center justify-center flex-col text-center px-2 py-3 font-semibold bg-gray-200 text-gray-700 hover:bg-pink-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                    </svg>
+                    <span>Converter</span>
+                </button>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Trigonometry Calculator -->
+            <div id="trig" class="calculator-card active">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Trigonometry Calculator</h2>
+                    <div class="grid md:grid-cols-2 gap-6 items-center">
+                        <!-- Diagram -->
+                        <div>
+                            <svg id="trig-diagram" viewBox="0 0 100 100" class="w-full max-w-xs mx-auto">
+                                <polygon points="5,95 95,95 5,5" fill="#fce7f3" stroke="#be185d" stroke-width="1"/>
+                                <!-- Static Labels -->
+                                <text x="50" y="99" font-size="5" text-anchor="middle">Side B (Adjacent)</text>
+                                <text x="3" y="50" font-size="5" text-anchor="middle" transform="rotate(-90, 3, 50)">Side A (Opposite)</text>
+                                <text x="35" y="45" font-size="5" transform="rotate(-45, 45, 45)">Hypotenuse (H)</text>
+                                <text x="83" y="92" font-size="5">Angle A</text>
+                                <path d="M 85 95 A 10 10 0 0 1 95 85" fill="none" stroke="gray" stroke-width="0.5"/>
+                                <text x="8" y="15" font-size="5">Angle B</text>
+                                <path d="M 5 15 A 10 10 0 0 0 15 5" fill="none" stroke="gray" stroke-width="0.5"/>
+                                
+                                <!-- Dynamic Value Labels -->
+                                <text id="diagram-side-b" x="50" y="88" font-size="6" text-anchor="middle" class="result-highlight font-bold">...</text>
+                                <text id="diagram-side-a" x="10" y="50" font-size="6" text-anchor="middle" transform="rotate(-90, 10, 50)" class="result-highlight font-bold">...</text>
+                                <text id="diagram-hypotenuse" x="55" y="55" font-size="6" text-anchor="middle" transform="rotate(-45, 50, 50)" class="result-highlight font-bold">...</text>
+                                <text id="diagram-angle-a" x="78" y="86" font-size="6" class="result-highlight font-bold">...</text>
+                                <text id="diagram-angle-b" x="17" y="20" font-size="6" class="result-highlight font-bold">...</text>
+                            </svg>
+                        </div>
+                        <!-- Inputs & Results -->
+                        <div class="space-y-4">
+                            <p class="text-xs text-gray-500 -mt-2">Enter exactly two values (at least one side).</p>
+                             <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="trig-side-a" class="block text-sm font-medium text-gray-700">Side A (Opposite)</label>
+                                    <input type="number" id="trig-side-a" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="trig-side-b" class="block text-sm font-medium text-gray-700">Side B (Adjacent)</label>
+                                    <input type="number" id="trig-side-b" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                </div>
+                                <div class="col-span-2">
+                                    <label for="trig-hypotenuse" class="block text-sm font-medium text-gray-700">Hypotenuse</label>
+                                    <input type="number" id="trig-hypotenuse" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="trig-input-angle-a" class="block text-sm font-medium text-gray-700">Angle A (°)</label>
+                                    <input type="number" id="trig-input-angle-a" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                </div>
+                                <div class="col-span-2 sm:col-span-1">
+                                    <label for="trig-input-angle-b" class="block text-sm font-medium text-gray-700">Angle B (°)</label>
+                                    <input type="number" id="trig-input-angle-b" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                </div>
+                            </div>
+                             <button id="trig-clear" class="w-full text-center px-4 py-2 mt-2 rounded-md font-semibold bg-gray-600 text-white hover:bg-gray-700">Clear</button>
+                            <div class="bg-gray-50 p-4 rounded-md mt-4">
+                                <h3 class="font-semibold text-lg">Results:</h3>
+                                <p id="trig-error" class="text-sm text-red-600 mb-2 hidden"></p>
+                                <div class="grid grid-cols-2 gap-x-4 text-sm">
+                                    <p>Side A:</p><p><span id="trig-res-side-a" class="font-bold result-highlight">0</span></p>
+                                    <p>Side B:</p><p><span id="trig-res-side-b" class="font-bold result-highlight">0</span></p>
+                                    <p>Hypotenuse:</p><p><span id="trig-res-hypotenuse" class="font-bold result-highlight">0</span></p>
+                                    <p>Angle A:</p><p><span id="trig-angle-a" class="font-bold result-highlight">0</span>°</p>
+                                    <p>Angle B:</p><p><span id="trig-angle-b" class="font-bold result-highlight">0</span>°</p>
+                                    <p>Right Angle:</p><p><span class="font-bold result-highlight">90.00</span>°</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Roof Calculator -->
+            <div id="roof" class="calculator-card">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Roof Calculator</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="roof-pitch" class="block text-sm font-medium text-gray-700">Roof Pitch (°)</label>
+                            <input type="range" id="roof-pitch" min="10" max="60" value="22.5" step="0.1" class="mt-1 block w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                            <span class="text-sm text-gray-500">Current: <span id="roof-pitch-value">22.5</span>°</span>
+                        </div>
+                         <div>
+                            <label for="roof-span" class="block text-sm font-medium text-gray-700">Building Span (mm)</label>
+                            <input type="number" id="roof-span" placeholder="e.g., 6000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md mt-4">
+                            <h3 class="font-semibold text-lg">Results:</h3>
+                            <p class="text-sm">Roof Rise: <span id="roof-rise" class="font-bold result-highlight">0</span> mm</p>
+                            <p class="text-sm">Rafter Length (per side): <span id="roof-rafter-length" class="font-bold result-highlight">0</span> mm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rafter Calculator -->
+            <div id="rafter" class="calculator-card">
+                 <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Rafter Calculator</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="rafter-width" class="block text-sm font-medium text-gray-700">Building Width/Span (mm)</label>
+                            <input type="number" id="rafter-width" placeholder="e.g., 6000" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="rafter-pitch" class="block text-sm font-medium text-gray-700">Roof Pitch (°)</label>
+                            <input type="number" id="rafter-pitch" placeholder="e.g., 22.5" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label for="rafter-overhang" class="block text-sm font-medium text-gray-700">Eave Overhang (mm)</label>
+                            <input type="number" id="rafter-overhang" placeholder="e.g., 450" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md mt-4">
+                            <h3 class="font-semibold text-lg">Results:</h3>
+                            <p class="text-sm">Common Rafter Length: <span id="rafter-common" class="font-bold result-highlight">0</span> mm</p>
+                            <p class="text-sm">Total Rafter Length: <span id="rafter-total" class="font-bold result-highlight">0</span> mm</p>
+                            <p class="text-sm">Plumb Cut Angle: <span id="rafter-plumb" class="font-bold result-highlight">0</span>°</p>
+                            <p class="text-sm">Birdsmouth Cut Angle: <span id="rafter-birdsmouth" class="font-bold result-highlight">0</span>°</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stair Calculator -->
+            <div id="stair" class="calculator-card">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Stair Calculator</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="stair-rise" class="block text-sm font-medium text-gray-700">Total Rise (mm)</label>
+                            <input type="number" id="stair-rise" placeholder="Finished Floor to Finished Floor, e.g., 2700" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md mt-4">
+                            <h3 class="font-semibold text-lg">Results:</h3>
+                             <div class="grid grid-cols-2 gap-2 text-sm">
+                                <p>Number of Risers:</p><p class="font-bold result-highlight" id="stair-num-risers">0</p>
+                                <p>Riser Height:</p><p class="font-bold result-highlight" id="stair-riser-height">0 mm</p>
+                                <p>Number of Treads:</p><p class="font-bold result-highlight" id="stair-num-treads">0</p>
+                                <p>Tread Going:</p><p class="font-bold result-highlight" id="stair-tread-going">0 mm</p>
+                                <p>Total Run:</p><p class="font-bold result-highlight" id="stair-total-run">0 mm</p>
+                                <p>Stair Angle:</p><p class="font-bold result-highlight" id="stair-angle">0°</p>
+                            </div>
+                        </div>
+                         <div id="stair-compliance" class="mt-4 p-3 rounded-md text-sm"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Framing & Paint Calculator -->
+            <div id="area" class="calculator-card">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4" id="area-title">Framing & Foundation Calculator</h2>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
+                            <div>
+                                <label for="area-application" class="block text-sm font-medium text-gray-700">Application</label>
+                                <select id="area-application" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md">
+                                    <option value="floor">Floor</option>
+                                    <option value="wall">Wall</option>
+                                    <option value="ceiling">Ceiling</option>
+                                    <option value="roof">Roof Rafters</option>
+                                </select>
+                            </div>
+                            <div id="area-spacing-container">
+                                <label for="area-spacing" class="block text-sm font-medium text-gray-700">Member Spacing</label>
+                                <select id="area-spacing" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md">
+                                    <option value="600">600 mm</option>
+                                    <option value="450">450 mm</option>
+                                    <option value="400">400 mm</option>
+                                    <option value="900">900 mm</option>
+                                </select>
+                            </div>
+                             <div id="wall-height-container" class="hidden">
+                                <label for="wall-height" class="block text-sm font-medium text-gray-700">Wall Height (mm)</label>
+                                <input type="number" id="wall-height" value="2400" placeholder="e.g., 2400" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                        </div>
+                        
+                        <!-- Standard Dimensions -->
+                        <div id="standard-dimensions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="area-length" class="block text-sm font-medium text-gray-700">Length (mm)</label>
+                                <input type="number" id="area-length" placeholder="e.g., 4800" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="area-width" class="block text-sm font-medium text-gray-700">Width (mm)</label>
+                                <input type="number" id="area-width" placeholder="e.g., 3600" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                        </div>
+                        
+                        <!-- Wall Dimensions -->
+                        <div id="wall-dimensions" class="hidden space-y-4">
+                            <div id="walls-list" class="space-y-3"></div>
+                            <button id="add-wall-btn" class="mt-2 text-sm font-semibold text-pink-600 hover:text-pink-800">+ Add Wall</button>
+                        </div>
+
+
+                        <div class="border-t pt-4 mt-4">
+                             <h3 class="text-lg font-semibold mb-3">Cost Inputs</h3>
+                             <div id="framing-cost-inputs">
+                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="cost-timber" class="block text-sm font-medium text-gray-700">Timber Cost ($/m)</label>
+                                        <input type="number" id="cost-timber" placeholder="e.g., 4.50" step="0.01" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                    </div>
+                                    <div id="cost-pile-container" class="sm:col-start-2 hidden">
+                                        <label for="cost-pile" class="block text-sm font-medium text-gray-700">Pile Cost ($/each)</label>
+                                        <input type="number" id="cost-pile" placeholder="e.g., 25" step="0.01" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                    </div>
+                                 </div>
+                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                                    <div class="sm:col-span-1">
+                                        <label for="sheet-type" class="block text-sm font-medium text-gray-700">Sheet Material</label>
+                                        <select id="sheet-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md">
+                                            <option value="treatedPly">Treated Ply</option>
+                                            <option value="internalPly">Internal Ply</option>
+                                            <option value="corrugate">Corrugate</option>
+                                            <option value="gib">GIB</option>
+                                            <option value="pir">PIR</option>
+                                            <option value="vinyl">Vinyl</option>
+                                        </select>
+                                    </div>
+                                    <div class="sm:col-span-1">
+                                        <label for="cost-sheet" class="block text-sm font-medium text-gray-700">Cost ($/sheet)</label>
+                                        <input type="number" id="cost-sheet" placeholder="e.g., 55" step="0.01" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                                    </div>
+                                 </div>
+                                 <div id="paint-cost-checkbox-container" class="mt-4 hidden">
+                                     <div class="flex items-center">
+                                         <input id="include-paint" type="checkbox" class="h-4 w-4 rounded border-gray-300 text-pink-600 focus:ring-pink-500">
+                                         <label for="include-paint" class="ml-2 block text-sm text-gray-900">Include Paint Cost</label>
+                                     </div>
+                                 </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-md mt-4">
+                            <h3 class="font-semibold text-lg mb-2">Quantities & Cost Estimate:</h3>
+                            <div id="framing-results">
+                                <div class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                                    <p>Total Area:</p><p><span id="area-total" class="font-bold result-highlight">0</span> m²</p>
+                                    <p id="subtracted-area-label" class="hidden">Subtracted Area:</p><p id="subtracted-area-value" class="hidden font-bold result-highlight">0 m²</p>
+                                    <p>Net Sheeting Area:</p><p><span id="net-area" class="font-bold result-highlight">0</span> m²</p>
+                                    <p>Sheets Needed:</p><p><span id="area-sheets" class="font-bold result-highlight">0</span></p>
+                                    
+                                    <hr class="col-span-2 my-1">
+                                    
+                                    <p class="col-span-2 font-semibold" id="area-members-label">Joists/Studs:</p>
+                                    <p class="pl-4">Total Members:</p><p><span id="area-members-total" class="font-bold result-highlight">0</span></p>
+                                    
+                                    <hr id="area-piles-hr" class="col-span-2 my-1 hidden">
+
+                                    <div id="area-piles-result-container" class="contents hidden">
+                                       <p class="font-semibold col-span-2">Piles Needed:</p>
+                                       <p class="pl-4">Total Piles (estimated):</p><p><span id="area-piles-total" class="font-bold result-highlight">0</span></p>
+                                    </div>
+                                    
+                                    <hr class="col-span-2 my-1">
+
+                                    <p class="col-span-2 font-semibold">Cost Breakdown:</p>
+                                    <p class="pl-4">Timber Cost:</p><p><span id="cost-total-timber" class="font-bold result-highlight">$0.00</span></p>
+                                    <p id="opening-framing-cost-label" class="pl-4 hidden">Opening Framing:</p><p id="opening-framing-cost-value" class="hidden font-bold result-highlight">$0.00</p>
+                                    <p class="pl-4">Sheet Cost:</p><p><span id="cost-total-sheet" class="font-bold result-highlight">$0.00</span></p>
+                                    <div id="cost-piles-container" class="contents hidden">
+                                        <p class="pl-4">Piles Cost:</p><p><span id="cost-total-piles" class="font-bold result-highlight">$0.00</span></p>
+                                    </div>
+                                    <div id="window-cost-container" class="contents hidden">
+                                        <p class="pl-4">Window Cost:</p><p><span id="cost-total-window" class="font-bold result-highlight">$0.00</span></p>
+                                    </div>
+                                    <div id="door-cost-container" class="contents hidden">
+                                        <p class="pl-4">Door Cost:</p><p><span id="cost-total-door" class="font-bold result-highlight">$0.00</span></p>
+                                    </div>
+                                     <div id="paint-cost-container" class="contents hidden">
+                                        <p class="pl-4">Paint Cost:</p><p><span id="cost-total-paint" class="font-bold result-highlight">$0.00</span></p>
+                                    </div>
+                                    <hr class="col-span-2 my-1 border-gray-300">
+                                    <p class="font-bold text-base">Total Estimated Cost:</p><p><span id="cost-grand-total" class="font-bold text-gray-800 text-base" style="color: var(--dark-grey);">$0.00</span></p>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-3">Sheet size: 2400x1200mm. Pile calculation based on 1.8m max bearer spacing & 1.5m max pile spacing. Costs are estimates only.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Unit Converter -->
+            <div id="converter" class="calculator-card">
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4">Unit Converter</h2>
+                    
+                    <!-- Length Conversion -->
+                    <div class="mb-6">
+                        <h3 class="text-lg font-semibold border-b pb-2 mb-3">Length</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label for="conv-mm" class="block text-sm font-medium text-gray-700">Millimetres (mm)</label>
+                                <input type="number" id="conv-mm" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="conv-m" class="block text-sm font-medium text-gray-700">Metres (m)</label>
+                                <input type="number" id="conv-m" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                            <div>
+                                <label for="conv-in" class="block text-sm font-medium text-gray-700">Inches (in)</label>
+                                <input type="number" id="conv-in" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                             <div>
+                                <label for="conv-ft" class="block text-sm font-medium text-gray-700">Feet (ft)</label>
+                                <input type="number" id="conv-ft" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diameter Conversion -->
+                    <div>
+                         <h3 class="text-lg font-semibold border-b pb-2 mb-3">Diameter (Screws/Nuts)</h3>
+                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                            <div>
+                                <label for="conv-dia-mm" class="block text-sm font-medium text-gray-700">Millimetres (mm)</label>
+                                <input type="number" id="conv-dia-mm" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none">
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-md mt-1">
+                                <p class="text-sm font-medium text-gray-700">Fractional Inches (approx)</p>
+                                <p id="conv-dia-in" class="font-bold result-highlight text-lg">0"</p>
+                            </div>
+                         </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div class="p-6 border-b">
+                <h3 class="text-xl font-bold">Default Material Costs</h3>
+            </div>
+            <div class="p-6 space-y-4 max-h-96 overflow-y-auto">
+                 <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label for="setting-treatedPly" class="block text-sm font-medium text-gray-700">Treated Ply</label>
+                        <input type="number" id="setting-treatedPly" placeholder="e.g., 65.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                    <div>
+                        <label for="setting-internalPly" class="block text-sm font-medium text-gray-700">Internal Ply</label>
+                        <input type="number" id="setting-internalPly" placeholder="e.g., 50.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                    <div>
+                        <label for="setting-corrugate" class="block text-sm font-medium text-gray-700">Corrugate</label>
+                        <input type="number" id="setting-corrugate" placeholder="e.g., 25.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <div>
+                        <label for="setting-gib" class="block text-sm font-medium text-gray-700">GIB</label>
+                        <input type="number" id="setting-gib" placeholder="e.g., 22.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <div>
+                        <label for="setting-pir" class="block text-sm font-medium text-gray-700">PIR Panel</label>
+                        <input type="number" id="setting-pir" placeholder="e.g., 90.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <div>
+                        <label for="setting-vinyl" class="block text-sm font-medium text-gray-700">Vinyl</label>
+                        <input type="number" id="setting-vinyl" placeholder="e.g., 120.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <hr class="col-span-2">
+                      <div>
+                        <label for="setting-window" class="block text-sm font-medium text-gray-700">Window ($/m²)</label>
+                        <input type="number" id="setting-window" placeholder="e.g., 350.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <div>
+                        <label for="setting-door" class="block text-sm font-medium text-gray-700">Door ($/unit)</label>
+                        <input type="number" id="setting-door" placeholder="e.g., 250.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <hr class="col-span-2">
+                     <div>
+                        <label for="setting-paint" class="block text-sm font-medium text-gray-700">Paint ($/m²)</label>
+                        <input type="number" id="setting-paint" placeholder="e.g., 15.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <hr class="col-span-2">
+                     <div>
+                        <label for="setting-timber" class="block text-sm font-medium text-gray-700">Timber ($/m)</label>
+                        <input type="number" id="setting-timber" placeholder="e.g., 4.50" step="0.01" class="mt-1 w-full input">
+                    </div>
+                     <div>
+                        <label for="setting-piles" class="block text-sm font-medium text-gray-700">Piles ($/each)</label>
+                        <input type="number" id="setting-piles" placeholder="e.g., 25.00" step="0.01" class="mt-1 w-full input">
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 bg-gray-50 flex justify-end space-x-2">
+                <button id="settings-close-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Close</button>
+                <button id="settings-save-btn" class="px-4 py-2 bg-pink-600 text-white rounded-md hover:bg-pink-700" style="background-color: var(--primary-pink);">Save Defaults</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navButtons = document.getElementById('nav-buttons');
+            const cards = document.querySelectorAll('.calculator-card');
+            
+            // Settings Modal Elements
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const settingsCloseBtn = document.getElementById('settings-close-btn');
+            const settingsSaveBtn = document.getElementById('settings-save-btn');
+            let builderSettings = {};
+
+            // --- Navigation ---
+            navButtons.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) {
+                    navButtons.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+
+                    const targetId = button.getAttribute('data-target');
+                    cards.forEach(card => {
+                        card.classList.toggle('active', card.id === targetId);
+                    });
+                }
+            });
+            
+            // --- Settings ---
+            function toggleSettingsModal(show) {
+                settingsModal.classList.toggle('hidden', !show);
+            }
+            
+            const settingIds = ['treatedPly', 'internalPly', 'corrugate', 'gib', 'pir', 'vinyl', 'paint', 'timber', 'piles', 'window', 'door'];
+
+            function saveSettings() {
+                const newSettings = {};
+                settingIds.forEach(id => {
+                    const el = document.getElementById(`setting-${id}`);
+                    if(el) newSettings[id] = el.value;
+                });
+                localStorage.setItem('builderAppSettings', JSON.stringify(newSettings));
+                builderSettings = newSettings;
+                loadDefaultsIntoCalculator();
+                toggleSettingsModal(false);
+            }
+
+            function loadSettings() {
+                const savedSettings = localStorage.getItem('builderAppSettings');
+                if (savedSettings) {
+                    builderSettings = JSON.parse(savedSettings);
+                    settingIds.forEach(id => {
+                        const el = document.getElementById(`setting-${id}`);
+                        if (el && builderSettings[id]) {
+                             el.value = builderSettings[id];
+                        }
+                    });
+                }
+                loadDefaultsIntoCalculator();
+            }
+
+            function loadDefaultsIntoCalculator() {
+                if (builderSettings.timber) costTimber.value = builderSettings.timber;
+                if (builderSettings.piles) costPile.value = builderSettings.piles;
+                updateSheetCost(); 
+            }
+
+            settingsBtn.addEventListener('click', () => toggleSettingsModal(true));
+            settingsCloseBtn.addEventListener('click', () => toggleSettingsModal(false));
+            settingsModal.addEventListener('click', (e) => {
+                if (e.target === settingsModal) toggleSettingsModal(false);
+            });
+            settingsSaveBtn.addEventListener('click', saveSettings);
+
+
+            // --- Utility Functions ---
+            const toRad = (deg) => deg * Math.PI / 180;
+            const toDeg = (rad) => rad * 180 / Math.PI;
+            const format = (num, decimals = 1) => isNaN(num) || !isFinite(num) ? 0 : parseFloat(num).toFixed(decimals);
+            const formatCurrency = (num) => isNaN(num) || !isFinite(num) ? '$0.00' : `$${num.toFixed(2)}`;
+
+            // --- Calculators ---
+
+            // 1. Trigonometry Calculator
+            // ... (omitted for brevity, no changes)
+            const trigSideAIn = document.getElementById('trig-side-a');
+            const trigSideBIn = document.getElementById('trig-side-b');
+            const trigHypotenuseIn = document.getElementById('trig-hypotenuse');
+            const trigAngleAIn = document.getElementById('trig-input-angle-a');
+            const trigAngleBIn = document.getElementById('trig-input-angle-b');
+            const trigClearBtn = document.getElementById('trig-clear');
+
+            const trigResSideA = document.getElementById('trig-res-side-a');
+            const trigResSideB = document.getElementById('trig-res-side-b');
+            const trigResHypotenuse = document.getElementById('trig-res-hypotenuse');
+            const trigAngleA = document.getElementById('trig-angle-a');
+            const trigAngleB = document.getElementById('trig-angle-b');
+            const trigError = document.getElementById('trig-error');
+            
+            const trigInputs = [trigSideAIn, trigSideBIn, trigHypotenuseIn, trigAngleAIn, trigAngleBIn];
+
+            // Dynamic Diagram Labels
+            const diagramSideA = document.getElementById('diagram-side-a');
+            const diagramSideB = document.getElementById('diagram-side-b');
+            const diagramHypotenuse = document.getElementById('diagram-hypotenuse');
+            const diagramAngleA = document.getElementById('diagram-angle-a');
+            const diagramAngleB = document.getElementById('diagram-angle-b');
+
+            function clearTrig() {
+                trigInputs.forEach(input => input.value = '');
+                calculateTrig(); // Recalculate to clear results and diagram
+                trigError.classList.add('hidden');
+            }
+            
+            function resetTrigResults() {
+                 trigResSideA.textContent = '0';
+                trigResSideB.textContent = '0';
+                trigResHypotenuse.textContent = '0';
+                trigAngleA.textContent = '0';
+                trigAngleB.textContent = '0';
+                
+                diagramSideA.textContent = '...';
+                diagramSideB.textContent = '...';
+                diagramHypotenuse.textContent = '...';
+                diagramAngleA.textContent = '...';
+                diagramAngleB.textContent = '...';
+            }
+
+            function calculateTrig() {
+                let sideA = parseFloat(trigSideAIn.value) || null;
+                let sideB = parseFloat(trigSideBIn.value) || null;
+                let hypotenuse = parseFloat(trigHypotenuseIn.value) || null;
+                let angleA = parseFloat(trigAngleAIn.value) || null;
+                let angleB = parseFloat(trigAngleBIn.value) || null;
+                
+                trigError.classList.add('hidden');
+                const values = [sideA, sideB, hypotenuse, angleA, angleB];
+                const inputCount = values.filter(v => v !== null).length;
+
+                if (inputCount === 0) { resetTrigResults(); return; }
+                if (inputCount !== 2) { trigError.textContent = 'Please enter exactly two values.'; trigError.classList.remove('hidden'); resetTrigResults(); return; }
+                if (angleA && angleB) { trigError.textContent = 'Please enter at least one side length.'; trigError.classList.remove('hidden'); resetTrigResults(); return; }
+                
+                if(angleA) angleB = 90 - angleA;
+                if(angleB) angleA = 90 - angleB;
+
+                if (sideA && sideB) { hypotenuse = Math.sqrt(sideA**2 + sideB**2); angleA = toDeg(Math.atan(sideA / sideB)); angleB = 90 - angleA;
+                } else if (sideA && hypotenuse) { if (hypotenuse <= sideA) { trigError.textContent = 'Hypotenuse must be longest side.'; trigError.classList.remove('hidden'); resetTrigResults(); return; } sideB = Math.sqrt(hypotenuse**2 - sideA**2); angleA = toDeg(Math.asin(sideA / hypotenuse)); angleB = 90 - angleA;
+                } else if (sideB && hypotenuse) { if (hypotenuse <= sideB) { trigError.textContent = 'Hypotenuse must be longest side.'; trigError.classList.remove('hidden'); resetTrigResults(); return; } sideA = Math.sqrt(hypotenuse**2 - sideB**2); angleB = toDeg(Math.acos(sideB / hypotenuse)); angleA = 90 - angleB;
+                } else if (sideA && angleA) { sideB = sideA / Math.tan(toRad(angleA)); hypotenuse = sideA / Math.sin(toRad(angleA));
+                } else if (sideA && angleB) { sideB = sideA * Math.tan(toRad(angleB)); hypotenuse = sideA / Math.cos(toRad(angleB));
+                } else if (sideB && angleA) { sideA = sideB * Math.tan(toRad(angleA)); hypotenuse = sideB / Math.cos(toRad(angleA));
+                } else if (sideB && angleB) { sideA = sideB / Math.tan(toRad(angleB)); hypotenuse = sideB / Math.sin(toRad(angleB));
+                } else if (hypotenuse && angleA) { sideA = hypotenuse * Math.sin(toRad(angleA)); sideB = hypotenuse * Math.cos(toRad(angleA));
+                } else if (hypotenuse && angleB) { sideA = hypotenuse * Math.cos(toRad(angleB)); sideB = hypotenuse * Math.sin(toRad(angleB)); }
+
+                trigResSideA.textContent = format(sideA, 2); trigResSideB.textContent = format(sideB, 2); trigResHypotenuse.textContent = format(hypotenuse, 2);
+                trigAngleA.textContent = format(angleA, 2); trigAngleB.textContent = format(angleB, 2);
+                diagramSideA.textContent = format(sideA, 1); diagramSideB.textContent = format(sideB, 1); diagramHypotenuse.textContent = format(hypotenuse, 1);
+                diagramAngleA.textContent = format(angleA, 1) + '°'; diagramAngleB.textContent = format(angleB, 1) + '°';
+            }
+            trigInputs.forEach(el => el.addEventListener('input', calculateTrig));
+            trigClearBtn.addEventListener('click', clearTrig);
+
+
+            // 2. Roof Calculator
+            // ... (omitted for brevity, no changes)
+            const roofPitch = document.getElementById('roof-pitch');
+            const roofPitchValue = document.getElementById('roof-pitch-value');
+            const roofSpan = document.getElementById('roof-span');
+            const roofRise = document.getElementById('roof-rise');
+            const roofRafterLength = document.getElementById('roof-rafter-length');
+
+            function calculateRoof() {
+                const pitch = parseFloat(roofPitch.value) || 0;
+                const span = parseFloat(roofSpan.value) || 0;
+                roofPitchValue.textContent = format(pitch);
+                if (pitch > 0 && span > 0) {
+                    const halfSpan = span / 2;
+                    const rise = halfSpan * Math.tan(toRad(pitch));
+                    const rafter = Math.sqrt(rise * rise + halfSpan * halfSpan);
+                    roofRise.textContent = format(rise);
+                    roofRafterLength.textContent = format(rafter);
+                } else {
+                    roofRise.textContent = '0';
+                    roofRafterLength.textContent = '0';
+                }
+            }
+            [roofPitch, roofSpan].forEach(el => el.addEventListener('input', calculateRoof));
+
+
+            // 3. Rafter Calculator
+            // ... (omitted for brevity, no changes)
+            const rafterWidth = document.getElementById('rafter-width');
+            const rafterPitch = document.getElementById('rafter-pitch');
+            const rafterOverhang = document.getElementById('rafter-overhang');
+            const rafterCommon = document.getElementById('rafter-common');
+            const rafterTotal = document.getElementById('rafter-total');
+            const rafterPlumb = document.getElementById('rafter-plumb');
+            const rafterBirdsmouth = document.getElementById('rafter-birdsmouth');
+
+             function calculateRafter() {
+                const width = parseFloat(rafterWidth.value) || 0;
+                const pitch = parseFloat(rafterPitch.value) || 0;
+                const overhang = parseFloat(rafterOverhang.value) || 0;
+                if (width > 0 && pitch > 0) {
+                    const halfWidth = width / 2;
+                    const rise = halfWidth * Math.tan(toRad(pitch));
+                    const common = Math.sqrt(rise * rise + halfWidth * halfWidth);
+                    const overhangRafter = overhang / Math.cos(toRad(pitch));
+                    const total = common + overhangRafter;
+                    rafterCommon.textContent = format(common);
+                    rafterTotal.textContent = format(total);
+                    rafterPlumb.textContent = format(pitch);
+                    rafterBirdsmouth.textContent = format(90 - pitch);
+                } else {
+                    rafterCommon.textContent = '0';
+                    rafterTotal.textContent = '0';
+                    rafterPlumb.textContent = '0';
+                    rafterBirdsmouth.textContent = '0';
+                }
+            }
+            [rafterWidth, rafterPitch, rafterOverhang].forEach(el => el.addEventListener('input', calculateRafter));
+
+
+            // 4. Stair Calculator
+            // ... (omitted for brevity, no changes)
+            const stairRise = document.getElementById('stair-rise');
+            const stairNumRisers = document.getElementById('stair-num-risers');
+            const stairRiserHeight = document.getElementById('stair-riser-height');
+            const stairNumTreads = document.getElementById('stair-num-treads');
+            const stairTreadGoing = document.getElementById('stair-tread-going');
+            const stairTotalRun = document.getElementById('stair-total-run');
+            const stairAngle = document.getElementById('stair-angle');
+            const stairCompliance = document.getElementById('stair-compliance');
+
+            function calculateStair() {
+                const totalRise = parseFloat(stairRise.value) || 0;
+                if (totalRise < 200) {
+                    stairNumRisers.textContent = '0'; stairRiserHeight.textContent = '0 mm'; stairNumTreads.textContent = '0';
+                    stairTreadGoing.textContent = '0 mm'; stairTotalRun.textContent = '0 mm'; stairAngle.textContent = '0°';
+                    stairCompliance.textContent = ''; stairCompliance.className = 'mt-4 p-3 rounded-md text-sm';
+                    return;
+                };
+                const idealRiser = 180; const numRisers = Math.round(totalRise / idealRiser);
+                const actualRiserHeight = totalRise / numRisers; const numTreads = numRisers - 1;
+                const idealGoing = 625 - (2 * actualRiserHeight); const treadGoing = Math.max(250, idealGoing); 
+                const totalRun = numTreads * treadGoing; const angle = toDeg(Math.atan(totalRise / totalRun));
+                stairNumRisers.textContent = numRisers; stairRiserHeight.textContent = format(actualRiserHeight) + ' mm';
+                stairNumTreads.textContent = numTreads; stairTreadGoing.textContent = format(treadGoing) + ' mm';
+                stairTotalRun.textContent = format(totalRun) + ' mm'; stairAngle.textContent = format(angle) + '°';
+
+                const twoRPlusG = 2 * actualRiserHeight + treadGoing; let isCompliant = true;
+                let complianceText = "NZBC D1/AS1 (Private Stairs): ";
+                if (actualRiserHeight < 115 || actualRiserHeight > 190) { isCompliant = false; complianceText += "Riser height outside 115-190mm. ";}
+                if (treadGoing < 250) { isCompliant = false; complianceText += "Tread going less than 250mm. ";}
+                if (twoRPlusG < 550 || twoRPlusG > 700) { isCompliant = false; complianceText += "2R+G ("+ format(twoRPlusG,0) +") outside 550-700mm. ";}
+                if (angle > 41) { isCompliant = false; complianceText += "Angle exceeds 41°. ";}
+                if(isCompliant) { stairCompliance.textContent = '✓ Compliant with NZBC D1/AS1 for Private Stairs.'; stairCompliance.className = 'mt-4 p-3 rounded-md text-sm bg-green-100 text-green-800';
+                } else { stairCompliance.textContent = `✗ Non-compliant. ${complianceText}`; stairCompliance.className = 'mt-4 p-3 rounded-md text-sm bg-red-100 text-red-800'; }
+            }
+            stairRise.addEventListener('input', calculateStair);
+
+
+            // 5. Area, Framing & Paint Calculator
+            const areaApplication = document.getElementById('area-application');
+            const standardDimensions = document.getElementById('standard-dimensions');
+            const wallDimensions = document.getElementById('wall-dimensions');
+            const wallHeightContainer = document.getElementById('wall-height-container');
+            const wallsList = document.getElementById('walls-list');
+            const addWallBtn = document.getElementById('add-wall-btn');
+            
+            const areaLength = document.getElementById('area-length');
+            const areaWidth = document.getElementById('area-width');
+            const wallHeight = document.getElementById('wall-height');
+            
+            const areaSpacing = document.getElementById('area-spacing');
+            const areaSpacingContainer = document.getElementById('area-spacing-container');
+            
+            // Openings
+            let walls = [];
+
+            // Cost Inputs
+            const costTimber = document.getElementById('cost-timber');
+            const costPile = document.getElementById('cost-pile');
+            const costPileContainer = document.getElementById('cost-pile-container');
+            const sheetType = document.getElementById('sheet-type');
+            const costSheet = document.getElementById('cost-sheet');
+            const includePaint = document.getElementById('include-paint');
+            const paintCostCheckboxContainer = document.getElementById('paint-cost-checkbox-container');
+            
+            // Result Containers
+            const framingResults = document.getElementById('framing-results');
+            
+            // Framing Results
+            const areaTotal = document.getElementById('area-total');
+            const subtractedAreaLabel = document.getElementById('subtracted-area-label');
+            const subtractedAreaValue = document.getElementById('subtracted-area-value');
+            const netArea = document.getElementById('net-area');
+            const areaSheets = document.getElementById('area-sheets');
+            const areaMembersLabel = document.getElementById('area-members-label');
+            const areaMembersTotal = document.getElementById('area-members-total');
+            const areaPilesHr = document.getElementById('area-piles-hr');
+            const areaPilesResultContainer = document.getElementById('area-piles-result-container');
+            const areaPilesTotal = document.getElementById('area-piles-total');
+            const costTotalTimber = document.getElementById('cost-total-timber');
+            const openingFramingCostLabel = document.getElementById('opening-framing-cost-label');
+            const openingFramingCostValue = document.getElementById('opening-framing-cost-value');
+            const costTotalSheet = document.getElementById('cost-total-sheet');
+            const costPilesContainer = document.getElementById('cost-piles-container');
+            const costTotalPiles = document.getElementById('cost-total-piles');
+            const costTotalWindowContainer = document.getElementById('window-cost-container');
+            const costTotalDoorContainer = document.getElementById('door-cost-container');
+            const costTotalPaintContainer = document.getElementById('paint-cost-container');
+            const costTotalWindow = document.getElementById('cost-total-window');
+            const costTotalDoor = document.getElementById('cost-total-door');
+            const costTotalPaint = document.getElementById('cost-total-paint');
+            const costGrandTotal = document.getElementById('cost-grand-total');
+            
+            function renderWalls() {
+                wallsList.innerHTML = '';
+                walls.forEach((wall, wallIndex) => {
+                    const wallDiv = document.createElement('div');
+                    wallDiv.className = 'p-4 border rounded-md bg-white space-y-3';
+                    
+                    wallDiv.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <label class="font-semibold text-gray-700">Wall ${wallIndex + 1}</label>
+                            <button class="remove-wall-btn p-1 text-gray-400 hover:text-red-500" data-index="${wallIndex}">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                        <input type="number" class="wall-length mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none" placeholder="Wall Length (mm)" value="${wall.length || ''}" data-index="${wallIndex}">
+                        <div class="openings-container-wall pl-4 border-l-2 border-gray-200 space-y-2"></div>
+                        <button class="add-opening-btn text-sm font-semibold text-pink-600 hover:text-pink-800" data-wall-index="${wallIndex}">+ Add Door or Window</button>
+                    `;
+                    wallsList.appendChild(wallDiv);
+
+                    const openingsContainer = wallDiv.querySelector('.openings-container-wall');
+                    wall.openings.forEach((opening, openingIndex) => {
+                         const openingDiv = document.createElement('div');
+                         openingDiv.className = 'grid grid-cols-8 gap-2 items-center';
+                         openingDiv.innerHTML = `
+                            <select class="opening-type col-span-2 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none sm:text-sm rounded-md" data-wall-index="${wallIndex}" data-opening-index="${openingIndex}">
+                                <option value="Window" ${opening.type === 'Window' ? 'selected' : ''}>Window</option>
+                                <option value="Door" ${opening.type === 'Door' ? 'selected' : ''}>Door</option>
+                            </select>
+                            <input type="number" class="opening-width col-span-2 mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm" placeholder="Width" value="${opening.width || ''}" data-wall-index="${wallIndex}" data-opening-index="${openingIndex}">
+                            <input type="number" class="opening-height col-span-2 mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm" placeholder="Height" value="${opening.height || ''}" data-wall-index="${wallIndex}" data-opening-index="${openingIndex}">
+                             <button class="remove-opening-btn col-span-2 justify-self-end p-2 text-gray-400 hover:text-red-500" data-wall-index="${wallIndex}" data-opening-index="${openingIndex}">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" /></svg>
+                             </button>
+                        `;
+                        openingsContainer.appendChild(openingDiv);
+                    });
+                });
+                attachWallEventListeners();
+            }
+
+            function attachWallEventListeners() {
+                document.querySelectorAll('.wall-length').forEach(el => el.addEventListener('input', handleWallInput));
+                document.querySelectorAll('.add-opening-btn').forEach(el => el.addEventListener('click', handleAddOpening));
+                document.querySelectorAll('.remove-wall-btn').forEach(el => el.addEventListener('click', handleRemoveWall));
+                document.querySelectorAll('.openings-container-wall').forEach(el => el.addEventListener('input', handleOpeningInput));
+                document.querySelectorAll('.remove-opening-btn').forEach(el => el.addEventListener('click', handleRemoveOpening));
+            }
+
+            function handleWallInput(e) {
+                const wallIndex = e.target.dataset.index;
+                walls[wallIndex].length = e.target.value;
+                calculateArea();
+            }
+
+            function handleAddOpening(e) {
+                const wallIndex = e.target.dataset.wallIndex;
+                walls[wallIndex].openings.push({ type: 'Window', width: '', height: '' });
+                renderWalls();
+                calculateArea();
+            }
+            
+            function handleRemoveWall(e) {
+                const wallIndex = e.currentTarget.dataset.index;
+                walls.splice(wallIndex, 1);
+                renderWalls();
+                calculateArea();
+            }
+
+            function handleOpeningInput(e) {
+                const wallIndex = e.target.dataset.wallIndex;
+                const openingIndex = e.target.dataset.openingIndex;
+                const opening = walls[wallIndex].openings[openingIndex];
+
+                if (e.target.classList.contains('opening-type')) {
+                    opening.type = e.target.value;
+                    if (opening.type === 'Door') {
+                        opening.width = '860';
+                        opening.height = '1980';
+                        const openingDiv = e.target.closest('.grid');
+                        openingDiv.querySelector('.opening-width').value = '860';
+                        openingDiv.querySelector('.opening-height').value = '1980';
+                    }
+                }
+                if (e.target.classList.contains('opening-width')) opening.width = e.target.value;
+                if (e.target.classList.contains('opening-height')) opening.height = e.target.value;
+                calculateArea();
+           }
+
+             function handleRemoveOpening(e) {
+                 const wallIndex = e.currentTarget.dataset.wallIndex;
+                 const openingIndex = e.currentTarget.dataset.openingIndex;
+                 walls[wallIndex].openings.splice(openingIndex, 1);
+                 renderWalls();
+                 calculateArea();
+            }
+
+            addWallBtn.addEventListener('click', () => {
+                walls.push({ length: '', openings: [] });
+                renderWalls();
+                calculateArea();
+            });
+
+            function updateSheetCost() {
+                const selectedType = sheetType.value;
+                if (builderSettings[selectedType]) {
+                    costSheet.value = builderSettings[selectedType];
+                }
+                calculateArea();
+            }
+
+            function calculateArea() {
+                const application = areaApplication.value;
+                
+                // --- UI Visibility & Data Reset ---
+                standardDimensions.classList.toggle('hidden', application === 'wall');
+                wallDimensions.classList.toggle('hidden', application !== 'wall');
+                wallHeightContainer.classList.toggle('hidden', application !== 'wall');
+                paintCostCheckboxContainer.classList.toggle('hidden', application !== 'wall');
+                const pileElements = [costPileContainer, areaPilesHr, areaPilesResultContainer, costPilesContainer];
+                pileElements.forEach(el => el.classList.toggle('hidden', application !== 'floor'));
+                
+                if (application !== 'wall') {
+                    if (walls.length > 0) {
+                        walls = [];
+                        renderWalls();
+                    }
+                    includePaint.checked = false;
+                }
+                
+                // --- Get Base Values ---
+                let length = parseFloat(areaLength.value) || 0;
+                let width = parseFloat(areaWidth.value) || 0;
+                const height = parseFloat(wallHeight.value) || 0;
+                const spacing = parseFloat(areaSpacing.value) || 600;
+
+                // --- Get Costs ---
+                const timberCostPerM = parseFloat(costTimber.value) || 0;
+                const sheetCostPerSheet = parseFloat(costSheet.value) || 0;
+                const pileCostPerEach = parseFloat(costPile.value) || 0;
+                const paintCostPerM2 = parseFloat(builderSettings.paint) || 0;
+                const windowCostPerM2 = parseFloat(builderSettings.window) || 0;
+                const doorCostPerUnit = parseFloat(builderSettings.door) || 0;
+                const shouldIncludePaint = includePaint.checked;
+                
+                const memberName = { floor: 'Joists', wall: 'Studs', ceiling: 'Ceiling Joists', roof: 'Rafters' }[application];
+                areaMembersLabel.textContent = memberName + ':';
+                
+                let totalAreaM2 = 0;
+                let totalMembers = 0;
+                let totalTimberLengthM = 0;
+                let openingsAreaM2 = 0;
+                let openingFramingM = 0;
+                let totalWindowCost = 0;
+                let totalDoorCost = 0;
+                
+                // --- Calculations based on Application ---
+                if (application === 'wall') {
+                    totalAreaM2 = walls.reduce((acc, wall) => acc + ((parseFloat(wall.length) || 0) * height) / 1000000, 0);
+                    totalMembers = walls.reduce((acc, wall) => acc + (Math.ceil((parseFloat(wall.length) || 0) / spacing) + 1), 0);
+                    totalTimberLengthM = walls.reduce((acc, wall) => acc + (Math.ceil(((parseFloat(wall.length) || 0) / spacing) + 1) * height) / 1000, 0);
+                    
+                    walls.forEach(wall => {
+                        wall.openings.forEach(op => {
+                            const opW = parseFloat(op.width) || 0;
+                            const opH = parseFloat(op.height) || 0;
+                            const opArea = (opW * opH) / 1000000;
+                            openingsAreaM2 += opArea;
+                            openingFramingM += (opW + opH) * 2 / 1000;
+                            if (op.type === 'Window') {
+                                totalWindowCost += opArea * windowCostPerM2;
+                            } else {
+                                totalDoorCost += doorCostPerUnit;
+                            }
+                        });
+                    });
+                     totalTimberLengthM += openingFramingM;
+                } else {
+                    totalAreaM2 = (length * width) / 1000000;
+                    const numMembersX = Math.ceil(length / spacing) + 1;
+                    const numMembersY = Math.ceil(width / spacing) + 1;
+                    totalMembers = numMembersX + numMembersY;
+                    totalTimberLengthM = (numMembersX * width + numMembersY * length) / 1000;
+                }
+                
+                const netSheetingAreaM2 = totalAreaM2 - openingsAreaM2;
+
+                // --- Update Quantity Results ---
+                areaTotal.textContent = format(totalAreaM2, 2);
+                subtractedAreaLabel.classList.toggle('hidden', application !== 'wall');
+                subtractedAreaValue.classList.toggle('hidden', application !== 'wall');
+                subtractedAreaValue.textContent = `${format(openingsAreaM2, 2)} m²`;
+                netArea.textContent = format(netSheetingAreaM2, 2);
+                
+                const sheetArea = 2.4 * 1.2;
+                const numSheets = Math.ceil(netSheetingAreaM2 / sheetArea);
+                areaSheets.textContent = numSheets;
+                
+                areaMembersTotal.textContent = totalMembers;
+                
+                // --- Update Cost Results ---
+                const openingFramingCost = openingFramingM * timberCostPerM;
+                const totalTimberCost = totalTimberLengthM * timberCostPerM;
+                const totalSheetCost = numSheets * sheetCostPerSheet;
+                
+                openingFramingCostLabel.classList.toggle('hidden', application !== 'wall' || openingFramingCost === 0);
+                openingFramingCostValue.classList.toggle('hidden', application !== 'wall' || openingFramingCost === 0);
+                openingFramingCostValue.textContent = formatCurrency(openingFramingCost);
+                costTotalTimber.textContent = formatCurrency(totalTimberCost - openingFramingCost);
+                costTotalSheet.textContent = formatCurrency(totalSheetCost);
+                
+                costTotalWindowContainer.classList.toggle('hidden', totalWindowCost === 0);
+                costTotalWindow.textContent = formatCurrency(totalWindowCost);
+                costTotalDoorContainer.classList.toggle('hidden', totalDoorCost === 0);
+                costTotalDoor.textContent = formatCurrency(totalDoorCost);
+                
+                let totalPaintCost = 0;
+                if (shouldIncludePaint && application === 'wall') {
+                    totalPaintCost = netSheetingAreaM2 * paintCostPerM2;
+                    costTotalPaintContainer.classList.remove('hidden');
+                    costTotalPaint.textContent = formatCurrency(totalPaintCost);
+                } else {
+                    costTotalPaintContainer.classList.add('hidden');
+                }
+                
+                let totalPileCost = 0;
+                if (application === 'floor') {
+                    const bearerSpacing = 1800;
+                    const pileSpacing = 1500;
+                    const numBearerRows = Math.ceil(width / bearerSpacing) + 1;
+                    const numPilesPerRow = Math.ceil(length / pileSpacing) + 1;
+                    const totalPiles = numBearerRows * numPilesPerRow;
+                    totalPileCost = totalPiles * pileCostPerEach;
+                    areaPilesTotal.textContent = totalPiles;
+                }
+                costTotalPiles.textContent = formatCurrency(totalPileCost);
+                
+                const grandTotal = totalTimberCost + totalSheetCost + totalPileCost + totalWindowCost + totalDoorCost + totalPaintCost;
+                costGrandTotal.textContent = formatCurrency(grandTotal);
+            }
+
+            [areaApplication, areaLength, areaWidth, wallHeight, areaSpacing, costTimber, costSheet, costPile, sheetType, includePaint].forEach(el => {
+                el.addEventListener('input', calculateArea);
+            });
+
+
+            // 6. Unit Converter
+            // ... (omitted for brevity, no changes)
+            const convInputs = { mm: document.getElementById('conv-mm'), m: document.getElementById('conv-m'), ft: document.getElementById('conv-ft'), in: document.getElementById('conv-in'), };
+            const convDiaMm = document.getElementById('conv-dia-mm');
+            const convDiaIn = document.getElementById('conv-dia-in');
+            let isCalculating = false;
+
+            function handleLengthConversion(e) {
+                if (isCalculating) return;
+                isCalculating = true;
+                const sourceId = e.target.id.split('-')[1];
+                const sourceValue = parseFloat(e.target.value) || 0;
+                let mmValue = 0;
+                switch(sourceId) {
+                    case 'mm': mmValue = sourceValue; break;
+                    case 'm':  mmValue = sourceValue * 1000; break;
+                    case 'ft': mmValue = sourceValue * 304.8; break;
+                    case 'in': mmValue = sourceValue * 25.4; break;
+                }
+                convInputs.mm.value = (sourceId === 'mm') ? sourceValue.toString() : format(mmValue, 2);
+                convInputs.m.value = (sourceId === 'm') ? sourceValue.toString() : format(mmValue / 1000, 4);
+                convInputs.ft.value = (sourceId === 'ft') ? sourceValue.toString() : format(mmValue / 304.8, 4);
+                convInputs.in.value = (sourceId === 'in') ? sourceValue.toString() : format(mmValue / 25.4, 4);
+                isCalculating = false;
+            }
+
+            function gcd(a, b) { return b ? gcd(b, a % b) : a; }
+            function decimalToFraction(decimal) {
+                if(decimal === 0) return '0';
+                const denominator = 64; const whole = Math.floor(decimal);
+                const fractional = decimal - whole;
+                const numerator = Math.round(fractional * denominator);
+                if (numerator === 0) return whole.toString();
+                const divisor = gcd(numerator, denominator);
+                const num = numerator / divisor; const den = denominator / divisor;
+                return (whole > 0 ? whole + ' ' : '') + `${num}/${den}`;
+            }
+            function handleDiameterConversion(e) {
+                const mm = parseFloat(e.target.value) || 0;
+                if(mm > 0) { convDiaIn.textContent = decimalToFraction(mm / 25.4) + '"';
+                } else { convDiaIn.textContent = '0"'; }
+            }
+
+            Object.values(convInputs).forEach(input => input.addEventListener('input', handleLengthConversion));
+            convDiaMm.addEventListener('input', handleDiameterConversion);
+
+
+            // Initial calculations on load
+            loadSettings();
+            calculateTrig();
+            calculateRoof();
+            calculateRafter();
+            calculateStair();
+            calculateArea();
+        });
+    </script>
+</body>
+</html>
+
