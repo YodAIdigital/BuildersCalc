@@ -1,0 +1,7 @@
+Place your main logo image here as logo.png (recommended) or logo.svg.
+
+- Required paths used by the site:
+  - ./assets/logo.png (homepage favicon, og:image, header brand)
+  - ./tools/public/logo.png (Tools PWA icon and favicon)
+
+Tip: Prefer a square PNG at 512x512 for best PWA icon quality, and an SVG for crisp header rendering if available.
