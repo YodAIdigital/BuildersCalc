@@ -7,18 +7,31 @@ export default function Layout() {
       <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2">
-            <img src="/tools/logo.png" alt="Roots & Echo Ltd logo" className="h-8 w-auto" onError={(e) => ((e.currentTarget.style.display = 'none'))} />
+            {/* Prefer the main site logo from /assets, fall back to the tools PWA icon if not available */}
+            <img
+              src="/assets/logo.png"
+              alt="Roots & Echo Ltd logo"
+              className="h-8 w-auto"
+              onError={(e) => {
+                const img = e.currentTarget as HTMLImageElement & { dataset: { fallback?: string } };
+                if (!img.dataset.fallback) {
+                  img.dataset.fallback = '1';
+                  img.src = '/tools/logo.png';
+                } else {
+                  img.style.display = 'none';
+                }
+              }}
+            />
             <span className="font-bold">Builder's Tools</span>
           </Link>
           <nav className="ml-auto flex flex-wrap items-center gap-2 text-sm">
             {[
               ['/', 'Trig'],
-              ['/roof-rafter', 'Roof/Rafter'],
+              ['/roof-rafter', 'Roof'],
               ['/stairs', 'Stairs'],
               ['/framing', 'Framing'],
-              ['/convert', 'Converter'],
+              ['/convert', 'Convert'],
               ['/gst', 'GST'],
-              ['/settings', '⚙'],
             ].map(([to, label]) => (
               <NavLink
                 key={to}
@@ -42,7 +55,21 @@ export default function Layout() {
       <footer className="border-t bg-white">
         <div className="mx-auto max-w-6xl px-4 py-4 text-sm flex items-center justify-between">
           <span>© {new Date().getFullYear()} Roots & Echo Ltd</span>
-          <a href="/" className="text-pink-700 hover:underline">Back to homepage</a>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/settings"
+              aria-label="Settings"
+              className="inline-flex items-center justify-center rounded-md px-1 pt-0.5 pb-1 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400"
+            >
+              <span
+                className="material-symbols-outlined text-current text-sm leading-none align-text-bottom relative -top-[2px]"
+                aria-hidden="true"
+              >
+                settings
+              </span>
+            </Link>
+            <a href="/" className="text-pink-700 hover:underline">Back to homepage</a>
+          </div>
         </div>
       </footer>
     </div>

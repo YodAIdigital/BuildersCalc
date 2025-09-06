@@ -1,0 +1,19 @@
+# VCS and IDE
+.git
+.gitignore
+.vscode
+.idea
+
+# Node
+node_modules
+**/node_modules
+**/*.log
+
+# Build artifacts
+tools/.vite
+tools/dist
+dist
+
+# OS
+.DS_Store
+Thumbs.db

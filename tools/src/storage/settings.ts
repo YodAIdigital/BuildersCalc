@@ -1,6 +1,5 @@
 import { getDeviceId } from './device';
 import { loadLocalSettings, saveLocalSettings, loadQueue, pushQueue, clearQueue, StoredSettings } from './local';
-import { supabase } from './supabase';
 
 export type Settings = {
   timberPerM: number;
@@ -49,33 +48,49 @@ export const defaultSettings: Settings = {
   gstRate: 0.15
 };
 
+const SETTINGS_API = (import.meta as any).env?.VITE_SETTINGS_API_URL || '/api/settings';
+
 function nowISO() { return new Date().toISOString(); }
+
+async function fetchRemote(): Promise<{ settings?: Partial<Settings>; updated_at?: string } | null> {
+  try {
+    const res = await fetch(SETTINGS_API, { headers: { 'Accept': 'application/json' } });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function pushRemote(payload: { settings: Settings & StoredSettings; updated_at: string | undefined }) {
+  await fetch(SETTINGS_API, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+}
 
 export async function loadSettings(): Promise<Settings> {
   // 1) Load fast from local cache
   const local = (await loadLocalSettings()) as (StoredSettings & Settings) | null;
   let current: Settings = local ? { ...defaultSettings, ...local } : { ...defaultSettings };
 
-  // 2) Try network sync
+  // 2) Try network sync from server file
   try {
-    if (supabase) {
-      const device_id = getDeviceId();
-      const { data, error } = await supabase
-        .from('builder_app_settings')
-        .select('settings, updated_at')
-        .eq('device_id', device_id)
-        .maybeSingle();
-      if (!error && data?.settings) {
-        const remote = data.settings as Settings;
-        current = { ...defaultSettings, ...remote };
-        await saveLocalSettings({ ...current, updated_at: data.updated_at });
-      } else if (!error && !data) {
-        // Insert initial row
-        await supabase.from('builder_app_settings').insert({ device_id, settings: current, updated_at: nowISO() });
+    const remote = await fetchRemote();
+    if (remote?.settings) {
+      current = { ...defaultSettings, ...remote.settings } as Settings;
+      await saveLocalSettings({ ...current, updated_at: remote.updated_at });
+    } else if (!remote && !local) {
+      // First run; write defaults up to server (optional)
+      try {
+        await pushRemote({ settings: { ...current, updated_at: nowISO() }, updated_at: nowISO() });
+      } catch {
+        // ignore
       }
     }
-  } catch (e) {
-    console.warn('Settings remote load failed; using local cache.');
+  } catch {
+    // ignore; stay offline
   }
 
   return current;
@@ -88,24 +103,19 @@ export async function saveSettings(partial: Partial<Settings>) {
 
   // Try network write; on failure, queue
   try {
-    if (supabase) {
-      const device_id = getDeviceId();
-      await supabase.from('builder_app_settings').upsert({ device_id, settings: merged, updated_at: merged.updated_at });
-      await flushQueue();
-    }
+    await pushRemote({ settings: merged, updated_at: merged.updated_at as string });
+    await flushQueue();
   } catch {
     await pushQueue(merged);
   }
 }
 
 export async function flushQueue() {
-  if (!supabase) return;
   const q = await loadQueue();
   if (q.length === 0) return;
-  const device_id = getDeviceId();
   for (const item of q) {
     try {
-      await supabase.from('builder_app_settings').upsert({ device_id, settings: item, updated_at: item.updated_at as string });
+      await pushRemote({ settings: item as any, updated_at: (item.updated_at as string) || nowISO() });
     } catch {
       // keep queued
       return;

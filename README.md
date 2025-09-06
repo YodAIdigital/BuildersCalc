@@ -21,9 +21,12 @@ Build + preview PWA:
 - `npm run preview`
 
 ## Storage (settings)
-- Offline-first using IndexedDB (idb-keyval) with periodic sync to Supabase.
-- Table: `builder_app_settings` with columns: `id uuid`, `device_id uuid`, `settings jsonb`, `updated_at timestamptz`.
-- Conflict resolution: newest `updated_at` wins.
+- Offline-first using IndexedDB (idb-keyval) with optional sync to a simple server JSON file.
+- API endpoints (served by the production container):
+  - `GET /api/settings` → returns `{ settings, updated_at }`
+  - `PUT /api/settings` → writes settings with last-write-wins using `updated_at`
+- Server persistence: `/data/settings.json` (mounted as a persistent volume in production)
+- Conflict resolution: newest `updated_at` wins; offline writes are queued and flushed when back online.
 
 ## PWA
 - The tools app precaches the app shell and supports install (Add to Home Screen).
@@ -37,6 +40,9 @@ Build + preview PWA:
 ## Legacy
 - The previous monolithic `BuildersTool.html` and docs are kept under `/legacy` (for reference only).
 
+## Deployment
+- See `DEPLOYMENT.md` for Dockerfile-based deployment on Elestio, volume mounting for `/data`, and the healthcheck endpoint.
+
 ## Notes
-- Remember to use the Context7 MCP server for the latest docs when needed, and Supabase MCP + Breeze to verify database structure and RLS whenever schema changes occur.
+- Remember to use the Context7 MCP server for the latest docs when needed.
 

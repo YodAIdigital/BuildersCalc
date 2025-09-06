@@ -1,3 +1,29 @@
+# OS-specific files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules and logs
+node_modules/
+**/node_modules/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build artifacts
+/dist
+/tools/dist
+
+# Vite cache
+/.vite
+/tools/.vite
+
+# Coverage and TS build info
+coverage/
+*.tsbuildinfo
+
 # Tools app artifacts
 /tools/node_modules/
 /tools/dist/
