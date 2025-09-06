@@ -35,8 +35,9 @@ The container is built from the repo's Dockerfile. No external database is requi
 - Repository: Connect this repo and select the deployment branch (e.g., `main`)
 - Build context: `.` (dot - represents repository root)
 - Dockerfile path: `Dockerfile` (NO leading `./` - just `Dockerfile`)
-- Container port: `80`
+- Container port: `3000`
 - Health check: HTTP `GET /health`
+- Note: The container runs as a non-root user and therefore binds to port `3000` (non-privileged). Point your load balancer target to port `3000`.
 - Domain: Use Elestio-provided or custom; enable HTTPS
 - Auto-deploy on push: Enable
 - Scaling: `1` instance (unless you configure a shared volume across instances)

@@ -40,15 +40,16 @@ COPY --from=builder --chown=nextjs:nodejs /app/tools/dist/ /app/site/tools/
 # Environment for server
 ENV SITE_DIR=/app/site
 ENV SETTINGS_PATH=/data/settings.json
-ENV PORT=80
+# Use a non-privileged port so the app can run as a non-root user
+ENV PORT=3000
 
 # Switch to non-root user
 USER nextjs
 
-EXPOSE 80
+EXPOSE 3000
 
 # Add healthcheck for monitoring
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:80/health',res=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+    CMD node -e "require('http').get('http://localhost:3000/health',res=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1))"
 
 CMD ["node", "/app/server/index.js"]
