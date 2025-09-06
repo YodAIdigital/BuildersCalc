@@ -14,6 +14,15 @@ services:
       PORT: "80"
       SITE_DIR: /app/site
       SETTINGS_PATH: /data/settings.json
+      # SMTP configuration (uncomment and set via .env or inline)
+      # SMTP_HOST: mail.smtp2go.com
+      # SMTP_PORT: "2525"
+      # SMTP_SECURE: "false"
+      # SMTP_USERNAME: "${SMTP_USERNAME}"
+      # SMTP_PASSWORD: "${SMTP_PASSWORD}"
+      # CONTACT_FROM_EMAIL: "no-reply@your-domain"
+      # CONTACT_TO_EMAIL: "zeke@rootsandecho.co.nz"
+      # CONTACT_REPLY_TO: "zeke@rootsandecho.co.nz"
     volumes:
       # Named volume for persistent settings file
       - data:/data

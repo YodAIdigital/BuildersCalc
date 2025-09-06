@@ -80,13 +80,18 @@ export default function StandardCalculator({ className = '' }: { className?: str
 
   function compute(a: number, b: number, operator: string): number {
     switch (operator) {
-      case '+': return a + b;
-      case '-': return a - b;
+      case '+':
+        return a + b;
+      case '-':
+        return a - b;
       case '×':
-      case '*': return a * b;
+      case '*':
+        return a * b;
       case '÷':
-      case '/': return b === 0 ? NaN : a / b;
-      default: return b;
+      case '/':
+        return b === 0 ? NaN : a / b;
+      default:
+        return b;
     }
   }
 
@@ -146,25 +151,63 @@ export default function StandardCalculator({ className = '' }: { className?: str
     setWaiting(true);
   }
 
-  function round2(n: number): number { return Math.round(n * 100) / 100; }
+  function round2(n: number): number {
+    return Math.round(n * 100) / 100;
+  }
 
   React.useEffect(() => {
     function onKey(e: KeyboardEvent) {
       const root = rootRef.current;
-      const active = (document.activeElement as HTMLElement | null);
+      const active = document.activeElement as HTMLElement | null;
       // Only handle keys if focus is inside the calculator (container or any child)
       if (!root || !active || !root.contains(active)) return;
 
       const k = e.key;
-      if (/^[0-9]$/.test(k)) { e.preventDefault(); inputDigit(k); return; }
-      if (k === '.') { e.preventDefault(); inputDot(); return; }
-      if (k === 'Backspace') { e.preventDefault(); doBackspace(); return; }
-      if (k === 'Enter' || k === '=') { e.preventDefault(); equals(); return; }
-      if (k === 'Escape') { e.preventDefault(); clearAll(); return; }
-      if (k === '+') { e.preventDefault(); performOperation('+'); return; }
-      if (k === '-') { e.preventDefault(); performOperation('-'); return; }
-      if (k === '*') { e.preventDefault(); performOperation('*'); return; }
-      if (k === '/') { e.preventDefault(); performOperation('/'); return; }
+      if (/^[0-9]$/.test(k)) {
+        e.preventDefault();
+        inputDigit(k);
+        return;
+      }
+      if (k === '.') {
+        e.preventDefault();
+        inputDot();
+        return;
+      }
+      if (k === 'Backspace') {
+        e.preventDefault();
+        doBackspace();
+        return;
+      }
+      if (k === 'Enter' || k === '=') {
+        e.preventDefault();
+        equals();
+        return;
+      }
+      if (k === 'Escape') {
+        e.preventDefault();
+        clearAll();
+        return;
+      }
+      if (k === '+') {
+        e.preventDefault();
+        performOperation('+');
+        return;
+      }
+      if (k === '-') {
+        e.preventDefault();
+        performOperation('-');
+        return;
+      }
+      if (k === '*') {
+        e.preventDefault();
+        performOperation('*');
+        return;
+      }
+      if (k === '/') {
+        e.preventDefault();
+        performOperation('/');
+        return;
+      }
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -172,40 +215,150 @@ export default function StandardCalculator({ className = '' }: { className?: str
   }, [display, acc, op, waiting, gstRate]);
 
   return (
-    <div ref={rootRef} tabIndex={0} className={`rounded-lg border bg-white p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 ${className}`} aria-label="Standard calculator" role="group">
+    <div
+      ref={rootRef}
+      tabIndex={0}
+      className={`rounded-lg border bg-white p-3 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-300 ${className}`}
+      aria-label="Standard calculator"
+      role="group"
+    >
       <div className="mb-3 rounded-md bg-slate-50 px-3 py-2 text-right text-2xl font-semibold tabular-nums tracking-wide">
         {display}
       </div>
       <div className="grid grid-cols-4 gap-2">
-        <button onClick={clearAll} className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200">AC</button>
-        <button onClick={clearEntry} className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200">C</button>
-        <button onClick={doBackspace} className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200" aria-label="Backspace">⌫</button>
-        <button onClick={undo} className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200">Undo</button>
+        <button
+          onClick={clearAll}
+          className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200"
+        >
+          AC
+        </button>
+        <button
+          onClick={clearEntry}
+          className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200"
+        >
+          C
+        </button>
+        <button
+          onClick={doBackspace}
+          className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200"
+          aria-label="Backspace"
+        >
+          ⌫
+        </button>
+        <button
+          onClick={undo}
+          className="rounded-md border bg-slate-100 px-3 py-2 text-sm hover:bg-slate-200"
+        >
+          Undo
+        </button>
 
-        <button onClick={() => inputDigit('7')} className="rounded-md border px-3 py-2 hover:bg-slate-100">7</button>
-        <button onClick={() => inputDigit('8')} className="rounded-md border px-3 py-2 hover:bg-slate-100">8</button>
-        <button onClick={() => inputDigit('9')} className="rounded-md border px-3 py-2 hover:bg-slate-100">9</button>
-        <button onClick={() => performOperation('÷')} className="rounded-md border px-3 py-2 hover:bg-slate-100">÷</button>
+        <button
+          onClick={() => inputDigit('7')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          7
+        </button>
+        <button
+          onClick={() => inputDigit('8')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          8
+        </button>
+        <button
+          onClick={() => inputDigit('9')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          9
+        </button>
+        <button
+          onClick={() => performOperation('÷')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          ÷
+        </button>
 
-        <button onClick={() => inputDigit('4')} className="rounded-md border px-3 py-2 hover:bg-slate-100">4</button>
-        <button onClick={() => inputDigit('5')} className="rounded-md border px-3 py-2 hover:bg-slate-100">5</button>
-        <button onClick={() => inputDigit('6')} className="rounded-md border px-3 py-2 hover:bg-slate-100">6</button>
-        <button onClick={() => performOperation('×')} className="rounded-md border px-3 py-2 hover:bg-slate-100">×</button>
+        <button
+          onClick={() => inputDigit('4')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          4
+        </button>
+        <button
+          onClick={() => inputDigit('5')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          5
+        </button>
+        <button
+          onClick={() => inputDigit('6')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          6
+        </button>
+        <button
+          onClick={() => performOperation('×')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          ×
+        </button>
 
-        <button onClick={() => inputDigit('1')} className="rounded-md border px-3 py-2 hover:bg-slate-100">1</button>
-        <button onClick={() => inputDigit('2')} className="rounded-md border px-3 py-2 hover:bg-slate-100">2</button>
-        <button onClick={() => inputDigit('3')} className="rounded-md border px-3 py-2 hover:bg-slate-100">3</button>
-        <button onClick={() => performOperation('-')} className="rounded-md border px-3 py-2 hover:bg-slate-100">−</button>
+        <button
+          onClick={() => inputDigit('1')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          1
+        </button>
+        <button
+          onClick={() => inputDigit('2')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          2
+        </button>
+        <button
+          onClick={() => inputDigit('3')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          3
+        </button>
+        <button
+          onClick={() => performOperation('-')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          −
+        </button>
 
-        <button onClick={() => inputDigit('0')} className="rounded-md border px-3 py-2 hover:bg-slate-100">0</button>
-        <button onClick={inputDot} className="rounded-md border px-3 py-2 hover:bg-slate-100">.</button>
-        <button onClick={equals} className="rounded-md border px-3 py-2 hover:bg-slate-100">=</button>
-        <button onClick={() => performOperation('+')} className="rounded-md border px-3 py-2 hover:bg-slate-100">+</button>
+        <button
+          onClick={() => inputDigit('0')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          0
+        </button>
+        <button onClick={inputDot} className="rounded-md border px-3 py-2 hover:bg-slate-100">
+          .
+        </button>
+        <button onClick={equals} className="rounded-md border px-3 py-2 hover:bg-slate-100">
+          =
+        </button>
+        <button
+          onClick={() => performOperation('+')}
+          className="rounded-md border px-3 py-2 hover:bg-slate-100"
+        >
+          +
+        </button>
 
-        <button onClick={addGST} className="col-span-2 rounded-md border bg-pink-50 px-3 py-2 hover:bg-pink-100">+GST</button>
-        <button onClick={removeGST} className="col-span-2 rounded-md border bg-pink-50 px-3 py-2 hover:bg-pink-100">−GST</button>
+        <button
+          onClick={addGST}
+          className="col-span-2 rounded-md border bg-pink-50 px-3 py-2 hover:bg-pink-100"
+        >
+          +GST
+        </button>
+        <button
+          onClick={removeGST}
+          className="col-span-2 rounded-md border bg-pink-50 px-3 py-2 hover:bg-pink-100"
+        >
+          −GST
+        </button>
       </div>
     </div>
   );
 }
-

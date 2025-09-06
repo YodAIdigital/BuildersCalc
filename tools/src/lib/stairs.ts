@@ -4,7 +4,16 @@ const toDeg = (rad: number) => (rad * 180) / Math.PI;
 export function calcStairs(totalRiseMm: number) {
   const totalRise = totalRiseMm || 0;
   if (totalRise < 200)
-    return { risers: 0, riserHeight: 0, treads: 0, going: 0, totalRun: 0, angle: 0, compliant: true, notes: '' };
+    return {
+      risers: 0,
+      riserHeight: 0,
+      treads: 0,
+      going: 0,
+      totalRun: 0,
+      angle: 0,
+      compliant: true,
+      notes: '',
+    };
 
   const idealRiser = 180;
   const risers = Math.round(totalRise / idealRiser);
@@ -43,7 +52,6 @@ export function calcStairs(totalRiseMm: number) {
     totalRun: round(totalRun),
     angle: round(angle),
     compliant,
-    notes
+    notes,
   };
 }
-

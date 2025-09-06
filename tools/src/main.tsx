@@ -14,23 +14,75 @@ const UnitConverter = React.lazy(() => import('./tools/UnitConverter'));
 const GST = React.lazy(() => import('./tools/GST'));
 const SettingsGate = React.lazy(() => import('./tools/SettingsGate'));
 
-const router = createBrowserRouter([
-  {
-    path: '/',
-    element: <Layout />,
-    children: [
-      { index: true, element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><Trigonometry /></Suspense> },
-      { path: 'roof-rafter', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><RoofRafter /></Suspense> },
-      { path: 'roof', element: <Navigate to="/roof-rafter" replace /> },
-      { path: 'rafter', element: <Navigate to="/roof-rafter" replace /> },
-      { path: 'stairs', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><Stairs /></Suspense> },
-      { path: 'framing', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><FramingFoundation /></Suspense> },
-      { path: 'convert', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><UnitConverter /></Suspense> },
-      { path: 'gst', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><GST /></Suspense> },
-      { path: 'settings', element: <Suspense fallback={<div className="p-6 text-center">Loading…</div>}><SettingsGate /></Suspense> },
-    ]
-  }
-], { basename: '/tools', future: { v7_startTransition: true, v7_relativeSplatPath: true } });
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <Layout />,
+      children: [
+        {
+          index: true,
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <Trigonometry />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'roof-rafter',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <RoofRafter />
+            </Suspense>
+          ),
+        },
+        { path: 'roof', element: <Navigate to="/roof-rafter" replace /> },
+        { path: 'rafter', element: <Navigate to="/roof-rafter" replace /> },
+        {
+          path: 'stairs',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <Stairs />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'framing',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <FramingFoundation />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'convert',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <UnitConverter />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'gst',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <GST />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'settings',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <SettingsGate />
+            </Suspense>
+          ),
+        },
+      ],
+    },
+  ],
+  { basename: '/tools', future: { v7_startTransition: true, v7_relativeSplatPath: true } }
+);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -39,4 +91,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </SettingsProvider>
   </React.StrictMode>
 );
-

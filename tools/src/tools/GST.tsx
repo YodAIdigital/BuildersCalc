@@ -63,16 +63,17 @@ export default function GST() {
           <StandardCalculator className="mt-2" />
         </div>
         <div className="w-full">
-
-
-          <div className="bg-white rounded-md border p-4 mt-4">
-            <h3 className="font-semibold mb-2">Results</h3>
+          <div className="bg-white rounded-md border p-4 mt-[6px]">
+            <h3 className="font-semibold mb-2">GST Breakdown</h3>
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end mb-3">
               <label className="block">
                 <span className="text-sm">Total without GST</span>
                 <input
                   value={exclStr}
-                  onChange={(e) => { setExclStr(e.target.value); setLastEdited('excl'); }}
+                  onChange={(e) => {
+                    setExclStr(e.target.value);
+                    setLastEdited('excl');
+                  }}
                   className="mt-1 w-full rounded-md border p-2"
                   type="number"
                   step="0.01"
@@ -83,7 +84,10 @@ export default function GST() {
                 <span className="text-sm">GST amount</span>
                 <input
                   value={gstStr}
-                  onChange={(e) => { setGstStr(e.target.value); setLastEdited('gst'); }}
+                  onChange={(e) => {
+                    setGstStr(e.target.value);
+                    setLastEdited('gst');
+                  }}
                   className="mt-1 w-full rounded-md border p-2"
                   type="number"
                   step="0.01"
@@ -94,7 +98,10 @@ export default function GST() {
                 <span className="text-sm">Total with GST</span>
                 <input
                   value={inclStr}
-                  onChange={(e) => { setInclStr(e.target.value); setLastEdited('incl'); }}
+                  onChange={(e) => {
+                    setInclStr(e.target.value);
+                    setLastEdited('incl');
+                  }}
                   className="mt-1 w-full rounded-md border p-2"
                   type="number"
                   step="0.01"
@@ -102,17 +109,26 @@ export default function GST() {
                 />
               </label>
               <div className="sm:justify-self-end self-end">
-                <button type="button" onClick={clearAll} className="rounded-md border px-3 py-2 text-sm hover:bg-slate-100">Clear all</button>
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="rounded-md border px-3 py-2 text-sm hover:bg-slate-100"
+                >
+                  Clear all
+                </button>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>Without GST:</div><div className="font-semibold text-pink-700">{formatCurrencyNZD(out.excl)}</div>
-              <div>GST:</div><div className="font-semibold text-pink-700">{formatCurrencyNZD(out.gst)}</div>
-              <div>Total with GST:</div><div className="font-semibold text-pink-700">{formatCurrencyNZD(out.incl)}</div>
+              <div>Without GST:</div>
+              <div className="font-semibold text-pink-700">{formatCurrencyNZD(out.excl)}</div>
+              <div>GST:</div>
+              <div className="font-semibold text-pink-700">{formatCurrencyNZD(out.gst)}</div>
+              <div>Total with GST:</div>
+              <div className="font-semibold text-pink-700">{formatCurrencyNZD(out.incl)}</div>
             </div>
           </div>
 
-          <div className="bg-white rounded-md border p-4 mt-2">
+          <div className="bg-white rounded-md border p-4 mt-4">
             <h3 className="font-semibold mb-2">Purchase vs Sale — Net GST</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <label className="block">
@@ -139,12 +155,20 @@ export default function GST() {
               </label>
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm mt-3">
-              <div>GST on purchase (reclaim):</div><div className="font-semibold text-pink-700">{formatCurrencyNZD(netOut.purchaseGST)}</div>
-              <div>GST on sale:</div><div className="font-semibold text-pink-700">{formatCurrencyNZD(netOut.saleGST)}</div>
-              <div className="font-semibold">{netOut.netGST >= 0 ? 'Net GST to pay:' : 'GST refund due:'}</div>
+              <div>GST on purchase (reclaim):</div>
+              <div className="font-semibold text-pink-700">
+                {formatCurrencyNZD(netOut.purchaseGST)}
+              </div>
+              <div>GST on sale:</div>
+              <div className="font-semibold text-pink-700">{formatCurrencyNZD(netOut.saleGST)}</div>
+              <div className="font-semibold">
+                {netOut.netGST >= 0 ? 'Net GST to pay:' : 'GST refund due:'}
+              </div>
               <div className="font-bold">{formatCurrencyNZD(Math.abs(netOut.netGST))}</div>
             </div>
-            <p className="text-xs text-slate-500 mt-2">Assumes entered amounts include GST at {(rate * 100).toFixed(2)}%.</p>
+            <p className="text-xs text-slate-500 mt-2">
+              Assumes entered amounts include GST at {(rate * 100).toFixed(2)}%.
+            </p>
           </div>
         </div>
       </div>

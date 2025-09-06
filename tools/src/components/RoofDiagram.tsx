@@ -29,8 +29,12 @@ export default function RoofDiagram() {
         strokeWidth="2"
       />
       {/* Labels */}
-      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>span/2</text>
-      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>rise</text>
+      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>
+        span/2
+      </text>
+      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>
+        rise
+      </text>
       <text
         x={(A.x + B.x) / 2 + 6}
         y={(A.y + B.y) / 2 - 6}
@@ -43,4 +47,3 @@ export default function RoofDiagram() {
     </svg>
   );
 }
-

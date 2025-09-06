@@ -1,5 +1,12 @@
 import { getDeviceId } from './device';
-import { loadLocalSettings, saveLocalSettings, loadQueue, pushQueue, clearQueue, StoredSettings } from './local';
+import {
+  loadLocalSettings,
+  saveLocalSettings,
+  loadQueue,
+  pushQueue,
+  clearQueue,
+  StoredSettings,
+} from './local';
 
 export type Settings = {
   timberPerM: number;
@@ -34,7 +41,7 @@ export const defaultSettings: Settings = {
     slate: 60,
     gib: 22,
     pir: 90,
-    vinyl: 120
+    vinyl: 120,
   },
   paintPerM2: 15,
   windowPerM2: 350,
@@ -45,16 +52,21 @@ export const defaultSettings: Settings = {
   costBargeCapPerM: 14,
   costUnderlayPerM2: 6,
   labourPerM2: 25,
-  gstRate: 0.15
+  gstRate: 0.15,
 };
 
 const SETTINGS_API = (import.meta as any).env?.VITE_SETTINGS_API_URL || '/api/settings';
 
-function nowISO() { return new Date().toISOString(); }
+function nowISO() {
+  return new Date().toISOString();
+}
 
-async function fetchRemote(): Promise<{ settings?: Partial<Settings>; updated_at?: string } | null> {
+async function fetchRemote(): Promise<{
+  settings?: Partial<Settings>;
+  updated_at?: string;
+} | null> {
   try {
-    const res = await fetch(SETTINGS_API, { headers: { 'Accept': 'application/json' } });
+    const res = await fetch(SETTINGS_API, { headers: { Accept: 'application/json' } });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -62,11 +74,14 @@ async function fetchRemote(): Promise<{ settings?: Partial<Settings>; updated_at
   }
 }
 
-async function pushRemote(payload: { settings: Settings & StoredSettings; updated_at: string | undefined }) {
+async function pushRemote(payload: {
+  settings: Settings & StoredSettings;
+  updated_at: string | undefined;
+}) {
   await fetch(SETTINGS_API, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
   });
 }
 
@@ -97,8 +112,14 @@ export async function loadSettings(): Promise<Settings> {
 }
 
 export async function saveSettings(partial: Partial<Settings>) {
-  const local = ((await loadLocalSettings()) as (StoredSettings & Settings) | null) || ({} as Settings);
-  const merged: Settings & StoredSettings = { ...defaultSettings, ...local, ...partial, updated_at: nowISO() };
+  const local =
+    ((await loadLocalSettings()) as (StoredSettings & Settings) | null) || ({} as Settings);
+  const merged: Settings & StoredSettings = {
+    ...defaultSettings,
+    ...local,
+    ...partial,
+    updated_at: nowISO(),
+  };
   await saveLocalSettings(merged);
 
   // Try network write; on failure, queue
@@ -115,7 +136,10 @@ export async function flushQueue() {
   if (q.length === 0) return;
   for (const item of q) {
     try {
-      await pushRemote({ settings: item as any, updated_at: (item.updated_at as string) || nowISO() });
+      await pushRemote({
+        settings: item as any,
+        updated_at: (item.updated_at as string) || nowISO(),
+      });
     } catch {
       // keep queued
       return;
@@ -131,4 +155,3 @@ export function bindOnlineSync() {
     });
   }
 }
-

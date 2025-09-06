@@ -85,7 +85,14 @@ export function calcFraming(inputs: FramingInputs) {
     pileCost = pileCount * costs.pilePerEach;
   }
 
-  const grandTotal = timberCost + sheetCost + paintCost + pileCost + totalWindowCost + totalDoorCost + openingFramingCost;
+  const grandTotal =
+    timberCost +
+    sheetCost +
+    paintCost +
+    pileCost +
+    totalWindowCost +
+    totalDoorCost +
+    openingFramingCost;
 
   return {
     totalAreaM2: round(totalAreaM2, 2),
@@ -102,8 +109,7 @@ export function calcFraming(inputs: FramingInputs) {
       pileCost: round(pileCost, 2),
       windowCost: round(totalWindowCost, 2),
       doorCost: round(totalDoorCost, 2),
-      grandTotal: round(grandTotal, 2)
-    }
+      grandTotal: round(grandTotal, 2),
+    },
   };
 }
-

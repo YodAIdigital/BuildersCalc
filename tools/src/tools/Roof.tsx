@@ -18,11 +18,22 @@ export default function Roof() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
               <span className="text-sm">Roof Pitch (°)</span>
-              <input value={pitch} onChange={(e) => setPitch(e.target.value)} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" step="0.1" />
+              <input
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+                step="0.1"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Building Span (mm)</span>
-              <input value={span} onChange={(e) => setSpan(e.target.value)} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={span}
+                onChange={(e) => setSpan(e.target.value)}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
           </div>
           <div className="bg-white rounded-md border p-3 mt-3">
@@ -39,4 +50,3 @@ export default function Roof() {
     </section>
   );
 }
-

@@ -271,7 +271,7 @@
     var yearSpan = document.getElementById('year');
     if (yearSpan) { yearSpan.textContent = new Date().getFullYear().toString(); }
     if (form) {
-      form.addEventListener('submit', function (e) {
+      form.addEventListener('submit', async function (e) {
         e.preventDefault();
         var honey = (form.querySelector('[name="company"]') || { value: '' }).value;
         if (honey) { return; }
@@ -279,13 +279,45 @@
           form.reportValidity();
           return;
         }
-        // Simulate success
-        if (status) {
-          status.classList.remove('sr-only');
-          status.classList.add('mt-3', 'text-sm', 'text-green-700');
-          status.textContent = 'Thanks — we’ll be in touch soon. For anything urgent call Zeke on 021 180 1218.';
+        var submitBtn = form.querySelector('button[type="submit"]');
+        var payload = {
+          name: (form.querySelector('#name') || { value: '' }).value.trim(),
+          email: (form.querySelector('#email') || { value: '' }).value.trim(),
+          phone: (form.querySelector('#phone') || { value: '' }).value.trim(),
+          message: (form.querySelector('#message') || { value: '' }).value.trim(),
+          company: '',
+          source: 'homepage'
+        };
+        try {
+          if (submitBtn) submitBtn.disabled = true;
+          if (status) {
+            status.classList.remove('sr-only');
+            status.classList.remove('text-green-700');
+            status.classList.add('mt-3', 'text-sm', 'text-slate-700');
+            status.textContent = 'Sending…';
+          }
+          var resp = await fetch('/api/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-Form-Source': 'homepage' },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) throw new Error('Request failed');
+          if (status) {
+            status.classList.remove('text-slate-700');
+            status.classList.add('text-green-700');
+            status.textContent = 'Thanks — we’ll be in touch soon. For anything urgent call Zeke on 021 180 1218.';
+          }
+          form.reset();
+        } catch (err) {
+          if (status) {
+            status.classList.remove('sr-only');
+            status.classList.remove('text-green-700');
+            status.classList.add('mt-3', 'text-sm', 'text-red-700');
+            status.textContent = 'Sorry, something went wrong sending your message. Please call Zeke on 021 180 1218.';
+          }
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
         }
-        form.reset();
       });
     }
   });

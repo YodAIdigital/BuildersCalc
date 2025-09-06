@@ -9,4 +9,3 @@ describe('trig', () => {
     expect(Math.round(r.B)).toBe(53);
   });
 });
-

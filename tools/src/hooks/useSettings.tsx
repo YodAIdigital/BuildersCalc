@@ -1,12 +1,21 @@
 import React from 'react';
-import { defaultSettings, loadSettings, saveSettings, Settings, bindOnlineSync } from '../storage/settings';
+import {
+  defaultSettings,
+  loadSettings,
+  saveSettings,
+  Settings,
+  bindOnlineSync,
+} from '../storage/settings';
 
 type Ctx = {
   settings: Settings;
   setSettings: (partial: Partial<Settings>) => void;
 };
 
-const SettingsContext = React.createContext<Ctx>({ settings: defaultSettings, setSettings: () => {} });
+const SettingsContext = React.createContext<Ctx>({
+  settings: defaultSettings,
+  setSettings: () => {},
+});
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettingsState] = React.useState<Settings>(defaultSettings);
@@ -22,10 +31,13 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     saveSettings(partial).catch(() => void 0);
   };
 
-  return <SettingsContext.Provider value={{ settings, setSettings }}>{children}</SettingsContext.Provider>;
+  return (
+    <SettingsContext.Provider value={{ settings, setSettings }}>
+      {children}
+    </SettingsContext.Provider>
+  );
 }
 
 export function useSettings() {
   return React.useContext(SettingsContext);
 }
-

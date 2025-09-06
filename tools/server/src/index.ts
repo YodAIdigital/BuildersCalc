@@ -1,6 +1,8 @@
 import express from 'express';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { validateContactInput, sendEnquiryEmail } from './contact.js';
+import crypto from 'node:crypto';
 
 const app = express();
 app.use(express.json({ limit: '128kb' }));
@@ -9,7 +11,37 @@ const SITE_DIR = process.env.SITE_DIR || '/app/site';
 const SETTINGS_PATH = process.env.SETTINGS_PATH || '/data/settings.json';
 const PORT = Number(process.env.PORT || 80);
 
-async function readSettingsFile(): Promise<{ settings: Record<string, unknown>; updated_at: string | null; }> {
+// Respect proxy headers so req.ip reflects the real client IP behind a proxy/LB
+app.set('trust proxy', true);
+
+// Basic in-memory rate limiting for contact endpoint
+const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX || '10'); // requests
+const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS || '900000'); // 15 minutes
+
+type RateBucket = { count: number; resetAt: number };
+const rateBuckets = new Map<string, RateBucket>();
+
+function rateLimitCheck(key: string): { allowed: boolean; remaining: number; resetAt: number } {
+  const now = Date.now();
+  const bucket = rateBuckets.get(key);
+  if (!bucket || now >= bucket.resetAt) {
+    const resetAt = now + RATE_LIMIT_WINDOW_MS;
+    const count = 1;
+    rateBuckets.set(key, { count, resetAt });
+    return { allowed: true, remaining: Math.max(0, RATE_LIMIT_MAX - count), resetAt };
+  }
+  if (bucket.count >= RATE_LIMIT_MAX) {
+    return { allowed: false, remaining: 0, resetAt: bucket.resetAt };
+  }
+  bucket.count += 1;
+  rateBuckets.set(key, bucket);
+  return { allowed: true, remaining: Math.max(0, RATE_LIMIT_MAX - bucket.count), resetAt: bucket.resetAt };
+}
+
+async function readSettingsFile(): Promise<{
+  settings: Record<string, unknown>;
+  updated_at: string | null;
+}> {
   try {
     const raw = await fs.readFile(SETTINGS_PATH, 'utf8');
     return JSON.parse(raw);
@@ -39,6 +71,39 @@ app.put('/api/settings', async (req, res) => {
   // No auth; last-write-wins as requested
   await writeSettingsFile(body);
   res.status(204).end();
+});
+
+// Contact form endpoint
+app.post('/api/contact', async (req, res) => {
+  try {
+    // Basic per-IP rate limiting
+    const ip = req.ip || (req.headers['x-forwarded-for'] as string) || (req.socket.remoteAddress || 'unknown');
+    const rl = rateLimitCheck(Array.isArray(ip) ? ip[0] : ip);
+    res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+    res.setHeader('X-RateLimit-Remaining', String(rl.remaining));
+    res.setHeader('X-RateLimit-Reset', String(Math.ceil(rl.resetAt / 1000)));
+    if (!rl.allowed) {
+      const retryAfter = Math.max(0, Math.ceil((rl.resetAt - Date.now()) / 1000));
+      res.setHeader('Retry-After', String(retryAfter));
+      return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+    }
+
+    const body = req.body as any;
+
+    // Honeypot: ignore bots silently
+    const honey = typeof body?.company === 'string' && body.company.trim();
+    if (honey) return res.status(200).json({ ok: true });
+
+    const result = validateContactInput(body);
+    if (result.errors) return res.status(400).json({ error: 'Invalid payload', details: result.errors });
+
+    const data = result.data!; // safe: errors checked above
+    const requestId = crypto.randomUUID();
+    await sendEnquiryEmail({ ...data, source: data.source || (req.headers['x-form-source'] as string) }, { requestId });
+    return res.status(202).json({ ok: true, requestId });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to send message' });
+  }
 });
 
 // Static assets
