@@ -35,7 +35,7 @@
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <a href="#home" class="flex items-center gap-3 font-bold text-slate-900">
-          <img src="./assets/logo.png" alt="Roots & Echo Ltd logo" class="h-10 w-auto" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('sr-only');">
+          <img src="./assets/logo.png" alt="Roots & Echo Ltd logo" width="40" height="40" decoding="async" fetchpriority="high" class="h-10 w-auto drop-shadow-sm select-none" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='./tools/public/logo.png';}else{this.style.display='none';this.nextElementSibling.classList.remove('sr-only');}">
           <span class="sr-only">Roots & Echo Ltd</span>
         </a>
         <button id="mobile-toggle" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-600" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
