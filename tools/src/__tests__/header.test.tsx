@@ -23,4 +23,3 @@ describe('Header logo', () => {
     expect(src.endsWith('/logo.png')).toBe(true);
   });
 });
-

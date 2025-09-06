@@ -1,3 +1,52 @@
+# BuildersCalc / Roots & Echo Site
+
+This repository contains:
+- A static marketing site (root) served by a small Express server in production
+- Builders Tools PWA under `/tools/`
+- A tiny HTTP API for settings persistence (`/api/settings`) and a contact endpoint (`/api/contact`)
+
+## Local development quick start
+
+1) Install dependencies for the tools workspace
+- PowerShell:
+  npm --prefix ./tools install
+
+2) Run tests
+- PowerShell:
+  npm --prefix ./tools run test
+
+3) Build
+- PowerShell:
+  npm --prefix ./tools run build:all
+
+4) Run the container locally (recommended)
+- PowerShell:
+  docker compose up --build
+- Visit http://localhost:8080/
+
+## Environment variables and secrets
+
+Create an `.env` (or configure variables in your hosting provider) using `.env.example` as a template.
+
+IMPORTANT: Do not commit secrets. The root `.gitignore` includes `.env` and `/.data`.
+
+Key variables:
+- SMTP_HOST (default mail.smtp2go.com)
+- SMTP_PORT (default 2525; STARTTLS)
+- SMTP_USERNAME, SMTP_PASSWORD
+- CONTACT_FROM_EMAIL, CONTACT_TO_EMAIL, CONTACT_REPLY_TO
+- RATE_LIMIT_MAX, RATE_LIMIT_WINDOW_MS
+
+## Contact form
+
+The contact forms on the marketing pages (index.html and cabins-cromwell-queenstown.html) POST to `/api/contact`.
+- The server validates inputs, honors the honeypot field, applies a basic per-IP rate limit, and sends via SMTP.
+- No data is stored locally or in a database.
+
+## Deployment
+
+See DEPLOYMENT.md for detailed instructions (Elestio) and required environment variables.
+
 # Roots & Echo Ltd — Cabins + Builder's Tools
 
 This repo hosts a two-part site:

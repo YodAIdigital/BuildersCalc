@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Install frontend/server dependencies in the tools workspace
 COPY tools/package*.json /app/tools/
-RUN cd /app/tools && npm ci --only=production=false
+RUN cd /app/tools && npm ci
 
 # Copy sources and build
 COPY tools /app/tools

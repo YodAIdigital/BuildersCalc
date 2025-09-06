@@ -16,7 +16,9 @@ export default function SettingsGate() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (pin === '555') {
-      try { localStorage.setItem('builders-tools-settings-unlocked', '1'); } catch {}
+      try {
+        localStorage.setItem('builders-tools-settings-unlocked', '1');
+      } catch {}
       setUnlocked(true);
     } else {
       setError('Incorrect PIN');
@@ -40,7 +42,10 @@ export default function SettingsGate() {
           <span className="text-sm">PIN</span>
           <input
             value={pin}
-            onChange={(e) => { setPin(e.target.value); setError(''); }}
+            onChange={(e) => {
+              setPin(e.target.value);
+              setError('');
+            }}
             className="mt-1 w-full rounded-md border p-2"
             type="password"
             inputMode="numeric"
@@ -51,9 +56,10 @@ export default function SettingsGate() {
           />
         </label>
         {error && <div className="text-sm text-red-600">{error}</div>}
-        <button type="submit" className="rounded-md border px-3 py-2 text-sm hover:bg-slate-100">Unlock</button>
+        <button type="submit" className="rounded-md border px-3 py-2 text-sm hover:bg-slate-100">
+          Unlock
+        </button>
       </form>
     </section>
   );
 }
-

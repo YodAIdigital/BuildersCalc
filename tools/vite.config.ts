@@ -32,12 +32,18 @@ export default defineConfig(({ command }) => ({
             const filePath = path.resolve(__dirname, `..${req.url}`);
             if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
               const ext = path.extname(filePath).toLowerCase();
-              const ctype = ext === '.png' ? 'image/png'
-                : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg'
-                : ext === '.svg' ? 'image/svg+xml'
-                : ext === '.ico' ? 'image/x-icon'
-                : ext === '.webp' ? 'image/webp'
-                : 'application/octet-stream';
+              const ctype =
+                ext === '.png'
+                  ? 'image/png'
+                  : ext === '.jpg' || ext === '.jpeg'
+                    ? 'image/jpeg'
+                    : ext === '.svg'
+                      ? 'image/svg+xml'
+                      : ext === '.ico'
+                        ? 'image/x-icon'
+                        : ext === '.webp'
+                          ? 'image/webp'
+                          : 'application/octet-stream';
               res.setHeader('Content-Type', ctype);
               res.end(fs.readFileSync(filePath));
               return;
@@ -78,7 +84,7 @@ export default defineConfig(({ command }) => ({
           }
           next();
         });
-      }
+      },
     },
     VitePWA({
       registerType: 'autoUpdate',
@@ -93,18 +99,17 @@ export default defineConfig(({ command }) => ({
         background_color: '#f8fafc',
         icons: [
           { src: 'logo.png', sizes: '192x192', type: 'image/png' },
-          { src: 'logo.png', sizes: '512x512', type: 'image/png' }
-        ]
+          { src: 'logo.png', sizes: '512x512', type: 'image/png' },
+        ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-      }
-    })
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+      },
+    }),
   ],
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './src/test/setup.ts'
-  }
+    setupFiles: './src/test/setup.ts',
+  },
 }));
-

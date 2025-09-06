@@ -35,7 +35,12 @@ export default function Stairs() {
 
     // If we have a total rise, work out a compliant riser count/height by default.
     const solveRiseGroup = () => {
-      if (totalRise <= 0) { risers = 0; treads = 0; riserHeight = 0; return; }
+      if (totalRise <= 0) {
+        risers = 0;
+        treads = 0;
+        riserHeight = 0;
+        return;
+      }
 
       // If user edited risers/treads/riserHeight/totalRise, respect that lastEdited field and derive the rest.
       if (lastEdited === 'risers' || lastEdited === 'treads') {
@@ -66,7 +71,12 @@ export default function Stairs() {
     };
 
     const solveRunGroup = () => {
-      if (treads <= 0 || totalRise <= 0) { totalRun = 0; going = 0; angle = 0; return; }
+      if (treads <= 0 || totalRise <= 0) {
+        totalRun = 0;
+        going = 0;
+        angle = 0;
+        return;
+      }
 
       const toRad = (d: number) => (d * Math.PI) / 180;
       const toDeg = (r: number) => (r * 180) / Math.PI;
@@ -104,10 +114,22 @@ export default function Stairs() {
     const twoRPlusG = 2 * riserHeight + going;
     let compliant = true;
     let notes = 'NZBC D1/AS1 (Private Stairs): ';
-    if (!(riserHeight >= 115 && riserHeight <= 190)) { compliant = false; notes += 'Riser height outside 115-190mm. '; }
-    if (!(going >= 250)) { compliant = false; notes += 'Tread going less than 250mm. '; }
-    if (!(twoRPlusG >= 550 && twoRPlusG <= 700)) { compliant = false; notes += `2R+G (${round(twoRPlusG, 0)}) outside 550-700mm. `; }
-    if (!(angle <= 41)) { compliant = false; notes += 'Angle exceeds 41°. '; }
+    if (!(riserHeight >= 115 && riserHeight <= 190)) {
+      compliant = false;
+      notes += 'Riser height outside 115-190mm. ';
+    }
+    if (!(going >= 250)) {
+      compliant = false;
+      notes += 'Tread going less than 250mm. ';
+    }
+    if (!(twoRPlusG >= 550 && twoRPlusG <= 700)) {
+      compliant = false;
+      notes += `2R+G (${round(twoRPlusG, 0)}) outside 550-700mm. `;
+    }
+    if (!(angle <= 41)) {
+      compliant = false;
+      notes += 'Angle exceeds 41°. ';
+    }
 
     return {
       totalRise: round(totalRise, 0),
@@ -120,8 +142,17 @@ export default function Stairs() {
       compliant,
       notes,
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parsed.totalRise, parsed.risers, parsed.treads, parsed.riserHeight, parsed.going, parsed.totalRun, parsed.angle, lastEdited]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    parsed.totalRise,
+    parsed.risers,
+    parsed.treads,
+    parsed.riserHeight,
+    parsed.going,
+    parsed.totalRun,
+    parsed.angle,
+    lastEdited,
+  ]);
 
   // Synchronize non-edited fields to computed output for a smooth UX
   React.useEffect(() => {
@@ -155,48 +186,114 @@ export default function Stairs() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <label className="block">
               <span className="text-sm">Total Rise (mm)</span>
-              <input value={totalRiseStr} onChange={(e) => { setTotalRiseStr(e.target.value); setLastEdited('totalRise'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={totalRiseStr}
+                onChange={(e) => {
+                  setTotalRiseStr(e.target.value);
+                  setLastEdited('totalRise');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Risers (count)</span>
-              <input value={risersStr} onChange={(e) => { setRisersStr(e.target.value); setLastEdited('risers'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" step="1" />
+              <input
+                value={risersStr}
+                onChange={(e) => {
+                  setRisersStr(e.target.value);
+                  setLastEdited('risers');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+                step="1"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Treads (count)</span>
-              <input value={treadsStr} onChange={(e) => { setTreadsStr(e.target.value); setLastEdited('treads'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" step="1" />
+              <input
+                value={treadsStr}
+                onChange={(e) => {
+                  setTreadsStr(e.target.value);
+                  setLastEdited('treads');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+                step="1"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Riser Height (mm)</span>
-              <input value={riserHeightStr} onChange={(e) => { setRiserHeightStr(e.target.value); setLastEdited('riserHeight'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={riserHeightStr}
+                onChange={(e) => {
+                  setRiserHeightStr(e.target.value);
+                  setLastEdited('riserHeight');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Tread Going (mm)</span>
-              <input value={goingStr} onChange={(e) => { setGoingStr(e.target.value); setLastEdited('going'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={goingStr}
+                onChange={(e) => {
+                  setGoingStr(e.target.value);
+                  setLastEdited('going');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Total Run (mm)</span>
-              <input value={totalRunStr} onChange={(e) => { setTotalRunStr(e.target.value); setLastEdited('totalRun'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={totalRunStr}
+                onChange={(e) => {
+                  setTotalRunStr(e.target.value);
+                  setLastEdited('totalRun');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Stair Angle (°)</span>
-              <input value={angleStr} onChange={(e) => { setAngleStr(e.target.value); setLastEdited('angle'); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" step="0.1" />
+              <input
+                value={angleStr}
+                onChange={(e) => {
+                  setAngleStr(e.target.value);
+                  setLastEdited('angle');
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+                step="0.1"
+              />
             </label>
           </div>
           <div className="bg-white rounded-md border p-3 mt-3">
             <h3 className="font-semibold mb-2 text-sm">Results</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>Number of Risers:</div><div className="font-semibold text-pink-700">{out.risers}</div>
-              <div>Riser Height:</div><div className="font-semibold text-pink-700">{out.riserHeight} mm</div>
-              <div>Number of Treads:</div><div className="font-semibold text-pink-700">{out.treads}</div>
-              <div>Tread Going:</div><div className="font-semibold text-pink-700">{out.going} mm</div>
-              <div>Total Run:</div><div className="font-semibold text-pink-700">{out.totalRun} mm</div>
-              <div>Stair Angle:</div><div className="font-semibold text-pink-700">{out.angle}°</div>
+              <div>Number of Risers:</div>
+              <div className="font-semibold text-pink-700">{out.risers}</div>
+              <div>Riser Height:</div>
+              <div className="font-semibold text-pink-700">{out.riserHeight} mm</div>
+              <div>Number of Treads:</div>
+              <div className="font-semibold text-pink-700">{out.treads}</div>
+              <div>Tread Going:</div>
+              <div className="font-semibold text-pink-700">{out.going} mm</div>
+              <div>Total Run:</div>
+              <div className="font-semibold text-pink-700">{out.totalRun} mm</div>
+              <div>Stair Angle:</div>
+              <div className="font-semibold text-pink-700">{out.angle}°</div>
             </div>
-            <p className={`mt-3 text-sm ${out.compliant ? 'text-green-700' : 'text-red-700'}`}>{out.compliant ? '✓ Compliant' : `✗ ${out.notes}`}</p>
+            <p className={`mt-3 text-sm ${out.compliant ? 'text-green-700' : 'text-red-700'}`}>
+              {out.compliant ? '✓ Compliant' : `✗ ${out.notes}`}
+            </p>
           </div>
         </div>
       </div>
     </section>
   );
 }
-

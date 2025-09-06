@@ -47,12 +47,33 @@ export default function CombinedRoofDiagram({ halfSpan, rise, pitch, common, ove
       <line x1={A.x} y1={A.y} x2={A2.x} y2={A2.y} stroke="#0f4c81" strokeWidth="2" />
 
       {/* Labels */}
-      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>half-span{halfSpan ? ` ${halfSpan.toFixed(0)}mm` : ''}</text>
-      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>rise{rise ? ` ${rise.toFixed(0)}mm` : ''}</text>
-      <text x={(A.x + B.x) / 2 + 6} y={(A.y + B.y) / 2 - 6} textAnchor="middle" fill="#0f4c81" fontWeight={600}>common{common ? ` ${common.toFixed(0)}mm` : ''}</text>
-      <text x={(A.x + A2.x) / 2} y={(A.y + A2.y) / 2 - 6} textAnchor="middle" fill="#0f4c81" fontWeight={600}>overhang{overhang ? ` ${overhang.toFixed(0)}mm` : ''}</text>
-      <text x={A.x - 10} y={A.y - 10} textAnchor="end" fill="#0f4c81" fontWeight={700}>pitch{pitch ? ` ${pitch.toFixed(1)}°` : ''}</text>
+      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>
+        half-span{halfSpan ? ` ${halfSpan.toFixed(0)}mm` : ''}
+      </text>
+      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>
+        rise{rise ? ` ${rise.toFixed(0)}mm` : ''}
+      </text>
+      <text
+        x={(A.x + B.x) / 2 + 6}
+        y={(A.y + B.y) / 2 - 6}
+        textAnchor="middle"
+        fill="#0f4c81"
+        fontWeight={600}
+      >
+        common{common ? ` ${common.toFixed(0)}mm` : ''}
+      </text>
+      <text
+        x={(A.x + A2.x) / 2}
+        y={(A.y + A2.y) / 2 - 6}
+        textAnchor="middle"
+        fill="#0f4c81"
+        fontWeight={600}
+      >
+        overhang{overhang ? ` ${overhang.toFixed(0)}mm` : ''}
+      </text>
+      <text x={A.x - 10} y={A.y - 10} textAnchor="end" fill="#0f4c81" fontWeight={700}>
+        pitch{pitch ? ` ${pitch.toFixed(1)}°` : ''}
+      </text>
     </svg>
   );
 }
-

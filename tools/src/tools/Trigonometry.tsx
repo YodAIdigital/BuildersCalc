@@ -87,27 +87,77 @@ export default function Trigonometry() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <label className="block">
               <span className="text-sm">Side A (Opposite)</span>
-              <input value={a} onChange={(e) => { const v = e.target.value; setA(v); updateSources('a', v); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={a}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setA(v);
+                  updateSources('a', v);
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Side B (Adjacent)</span>
-              <input value={b} onChange={(e) => { const v = e.target.value; setB(v); updateSources('b', v); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={b}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setB(v);
+                  updateSources('b', v);
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Side C (Hypotenuse)</span>
-              <input value={c} onChange={(e) => { const v = e.target.value; setC(v); updateSources('c', v); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={c}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setC(v);
+                  updateSources('c', v);
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Angle 1 (°)</span>
-              <input value={A} onChange={(e) => { const v = e.target.value; setAngA(v); updateSources('A', v); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={A}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setAngA(v);
+                  updateSources('A', v);
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Angle 2 (°)</span>
-              <input value={B} onChange={(e) => { const v = e.target.value; setAngB(v); updateSources('B', v); }} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={B}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setAngB(v);
+                  updateSources('B', v);
+                }}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Area</span>
-              <input value={area} readOnly className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm bg-slate-50" type="number" />
+              <input
+                value={area}
+                readOnly
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm bg-slate-50"
+                type="number"
+              />
             </label>
           </div>
           {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
@@ -133,4 +183,3 @@ export default function Trigonometry() {
     </section>
   );
 }
-

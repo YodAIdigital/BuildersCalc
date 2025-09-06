@@ -10,4 +10,3 @@ export function calcRoof(pitchDeg: number, spanMm: number) {
   const rafter = Math.sqrt(rise * rise + halfSpan * halfSpan);
   return { rise: round(rise), rafter: round(rafter) };
 }
-

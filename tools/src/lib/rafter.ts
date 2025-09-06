@@ -15,7 +15,6 @@ export function calcRafter(widthMm: number, pitchDeg: number, overhangMm: number
     common: round(common),
     total: round(total),
     plumb: round(pitch),
-    birdsmouth: round(90 - pitch)
+    birdsmouth: round(90 - pitch),
   };
 }
-

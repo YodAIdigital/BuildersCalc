@@ -15,7 +15,11 @@ function Header() {
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
         {/* Brand link intentionally uses an anchor to route to the marketing homepage at "/" outside the /tools router scope. */}
-        <a href="/" className="flex items-center gap-2" aria-label="Roots & Echo Ltd marketing homepage">
+        <a
+          href="/"
+          className="flex items-center gap-2"
+          aria-label="Roots & Echo Ltd marketing homepage"
+        >
           {/* Use BASE_URL so dev resolves to "/logo.png" and production build resolves to "/tools/logo.png". */}
           <img
             src={`${import.meta.env.BASE_URL}logo.png`}
@@ -34,7 +38,7 @@ function Header() {
             ['/framing', 'Framing'],
             ['/convert', 'Converter'],
             ['/gst', 'GST'],
-            ['/settings', 'Settings']
+            ['/settings', 'Settings'],
           ].map(([to, label]) => (
             <NavLink
               key={to}
@@ -75,10 +79,11 @@ export default function App() {
       <footer className="border-t bg-white">
         <div className="mx-auto max-w-6xl px-4 py-4 text-sm flex items-center justify-between">
           <span>© {new Date().getFullYear()} Roots & Echo Ltd</span>
-          <a href="/" className="text-pink-700 hover:underline">Back to homepage</a>
+          <a href="/" className="text-pink-700 hover:underline">
+            Back to homepage
+          </a>
         </div>
       </footer>
     </div>
   );
 }
-

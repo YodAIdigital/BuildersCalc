@@ -21,4 +21,3 @@ export async function pushQueue(item: StoredSettings) {
 export async function clearQueue() {
   await set('queue', []);
 }
-

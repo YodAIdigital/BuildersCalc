@@ -27,10 +27,15 @@ coverage/
 # Tools app artifacts
 /tools/node_modules/
 /tools/dist/
+/tools/server/dist/
 /tools/.vite/
 /tools/.env
 /tools/.vercel/
 /tools/.cache/
+
+# Local env and data
+.env
+/.data
 
 # Mac/Windows
 .DS_Store

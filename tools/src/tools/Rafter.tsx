@@ -19,15 +19,30 @@ export default function Rafter() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <label className="block">
               <span className="text-sm">Building Width/Span (mm)</span>
-              <input value={width} onChange={(e) => setWidth(e.target.value)} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={width}
+                onChange={(e) => setWidth(e.target.value)}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Roof Pitch (°)</span>
-              <input value={pitch} onChange={(e) => setPitch(e.target.value)} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
             <label className="block">
               <span className="text-sm">Eave Overhang (mm)</span>
-              <input value={overhang} onChange={(e) => setOverhang(e.target.value)} className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm" type="number" />
+              <input
+                value={overhang}
+                onChange={(e) => setOverhang(e.target.value)}
+                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                type="number"
+              />
             </label>
           </div>
           <div className="bg-white rounded-md border p-3 mt-3">
@@ -48,4 +63,3 @@ export default function Rafter() {
     </section>
   );
 }
-

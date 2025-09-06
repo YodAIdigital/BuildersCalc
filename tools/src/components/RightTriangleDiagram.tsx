@@ -27,8 +27,12 @@ export default function RightTriangleDiagram() {
         stroke="#0f4c81"
         strokeWidth="2"
       />
-      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>a</text>
-      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>b</text>
+      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>
+        a
+      </text>
+      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>
+        b
+      </text>
       <text
         x={(A.x + B.x) / 2 + 8}
         y={(A.y + B.y) / 2 - 8}
@@ -38,9 +42,12 @@ export default function RightTriangleDiagram() {
       >
         c
       </text>
-      <text x={A.x - 8} y={A.y - 8} textAnchor="end" fill="#0f4c81" fontWeight={700}>1</text>
-      <text x={B.x + 12} y={B.y + 12} textAnchor="start" fill="#0f4c81" fontWeight={700}>2</text>
+      <text x={A.x - 8} y={A.y - 8} textAnchor="end" fill="#0f4c81" fontWeight={700}>
+        1
+      </text>
+      <text x={B.x + 12} y={B.y + 12} textAnchor="start" fill="#0f4c81" fontWeight={700}>
+        2
+      </text>
     </svg>
   );
 }
-

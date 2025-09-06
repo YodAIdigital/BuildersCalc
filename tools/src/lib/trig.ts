@@ -51,5 +51,4 @@ export function solveRightTriangle(inputs: TrigInputs): TrigSolution | null {
   return { a: round(a!), b: round(b!), c: round(c!), A: round(A!), B: round(B!) };
 }
 
-export const round = (n: number, d = 2) => Number.isFinite(n) ? parseFloat(n.toFixed(d)) : 0;
-
+export const round = (n: number, d = 2) => (Number.isFinite(n) ? parseFloat(n.toFixed(d)) : 0);

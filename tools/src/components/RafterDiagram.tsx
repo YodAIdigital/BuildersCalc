@@ -41,12 +41,39 @@ export default function RafterDiagram() {
       <line x1={A.x} y1={A.y} x2={A2.x} y2={A2.y} stroke="#0f4c81" strokeWidth="2" />
 
       {/* Labels */}
-      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>width/2</text>
-      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>rise</text>
-      <text x={(A.x + B.x) / 2 + 6} y={(A.y + B.y) / 2 - 6} textAnchor="middle" fill="#0f4c81" fontWeight={600}>common</text>
-      <text x={(A.x + A2.x) / 2} y={(A.y + A2.y) / 2 - 6} textAnchor="middle" fill="#0f4c81" fontWeight={600}>overhang</text>
-      <text x={(B.x + A2.x) / 2 + 10} y={(B.y + A2.y) / 2 - 10} textAnchor="middle" fill="#0f4c81" fontWeight={700}>total</text>
+      <text x={(C.x + A.x) / 2} y={C.y - 8} textAnchor="middle" fill="#0f4c81" fontWeight={600}>
+        width/2
+      </text>
+      <text x={C.x + 10} y={(C.y + B.y) / 2} textAnchor="start" fill="#0f4c81" fontWeight={600}>
+        rise
+      </text>
+      <text
+        x={(A.x + B.x) / 2 + 6}
+        y={(A.y + B.y) / 2 - 6}
+        textAnchor="middle"
+        fill="#0f4c81"
+        fontWeight={600}
+      >
+        common
+      </text>
+      <text
+        x={(A.x + A2.x) / 2}
+        y={(A.y + A2.y) / 2 - 6}
+        textAnchor="middle"
+        fill="#0f4c81"
+        fontWeight={600}
+      >
+        overhang
+      </text>
+      <text
+        x={(B.x + A2.x) / 2 + 10}
+        y={(B.y + A2.y) / 2 - 10}
+        textAnchor="middle"
+        fill="#0f4c81"
+        fontWeight={700}
+      >
+        total
+      </text>
     </svg>
   );
 }
-

@@ -9,7 +9,14 @@ type Props = {
   angle: number;
 };
 
-export default function StairsDiagram({ risers, riserHeight, going, totalRise, totalRun, angle }: Props) {
+export default function StairsDiagram({
+  risers,
+  riserHeight,
+  going,
+  totalRise,
+  totalRun,
+  angle,
+}: Props) {
   const width = 360;
   const height = 220;
 
@@ -34,7 +41,6 @@ export default function StairsDiagram({ risers, riserHeight, going, totalRise, t
     if (i < stepsToDraw - 1) pathParts.push(`M ${x0} ${y0 - risePx} L ${x0 + step} ${y0 - risePx}`);
   }
 
-
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
@@ -49,23 +55,44 @@ export default function StairsDiagram({ risers, riserHeight, going, totalRise, t
       <line x1={baseX} y1={baseY} x2={topX} y2={topY} stroke="#0f4c81" strokeWidth="2" />
 
       {/* Angle arc at base */}
-      <path d={`M ${baseX + 26} ${baseY} A 26 26 0 0 0 ${baseX} ${baseY - 26}`} fill="none" stroke="#0f4c81" strokeWidth="2" />
-      <text x={baseX + 16} y={baseY - 8} textAnchor="middle" fill="#0f4c81" fontWeight={700}>θ</text>
+      <path
+        d={`M ${baseX + 26} ${baseY} A 26 26 0 0 0 ${baseX} ${baseY - 26}`}
+        fill="none"
+        stroke="#0f4c81"
+        strokeWidth="2"
+      />
+      <text x={baseX + 16} y={baseY - 8} textAnchor="middle" fill="#0f4c81" fontWeight={700}>
+        θ
+      </text>
 
       {/* Dimension lines */}
       {/* total rise */}
       <line x1={baseX - 10} y1={baseY} x2={baseX - 10} y2={topY} stroke="#0f4c81" strokeWidth="2" />
-      <polygon points={`${baseX - 14},${baseY} ${baseX - 6},${baseY} ${baseX - 10},${baseY - 6}`} fill="#0f4c81" />
-      <polygon points={`${baseX - 14},${topY} ${baseX - 6},${topY} ${baseX - 10},${topY + 6}`} fill="#0f4c81" />
-      <text x={baseX - 16} y={(baseY + topY) / 2} textAnchor="end" fill="#0f4c81" fontSize={12}>rise</text>
+      <polygon
+        points={`${baseX - 14},${baseY} ${baseX - 6},${baseY} ${baseX - 10},${baseY - 6}`}
+        fill="#0f4c81"
+      />
+      <polygon
+        points={`${baseX - 14},${topY} ${baseX - 6},${topY} ${baseX - 10},${topY + 6}`}
+        fill="#0f4c81"
+      />
+      <text x={baseX - 16} y={(baseY + topY) / 2} textAnchor="end" fill="#0f4c81" fontSize={12}>
+        rise
+      </text>
 
       {/* total run */}
       <line x1={baseX} y1={baseY + 10} x2={topX} y2={baseY + 10} stroke="#0f4c81" strokeWidth="2" />
-      <polygon points={`${baseX},${baseY + 14} ${baseX},${baseY + 6} ${baseX + 6},${baseY + 10}`} fill="#0f4c81" />
-      <polygon points={`${topX},${baseY + 14} ${topX},${baseY + 6} ${topX - 6},${baseY + 10}`} fill="#0f4c81" />
-      <text x={(baseX + topX) / 2} y={baseY + 22} textAnchor="middle" fill="#0f4c81" fontSize={12}>run</text>
-
+      <polygon
+        points={`${baseX},${baseY + 14} ${baseX},${baseY + 6} ${baseX + 6},${baseY + 10}`}
+        fill="#0f4c81"
+      />
+      <polygon
+        points={`${topX},${baseY + 14} ${topX},${baseY + 6} ${topX - 6},${baseY + 10}`}
+        fill="#0f4c81"
+      />
+      <text x={(baseX + topX) / 2} y={baseY + 22} textAnchor="middle" fill="#0f4c81" fontSize={12}>
+        run
+      </text>
     </svg>
   );
 }
-

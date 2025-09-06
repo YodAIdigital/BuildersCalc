@@ -1,12 +1,12 @@
 import { solveRightTriangle } from './trig';
 
 export type RoofRafterInputs = Partial<{
-  span: number;       // full span
-  halfSpan: number;   // run (half span)
-  pitch: number;      // degrees
-  rise: number;       // vertical rise
-  common: number;     // common rafter length
-  overhang: number;   // horizontal overhang
+  span: number; // full span
+  halfSpan: number; // run (half span)
+  pitch: number; // degrees
+  rise: number; // vertical rise
+  common: number; // common rafter length
+  overhang: number; // horizontal overhang
 }>;
 
 export type RoofRafterResult = {
@@ -29,7 +29,15 @@ export type RoofRafterResult = {
 
 const toRad = (d: number) => (d * Math.PI) / 180;
 
-export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: number; seatDepth?: number; buildingLength?: number; rafterSpacing?: number; includeOverhangInArea?: boolean; }): RoofRafterResult | null {
+export function calcRoofRafter(
+  inputs: RoofRafterInputs & {
+    ridgeThickness?: number;
+    seatDepth?: number;
+    buildingLength?: number;
+    rafterSpacing?: number;
+    includeOverhangInArea?: boolean;
+  }
+): RoofRafterResult | null {
   let { span, halfSpan, pitch, rise, common, overhang } = inputs;
 
   // Prefer explicit halfSpan if provided; otherwise derive from span
@@ -38,22 +46,36 @@ export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: num
 
   // Prepare inputs: treat non-positive numbers as undefined
   const u = (n?: number) => (n && n > 0 ? n : undefined);
-  const vals = { a: u(rise), b: u(halfSpan), c: u(common), A: u(pitch) } as { a?: number; b?: number; c?: number; A?: number };
-  const present = Object.entries(vals).filter(([, v]) => v != null).map(([k]) => k as 'a'|'b'|'c'|'A');
+  const vals = { a: u(rise), b: u(halfSpan), c: u(common), A: u(pitch) } as {
+    a?: number;
+    b?: number;
+    c?: number;
+    A?: number;
+  };
+  const present = Object.entries(vals)
+    .filter(([, v]) => v != null)
+    .map(([k]) => k as 'a' | 'b' | 'c' | 'A');
   if (present.length < 2) return null;
 
   // If we have more than two, prefer stable pairs in this order: (b,A), (a,b), (a,A), (b,c), (A,c)
-  const preferPairs: Array<Array<'a'|'b'|'c'|'A'>> = [
-    ['b','A'], ['a','b'], ['a','A'], ['b','c'], ['A','c']
+  const preferPairs: Array<Array<'a' | 'b' | 'c' | 'A'>> = [
+    ['b', 'A'],
+    ['a', 'b'],
+    ['a', 'A'],
+    ['b', 'c'],
+    ['A', 'c'],
   ];
-  let chosen: Array<'a'|'b'|'c'|'A'> | null = null;
+  let chosen: Array<'a' | 'b' | 'c' | 'A'> | null = null;
   if (present.length > 2) {
     for (const p of preferPairs) {
-      if (p.every((k) => present.includes(k))) { chosen = p; break; }
+      if (p.every((k) => present.includes(k))) {
+        chosen = p;
+        break;
+      }
     }
-    if (!chosen) chosen = present.slice(0,2) as Array<'a'|'b'|'c'|'A'>;
+    if (!chosen) chosen = present.slice(0, 2) as Array<'a' | 'b' | 'c' | 'A'>;
   } else {
-    chosen = present as Array<'a'|'b'|'c'|'A'>;
+    chosen = present as Array<'a' | 'b' | 'c' | 'A'>;
   }
 
   const triInputs: { a?: number; b?: number; c?: number; A?: number } = {};
@@ -64,7 +86,10 @@ export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: num
 
   if (!tri) return null;
 
-  rise = tri.a; halfSpan = tri.b; common = tri.c; pitch = tri.A;
+  rise = tri.a;
+  halfSpan = tri.b;
+  common = tri.c;
+  pitch = tri.A;
   span = span ?? (halfSpan ? halfSpan * 2 : 0);
 
   overhang = overhang ?? 0;
@@ -76,7 +101,8 @@ export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: num
   const buildingLength = inputs.buildingLength ?? 0;
   const spacing = inputs.rafterSpacing ?? 0;
 
-  const commonAtRidge = (common ?? 0) - (ridgeT > 0 && pitch ? ridgeT / (2 * Math.sin(toRad(pitch))) : 0);
+  const commonAtRidge =
+    (common ?? 0) - (ridgeT > 0 && pitch ? ridgeT / (2 * Math.sin(toRad(pitch))) : 0);
   const total = (common ?? 0) + overhangSlope;
   const plumb = pitch ?? 0;
   const birdsmouth = 90 - plumb;
@@ -86,7 +112,8 @@ export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: num
   const areaPerSide = (buildingLength > 0 ? buildingLength * effectiveWidth : 0) / 1; // mm^2
   const areaTotal = areaPerSide * 2;
 
-  const rafterCountPerSide = spacing > 0 && buildingLength > 0 ? Math.floor(buildingLength / spacing) + 1 : 0;
+  const rafterCountPerSide =
+    spacing > 0 && buildingLength > 0 ? Math.floor(buildingLength / spacing) + 1 : 0;
 
   return {
     span: round(span ?? 0, 2),
@@ -107,5 +134,4 @@ export function calcRoofRafter(inputs: RoofRafterInputs & { ridgeThickness?: num
   };
 }
 
-export const round = (n: number, d = 2) => Number.isFinite(n) ? parseFloat(n.toFixed(d)) : 0;
-
+export const round = (n: number, d = 2) => (Number.isFinite(n) ? parseFloat(n.toFixed(d)) : 0);

@@ -44,15 +44,19 @@ export function solveGST(params: GSTInput): GSTResult {
     const denom = 1 + r;
     if (denom === 0) {
       // r = -1 (not possible after clamp), safe-guard
-      excl = 0; gst = 0; incl = 0;
+      excl = 0;
+      gst = 0;
+      incl = 0;
     } else {
       excl = incl / denom;
       gst = incl - excl;
     }
-  } else { // source === 'gst'
+  } else {
+    // source === 'gst'
     if (r === 0) {
       // Cannot derive excl from gst when rate is 0
-      excl = 0; incl = gst; // best-effort: treat gst as part of total if r=0
+      excl = 0;
+      incl = gst; // best-effort: treat gst as part of total if r=0
       gst = 0;
     } else {
       excl = gst / r;
@@ -63,7 +67,7 @@ export function solveGST(params: GSTInput): GSTResult {
   return {
     excl: round2(excl),
     incl: round2(incl),
-    gst: round2(gst)
+    gst: round2(gst),
   };
 }
 
