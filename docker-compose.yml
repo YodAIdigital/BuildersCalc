@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: builderscalc:web
+    ports:
+      # Local dev: visit http://localhost:8080
+      - "8080:80"
+    environment:
+      NODE_ENV: production
+      PORT: "80"
+      SITE_DIR: /app/site
+      SETTINGS_PATH: /data/settings.json
+    volumes:
+      # Named volume for persistent settings file
+      - data:/data
+    restart: unless-stopped
+    # Local healthcheck using Node (no curl/wget required)
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost/health',res=>process.exit(res.statusCode===200?0:1)).on('error',()=>process.exit(1))"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  data:
