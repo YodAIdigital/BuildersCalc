@@ -1,0 +1,38 @@
+/* Ensure UA renders controls in light scheme inside the tools app */
+#root {
+  color-scheme: light !important;
+}
+
+/* Baseline white backgrounds and dark text for form controls */
+#root input,
+#root select,
+#root textarea {
+  background-color: #ffffff !important;
+  color: #111827 !important; /* slate-900 */
+  border-color: #cbd5e1 !important; /* slate-300 */
+  -webkit-text-fill-color: #111827;
+}
+
+/* Disabled state */
+#root input:disabled,
+#root select:disabled,
+#root textarea:disabled {
+  background-color: #f1f5f9 !important; /* slate-100 */
+  color: #64748b !important; /* slate-500 */
+}
+
+/* Autofill overrides */
+#root input:-webkit-autofill,
+#root select:-webkit-autofill,
+#root textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #111827 !important;
+  caret-color: #111827 !important;
+}
+
+/* Prevent odd clipping on iOS/Safari */
+#root input,
+#root textarea {
+  background-clip: padding-box;
+}
+

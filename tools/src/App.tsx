@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Link, NavLink, Route, Routes } from 'react-router-dom';
+import { NavLink, Route, Routes, Navigate } from 'react-router-dom';
 
 const Trigonometry = React.lazy(() => import('./tools/Trigonometry'));
 const Roof = React.lazy(() => import('./tools/Roof'));
@@ -7,23 +7,34 @@ const Rafter = React.lazy(() => import('./tools/Rafter'));
 const Stairs = React.lazy(() => import('./tools/Stairs'));
 const FramingFoundation = React.lazy(() => import('./tools/FramingFoundation'));
 const UnitConverter = React.lazy(() => import('./tools/UnitConverter'));
-
+const GST = React.lazy(() => import('./tools/GST'));
+const Settings = React.lazy(() => import('./tools/Settings'));
+const RoofRafter = React.lazy(() => import('./tools/RoofRafter'));
 function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
-        <Link to="/" className="flex items-center gap-2">
-          <img src="/tools/logo.png" alt="Roots & Echo Ltd logo" className="h-8 w-auto" onError={(e) => ((e.currentTarget.style.display = 'none'))} />
+        {/* Brand link intentionally uses an anchor to route to the marketing homepage at "/" outside the /tools router scope. */}
+        <a href="/" className="flex items-center gap-2" aria-label="Roots & Echo Ltd marketing homepage">
+          {/* Use BASE_URL so dev resolves to "/logo.png" and production build resolves to "/tools/logo.png". */}
+          <img
+            src={`${import.meta.env.BASE_URL}logo.png`}
+            alt="Roots & Echo Ltd Builder's Tools - construction calculators and framing tools"
+            className="h-8 w-auto"
+            decoding="async"
+            fetchPriority="high"
+          />
           <span className="font-bold">Builder's Tools</span>
-        </Link>
+        </a>
         <nav className="ml-auto flex flex-wrap items-center gap-2 text-sm">
           {[
             ['/', 'Trig'],
-            ['/roof', 'Roof'],
-            ['/rafter', 'Rafter'],
+            ['/roof-rafter', 'Roof/Rafter'],
             ['/stairs', 'Stairs'],
             ['/framing', 'Framing'],
-            ['/convert', 'Converter']
+            ['/convert', 'Converter'],
+            ['/gst', 'GST'],
+            ['/settings', 'Settings']
           ].map(([to, label]) => (
             <NavLink
               key={to}
@@ -50,11 +61,14 @@ export default function App() {
         <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
           <Routes>
             <Route path="/" element={<Trigonometry />} />
-            <Route path="/roof" element={<Roof />} />
-            <Route path="/rafter" element={<Rafter />} />
+            <Route path="/roof-rafter" element={<RoofRafter />} />
+            <Route path="/roof" element={<Navigate to="/roof-rafter" replace />} />
+            <Route path="/rafter" element={<Navigate to="/roof-rafter" replace />} />
             <Route path="/stairs" element={<Stairs />} />
             <Route path="/framing" element={<FramingFoundation />} />
             <Route path="/convert" element={<UnitConverter />} />
+            <Route path="/gst" element={<GST />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </Suspense>
       </main>

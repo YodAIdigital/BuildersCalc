@@ -9,6 +9,14 @@ export type Settings = {
   paintPerM2: number;
   windowPerM2: number;
   doorPerUnit: number;
+  // Roof/Cladding related costs
+  costGutterPerM: number;
+  costFasciaPerM: number;
+  costRidgeCapPerM: number;
+  costBargeCapPerM: number;
+  costUnderlayPerM2: number;
+  labourPerM2: number;
+  gstRate: number; // decimal fraction (e.g., 0.15 = 15%)
 };
 
 export const defaultSettings: Settings = {
@@ -18,13 +26,27 @@ export const defaultSettings: Settings = {
     treatedPly: 65,
     internalPly: 50,
     corrugate: 25,
+    longrun: 40,
+    membrane: 35,
+    metalTile: 30,
+    concreteTile: 28,
+    clayTile: 45,
+    asphaltShingle: 32,
+    slate: 60,
     gib: 22,
     pir: 90,
     vinyl: 120
   },
   paintPerM2: 15,
   windowPerM2: 350,
-  doorPerUnit: 250
+  doorPerUnit: 250,
+  costGutterPerM: 18,
+  costFasciaPerM: 22,
+  costRidgeCapPerM: 15,
+  costBargeCapPerM: 14,
+  costUnderlayPerM2: 6,
+  labourPerM2: 25,
+  gstRate: 0.15
 };
 
 function nowISO() { return new Date().toISOString(); }
