@@ -1,0 +1,12 @@
+# Tools app artifacts
+/tools/node_modules/
+/tools/dist/
+/tools/.vite/
+/tools/.env
+/tools/.vercel/
+/tools/.cache/
+
+# Mac/Windows
+.DS_Store
+Thumbs.db
+
