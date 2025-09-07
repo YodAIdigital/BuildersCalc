@@ -92,6 +92,116 @@ export default function SettingsPage() {
       </div>
 
       <div className="rounded-md border bg-white p-4">
+        <h3 className="font-semibold mb-2">Cladding & Lining (per m²)</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+          {/* Cladding per m2 */}
+          <div className="sm:col-span-3">
+            <span className="block font-medium mb-1">Exterior Cladding ($/m²)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {Object.entries(settings.claddingPerM2).map(([k, v]) => (
+                <label key={k} className="block text-xs">
+                  <span className="capitalize">{k}</span>
+                  <input
+                    className="mt-1 w-full rounded-md border p-2"
+                    type="number"
+                    step="0.01"
+                    value={v}
+                    onChange={(e) =>
+                      setSettings({
+                        claddingPerM2: {
+                          ...settings.claddingPerM2,
+                          [k]: parseFloat(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          {/* Lining per m2 */}
+          <div className="sm:col-span-3">
+            <span className="block font-medium mb-1">Internal Lining ($/m²)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {Object.entries(settings.liningPerM2).map(([k, v]) => (
+                <label key={k} className="block text-xs">
+                  <span className="capitalize">{k}</span>
+                  <input
+                    className="mt-1 w-full rounded-md border p-2"
+                    type="number"
+                    step="0.01"
+                    value={v}
+                    onChange={(e) =>
+                      setSettings({
+                        liningPerM2: {
+                          ...settings.liningPerM2,
+                          [k]: parseFloat(e.target.value) || 0,
+                        },
+                      })
+                    }
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+          <label className="block">
+            <span>Insulation ($/m²)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.insulationPerM2}
+              onChange={(e) => setSettings({ insulationPerM2: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
+            <span>Building Wrap ($/m²)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.buildingWrapPerM2}
+              onChange={(e) => setSettings({ buildingWrapPerM2: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
+            <span>Fixings Allowance ($/m²)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.fixingsAllowancePerM2}
+              onChange={(e) => setSettings({ fixingsAllowancePerM2: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
+            <span>Flashings ($/m)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.flashingsAllowancePerM}
+              onChange={(e) => setSettings({ flashingsAllowancePerM: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
+            <span>Door Hardware ($/unit)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.doorHardwarePerUnit}
+              onChange={(e) => setSettings({ doorHardwarePerUnit: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+        </div>
+        <p className="mt-2 text-xs text-slate-500">
+          Note: For metal/weatherboard exteriors and membrane roofs, the per‑m² values above are used.
+          For sheet goods (ply, PIR, GIB) we use sheet counts by area (with a small waste factor).
+        </p>
+      </div>
+
+      <div className="rounded-md border bg-white p-4">
         <h3 className="font-semibold mb-2">Tax</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
           <label className="block">
