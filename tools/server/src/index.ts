@@ -119,7 +119,7 @@ app.get('/health', (_req, res) => {
   res.type('text').send('ok');
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   // eslint-disable-next-line no-console
   console.log(`Server listening on ${PORT}`);
 });
