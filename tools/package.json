@@ -21,7 +21,10 @@
     "nodemailer": "^6.9.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.26.1"
+    "react-router-dom": "^6.26.1",
+    "@react-three/drei": "^9.106.3",
+    "@react-three/fiber": "^8.15.20",
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.8",

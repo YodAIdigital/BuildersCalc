@@ -2,6 +2,7 @@ import React from 'react';
 import CombinedRoofDiagram from '../components/CombinedRoofDiagram';
 import { calcRoofRafter } from '../lib/roofRafter';
 import { useSettings } from '../hooks/useSettings';
+import { pitchWarnings as sharedPitchWarnings } from '../lib/roofPitch';
 
 export default function RoofRafter() {
   const { settings } = useSettings();
@@ -75,26 +76,13 @@ export default function RoofRafter() {
     setIf('overhang', setOverhangStr, parsed.overhang || '');
   }, [solved, lastEdited]);
 
-  const CLADDING_MIN: Record<string, number> = {
-    corrugate: 8,
-    longrun: 3,
-    membrane: 1.5,
-    metalTile: 12,
-    concreteTile: 20,
-    clayTile: 25,
-    asphaltShingle: 18,
-    slate: 22,
-  };
+  // Centralized in lib/roofPitch for reuse across tools
+  
 
   const warnings: string[] = [];
   if (solved?.pitch != null) {
-    const minPitch = CLADDING_MIN[cladding] ?? 0;
-    if (minPitch && solved.pitch < minPitch)
-      warnings.push(
-        `Pitch ${solved.pitch}° is below ${minPitch}° for selected cladding (NZ E2/AS1 guidance; verify manufacturer requirements).`
-      );
-    if (solved.pitch <= 0 || solved.pitch > 60)
-      warnings.push('Pitch is outside typical buildable range (0–60°).');
+    const list = sharedPitchWarnings({ pitch: solved.pitch, cladding });
+    for (const w of list) warnings.push(w.message);
   }
 
   const areaPerSideM2 = solved ? solved.areaPerSide / 1_000_000 : 0;

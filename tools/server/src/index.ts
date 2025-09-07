@@ -73,6 +73,71 @@ app.put('/api/settings', async (req, res) => {
   res.status(204).end();
 });
 
+// Email a cabin quote
+app.post('/api/email-cabin', async (req, res) => {
+  try {
+    // Rate limit (reuse existing bucket)
+    const ip = req.ip || (req.headers['x-forwarded-for'] as string) || (req.socket.remoteAddress || 'unknown');
+    const rl = rateLimitCheck(Array.isArray(ip) ? ip[0] : ip);
+    res.setHeader('X-RateLimit-Limit', String(RATE_LIMIT_MAX));
+    res.setHeader('X-RateLimit-Remaining', String(rl.remaining));
+    res.setHeader('X-RateLimit-Reset', String(Math.ceil(rl.resetAt / 1000)));
+    if (!rl.allowed) {
+      const retryAfter = Math.max(0, Math.ceil((rl.resetAt - Date.now()) / 1000));
+      res.setHeader('Retry-After', String(retryAfter));
+      return res.status(429).json({ error: 'Too many requests. Please try again later.' });
+    }
+
+    const body = req.body as any;
+    if (!body || typeof body !== 'object') return res.status(400).json({ error: 'Invalid payload' });
+
+    const to = typeof body.to === 'string' ? sanitizeEmail(body.to) : '';
+    const subject = typeof body.subject === 'string' ? sanitizeHeader(body.subject).slice(0, 150) : 'Cabin quote';
+    const html = typeof body.html === 'string' ? body.html : '';
+    const attachments = Array.isArray(body.attachments) ? body.attachments : [];
+
+    if (!to || !isEmailLike(to)) return res.status(400).json({ error: 'Invalid recipient' });
+    if (!html || html.length > 200_000) return res.status(400).json({ error: 'Invalid email body' });
+
+    const from = process.env.CONTACT_FROM_EMAIL || process.env.MAIL_FROM || 'zeke@rootsandecho.co.nz';
+    const replyTo = process.env.CONTACT_REPLY_TO || process.env.MAIL_REPLY_TO || from;
+
+    const safeAttachments = attachments.slice(0, 2).map((a: any) => {
+      const fn = typeof a?.filename === 'string' ? a.filename.replace(/[\r\n]+/g, '').slice(0, 64) : 'attachment.bin';
+      const b64 = typeof a?.contentBase64 === 'string' ? a.contentBase64 : '';
+      if (!/^([A-Za-z0-9+/=]+)$/.test(b64) || b64.length > 2_000_000) return null;
+      return { filename: fn, content: Buffer.from(b64, 'base64'), contentType: 'image/png' };
+    }).filter(Boolean) as { filename: string; content: Buffer; contentType?: string }[];
+
+    const { sendEmail } = await import('./email.js');
+
+    await sendEmail({
+      to,
+      from,
+      replyTo,
+      subject,
+      text: 'Cabin quote (HTML version attached).',
+      html,
+      headers: { 'X-Mail-Type': 'cabin-quote' },
+      attachments: safeAttachments,
+    });
+
+    return res.status(202).json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ error: 'Failed to send email' });
+  }
+});
+
+function sanitizeHeader(s: string) {
+  return s.replace(/[\r\n]+/g, ' ').trim();
+}
+function sanitizeEmail(s: string) {
+  return sanitizeHeader(s);
+}
+function isEmailLike(s: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s);
+}
+
 // Contact form endpoint
 app.post('/api/contact', async (req, res) => {
   try {

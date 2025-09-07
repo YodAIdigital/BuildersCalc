@@ -10,6 +10,7 @@ const UnitConverter = React.lazy(() => import('./tools/UnitConverter'));
 const GST = React.lazy(() => import('./tools/GST'));
 const Settings = React.lazy(() => import('./tools/Settings'));
 const RoofRafter = React.lazy(() => import('./tools/RoofRafter'));
+const Cabin = React.lazy(() => import('./tools/Cabin'));
 function Header() {
   return (
     <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
@@ -33,6 +34,7 @@ function Header() {
         <nav className="ml-auto flex flex-wrap items-center gap-2 text-sm">
           {[
             ['/', 'Trig'],
+            ['/cabin', 'Cabin'],
             ['/roof-rafter', 'Roof/Rafter'],
             ['/stairs', 'Stairs'],
             ['/framing', 'Framing'],
@@ -65,6 +67,7 @@ export default function App() {
         <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
           <Routes>
             <Route path="/" element={<Trigonometry />} />
+            <Route path="/cabin" element={<Cabin />} />
             <Route path="/roof-rafter" element={<RoofRafter />} />
             <Route path="/roof" element={<Navigate to="/roof-rafter" replace />} />
             <Route path="/rafter" element={<Navigate to="/roof-rafter" replace />} />

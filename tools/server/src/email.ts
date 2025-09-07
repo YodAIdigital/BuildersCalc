@@ -11,6 +11,7 @@ export type SendEmailInput = {
   text: string;
   html?: string;
   headers?: Record<string, string>;
+  attachments?: { filename: string; content: Buffer | string; contentType?: string }[];
 };
 
 let cachedTransport: ReturnType<typeof nodemailer.createTransport> | null = null;
@@ -49,6 +50,7 @@ export async function sendEmail(input: SendEmailInput) {
     text: input.text,
     html: input.html,
     headers: input.headers,
+    attachments: input.attachments,
   });
   return info;
 }

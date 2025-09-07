@@ -11,10 +11,28 @@ import {
 export type Settings = {
   timberPerM: number;
   pilePerEach: number;
-  sheetCosts: Record<string, number>;
+  sheetCosts: Record<string, number>; // $/sheet for sheet goods (ply, gib, pir, vinyl, etc.)
   paintPerM2: number;
   windowPerM2: number;
   doorPerUnit: number;
+  // Additional pricing models (prefer per-m2 where applicable)
+  claddingPerM2: {
+    corrugate: number;
+    longrun: number; // tray/standing seam
+    fiveRib: number;
+    membrane: number;
+    cedarWeatherboard: number;
+    standardWeatherboard: number;
+  };
+  liningPerM2: {
+    ply: number;
+    gib: number;
+  };
+  insulationPerM2: number;
+  buildingWrapPerM2: number;
+  fixingsAllowancePerM2: number;
+  flashingsAllowancePerM: number;
+  doorHardwarePerUnit: number;
   // Roof/Cladding related costs
   costGutterPerM: number;
   costFasciaPerM: number;
@@ -29,23 +47,40 @@ export const defaultSettings: Settings = {
   timberPerM: 4.5,
   pilePerEach: 25,
   sheetCosts: {
-    treatedPly: 65,
-    internalPly: 50,
-    corrugate: 25,
-    longrun: 40,
-    membrane: 35,
+    treatedPly: 65, // $/sheet (2.4 x 1.2)
+    internalPly: 50, // $/sheet (2.4 x 1.2)
+    corrugate: 25, // legacy sheet-like input; prefer claddingPerM2 below
+    longrun: 40, // legacy
+    membrane: 35, // legacy
     metalTile: 30,
     concreteTile: 28,
     clayTile: 45,
     asphaltShingle: 32,
     slate: 60,
-    gib: 22,
-    pir: 90,
+    gib: 22, // $/sheet (2.4 x 1.2)
+    pir: 90, // $/sheet (2.4 x 1.2)
     vinyl: 120,
   },
   paintPerM2: 15,
   windowPerM2: 350,
   doorPerUnit: 250,
+  claddingPerM2: {
+    corrugate: 55,
+    longrun: 65,
+    fiveRib: 60,
+    membrane: 40,
+    cedarWeatherboard: 145,
+    standardWeatherboard: 95,
+  },
+  liningPerM2: {
+    ply: 35,
+    gib: 25,
+  },
+  insulationPerM2: 20,
+  buildingWrapPerM2: 4.5,
+  fixingsAllowancePerM2: 6.0,
+  flashingsAllowancePerM: 9.5,
+  doorHardwarePerUnit: 85,
   costGutterPerM: 18,
   costFasciaPerM: 22,
   costRidgeCapPerM: 15,
@@ -85,17 +120,28 @@ async function pushRemote(payload: {
   });
 }
 
+export function hydrateSettings(s: Partial<Settings> | null | undefined): Settings {
+  // Merge missing keys from defaults to maintain backward compatibility as we add pricing fields
+  return {
+    ...defaultSettings,
+    ...(s as any),
+    sheetCosts: { ...defaultSettings.sheetCosts, ...(s?.sheetCosts || {}) },
+    claddingPerM2: { ...defaultSettings.claddingPerM2, ...(s as any)?.claddingPerM2 },
+    liningPerM2: { ...defaultSettings.liningPerM2, ...(s as any)?.liningPerM2 },
+  } as Settings;
+}
+
 export async function loadSettings(): Promise<Settings> {
   // 1) Load fast from local cache
   const local = (await loadLocalSettings()) as (StoredSettings & Settings) | null;
-  let current: Settings = local ? { ...defaultSettings, ...local } : { ...defaultSettings };
+  let current: Settings = hydrateSettings(local || undefined);
 
   // 2) Try network sync from server file
   try {
     const remote = await fetchRemote();
     if (remote?.settings) {
-      current = { ...defaultSettings, ...remote.settings } as Settings;
-      await saveLocalSettings({ ...current, updated_at: remote.updated_at });
+      current = hydrateSettings(remote.settings as any);
+      await saveLocalSettings({ ...(current as any), updated_at: remote.updated_at });
     } else if (!remote && !local) {
       // First run; write defaults up to server (optional)
       try {
@@ -115,11 +161,10 @@ export async function saveSettings(partial: Partial<Settings>) {
   const local =
     ((await loadLocalSettings()) as (StoredSettings & Settings) | null) || ({} as Settings);
   const merged: Settings & StoredSettings = {
-    ...defaultSettings,
-    ...local,
+    ...hydrateSettings(local || undefined),
     ...partial,
     updated_at: nowISO(),
-  };
+  } as any;
   await saveLocalSettings(merged);
 
   // Try network write; on failure, queue
