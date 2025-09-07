@@ -9,6 +9,94 @@ export default defineConfig(({ command }) => ({
   base: command === 'build' ? '/tools/' : '/',
   plugins: [
     react(),
+    // Lightweight development API to avoid 404s for /api/* during `vite`
+    // NOTE: This only runs in dev and is not part of the production build.
+    {
+      name: 'roots-echo-dev-api',
+      apply: 'serve',
+      configureServer(server) {
+        const dataDir = path.resolve(__dirname, '.dev-data');
+        const settingsFile = path.join(dataDir, 'settings.json');
+
+        async function readBody(req: any): Promise<any> {
+          const chunks: Uint8Array[] = [];
+          await new Promise<void>((resolve) => {
+            req.on('data', (c: Uint8Array) => chunks.push(c));
+            req.on('end', () => resolve());
+          });
+          if (chunks.length === 0) return null;
+          const raw = Buffer.concat(chunks).toString('utf8');
+          try {
+            return JSON.parse(raw);
+          } catch {
+            return null;
+          }
+        }
+
+        server.middlewares.use(async (req, res, next) => {
+          const url = req.url || '';
+          if (!url.startsWith('/api/')) return next();
+
+          // Ensure a place to write local dev data
+          try {
+            fs.mkdirSync(dataDir, { recursive: true });
+          } catch {}
+
+          res.setHeader('Cache-Control', 'no-store');
+
+          // GET/PUT Settings
+          if (url === '/api/settings') {
+            if (req.method === 'GET') {
+              try {
+                const raw = fs.readFileSync(settingsFile, 'utf8');
+                res.setHeader('Content-Type', 'application/json');
+                res.end(raw);
+              } catch {
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ settings: {}, updated_at: null }));
+              }
+              return;
+            }
+            if (req.method === 'PUT') {
+              const body = await readBody(req);
+              if (!body || typeof body !== 'object' || typeof body.settings !== 'object') {
+                res.statusCode = 400;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ error: 'Invalid payload' }));
+                return;
+              }
+              fs.writeFileSync(settingsFile, JSON.stringify(body));
+              res.statusCode = 204; // align with production server
+              res.end();
+              return;
+            }
+          }
+
+          // POST Contact — dev no-op that simply acknowledges
+          if (url === '/api/contact' && req.method === 'POST') {
+            const body = await readBody(req);
+            const requestId =
+              Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+            // Log a minimal, non-sensitive summary to aid local debugging
+            // eslint-disable-next-line no-console
+            console.log('[dev-contact]', {
+              name: body?.name,
+              email: body?.email,
+              phone: body?.phone,
+              source: body?.source,
+              requestId,
+            });
+            res.statusCode = 202;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ ok: true, requestId }));
+            return;
+          }
+
+          // Unknown /api route — continue to next middleware (may 404 later)
+          next();
+        });
+      },
+    },
     // Serve marketing homepage at "/" during dev and allow deep links under "/tools/*"
     {
       name: 'roots-echo-dev-mpa',

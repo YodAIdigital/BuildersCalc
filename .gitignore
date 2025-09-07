@@ -32,6 +32,7 @@ coverage/
 /tools/.env
 /tools/.vercel/
 /tools/.cache/
+/tools/.dev-data/
 
 # Local env and data
 .env
