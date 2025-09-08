@@ -92,6 +92,26 @@ export default defineConfig(({ command }) => ({
             return;
           }
 
+          // POST Email cabin (HTML+attachments) — dev no-op that acknowledges
+          if (url === '/api/email-cabin' && req.method === 'POST') {
+            const body = await readBody(req);
+            const requestId =
+              Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+            // eslint-disable-next-line no-console
+            console.log('[dev-email-cabin]', {
+              to: body?.to,
+              subject: body?.subject,
+              attachments: Array.isArray(body?.attachments)
+                ? body.attachments.map((a: any) => ({ filename: a?.filename, contentType: a?.contentType, sizeB64: (a?.contentBase64 || '').length })).slice(0, 2)
+                : undefined,
+              requestId,
+            });
+            res.statusCode = 202;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ ok: true, requestId }));
+            return;
+          }
+
           // Unknown /api route — continue to next middleware (may 404 later)
           next();
         });

@@ -24,5 +24,8 @@ describe('Cabin layout', () => {
 
     // Results header
     expect(screen.getByText(/materials & costs/i)).toBeInTheDocument();
+
+    // Email PDF control under pricing breakdown
+    expect(screen.getByText(/email pdf/i)).toBeInTheDocument();
   });
 });

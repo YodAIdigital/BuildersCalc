@@ -3,9 +3,12 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { validateContactInput, sendEnquiryEmail } from './contact.js';
 import crypto from 'node:crypto';
+import { validateAttachments } from './attachments.js';
 
 const app = express();
-app.use(express.json({ limit: '128kb' }));
+// Use per-route parsers with appropriate limits
+const smallJson = express.json({ limit: '128kb' });
+const largeJson = express.json({ limit: '10mb' });
 
 const SITE_DIR = process.env.SITE_DIR || '/app/site';
 const SETTINGS_PATH = process.env.SETTINGS_PATH || '/data/settings.json';
@@ -63,7 +66,7 @@ app.get('/api/settings', async (_req, res) => {
   res.json(data);
 });
 
-app.put('/api/settings', async (req, res) => {
+app.put('/api/settings', smallJson, async (req, res) => {
   const body = req.body as any;
   if (!body || typeof body !== 'object' || typeof body.settings !== 'object') {
     return res.status(400).json({ error: 'Invalid payload' });
@@ -74,7 +77,7 @@ app.put('/api/settings', async (req, res) => {
 });
 
 // Email a cabin quote
-app.post('/api/email-cabin', async (req, res) => {
+app.post('/api/email-cabin', largeJson, async (req, res) => {
   try {
     // Rate limit (reuse existing bucket)
     const ip = req.ip || (req.headers['x-forwarded-for'] as string) || (req.socket.remoteAddress || 'unknown');
@@ -102,12 +105,8 @@ app.post('/api/email-cabin', async (req, res) => {
     const from = process.env.CONTACT_FROM_EMAIL || process.env.MAIL_FROM || 'zeke@rootsandecho.co.nz';
     const replyTo = process.env.CONTACT_REPLY_TO || process.env.MAIL_REPLY_TO || from;
 
-    const safeAttachments = attachments.slice(0, 2).map((a: any) => {
-      const fn = typeof a?.filename === 'string' ? a.filename.replace(/[\r\n]+/g, '').slice(0, 64) : 'attachment.bin';
-      const b64 = typeof a?.contentBase64 === 'string' ? a.contentBase64 : '';
-      if (!/^([A-Za-z0-9+/=]+)$/.test(b64) || b64.length > 2_000_000) return null;
-      return { filename: fn, content: Buffer.from(b64, 'base64'), contentType: 'image/png' };
-    }).filter(Boolean) as { filename: string; content: Buffer; contentType?: string }[];
+    const maxBytes = Number(process.env.EMAIL_MAX_ATTACHMENT_BYTES || '5000000');
+    const safeAttachments = validateAttachments(attachments, { maxBytes });
 
     const { sendEmail } = await import('./email.js');
 
@@ -139,7 +138,7 @@ function isEmailLike(s: string) {
 }
 
 // Contact form endpoint
-app.post('/api/contact', async (req, res) => {
+app.post('/api/contact', smallJson, async (req, res) => {
   try {
     // Basic per-IP rate limiting
     const ip = req.ip || (req.headers['x-forwarded-for'] as string) || (req.socket.remoteAddress || 'unknown');

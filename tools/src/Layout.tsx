@@ -5,6 +5,7 @@ export default function Layout() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const links: [string, string][] = [
     ['/', 'Trig'],
+    ['/cabin', 'Cabin'],
     ['/roof-rafter', 'Roof'],
     ['/stairs', 'Stairs'],
     ['/framing', 'Framing'],

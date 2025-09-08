@@ -5,6 +5,28 @@ import { computeCabin, type CabinConfig } from '../lib/cabin';
 import { bomToCSV } from '../lib/csv';
 import { pitchWarnings } from '../lib/roofPitch';
 
+// Allow overriding email API in dev to hit a real backend instead of Vite stub
+const EMAIL_API = (import.meta as any).env?.VITE_EMAIL_API_URL || '/api/email-cabin';
+
+const COLORSTEEL: Record<string, string> = {
+  'Titania': '#dfdfcf',
+  'Gull Grey': '#b9b9b6',
+  'Sandstone Grey': '#8e8f8c',
+  'Grey Friars': '#5a5f69',
+  'New Denim Blue': '#3e5a6d',
+  'FlaxPod': '#262626',
+  'Ebony': '#101214',
+  'Karaka': '#273021',
+  'Permanent Green': '#2d5731',
+  'Mist Green': '#6f8664',
+  'Desert Sand': '#c9b693',
+  'Scoria': '#6b2b2b',
+  'Lignite': '#4a382e',
+  'Ironsand': '#3a3a37',
+  'Slate': '#6c6f70',
+};
+const COLORSTEEL_ENTRIES = Object.entries(COLORSTEEL);
+
 export default function Cabin() {
   const { settings } = useSettings();
 
@@ -26,11 +48,13 @@ export default function Cabin() {
   const [pileSpacing, setPileSpacing] = React.useState('1500');
 
   const [windows, setWindows] = React.useState<{ count: number; width: number; height: number }[]>([
-    { count: 1, width: 1000, height: 2000 },
+    { count: 1, width: 1200, height: 900 },
   ]);
+  const [windowWall, setWindowWall] = React.useState<'front' | 'back' | 'left' | 'right'>('right');
   const [doors, setDoors] = React.useState<{ count: number; width: number; height: number }[]>([
     { count: 1, width: 860, height: 1980 },
   ]);
+  const [doorWall, setDoorWall] = React.useState<'front' | 'back' | 'left' | 'right'>('front');
 
   const [exteriorCladding, setExteriorCladding] = React.useState(
     'corrugate'
@@ -40,6 +64,11 @@ export default function Cabin() {
 
   const [sheetWm, setSheetWm] = React.useState('1.2');
   const [sheetHm, setSheetHm] = React.useState('2.4');
+
+  const [rotationDeg, setRotationDeg] = React.useState('20');
+
+  const [wallColourKey, setWallColourKey] = React.useState<string>('Gull Grey');
+  const [roofColourKey, setRoofColourKey] = React.useState<string>('Ironsand');
 
   const config: CabinConfig = React.useMemo(
     () => ({
@@ -115,9 +144,11 @@ export default function Cabin() {
   const [emailOpen, setEmailOpen] = React.useState(false);
   const [emailTo, setEmailTo] = React.useState('');
   const cabinRef = React.useRef<{ snapshot: () => string | null } | null>(null);
+  const sectionRef = React.useRef<HTMLElement | null>(null);
   function handleReady(api: { snapshot: () => string | null }) {
     cabinRef.current = api;
   }
+  const [pdfSending, setPdfSending] = React.useState(false);
   async function sendEmail() {
     try {
       const snapshot = cabinRef.current?.snapshot?.() || null;
@@ -134,7 +165,7 @@ export default function Cabin() {
             ]
           : undefined,
       };
-      const res = await fetch('/api/email-cabin', {
+      const res = await fetch(EMAIL_API, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -147,8 +178,69 @@ export default function Cabin() {
     }
   }
 
+  async function blobToBase64(blob: Blob): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const res = reader.result as string;
+        const base64 = res.includes(',') ? res.split(',')[1] : res;
+        resolve(base64);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  async function sendEmailPdf() {
+    try {
+      if (!sectionRef.current) {
+        alert('Unable to find content to export.');
+        return;
+      }
+      setPdfSending(true);
+      const el = sectionRef.current;
+      const html2pdf = (await import('html2pdf.js')).default;
+      const opt = {
+        margin: 10,
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: { scale: Math.min(2, (window as any).devicePixelRatio || 1), useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] },
+      } as any;
+      const worker = html2pdf().set(opt).from(el).toPdf();
+      const pdf = await worker.get('pdf');
+      const blob: Blob = pdf.output('blob');
+      const b64 = await blobToBase64(blob);
+
+      const payload: any = {
+        to: emailTo,
+        subject: 'Cabin quote',
+        html: renderEmailHTML(config, result),
+        attachments: [
+          {
+            filename: 'cabin.pdf',
+            contentBase64: b64,
+            contentType: 'application/pdf',
+          },
+        ],
+      };
+
+      const res = await fetch(EMAIL_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to email');
+      alert('Email sent');
+    } catch (e) {
+      alert('Failed to generate or send PDF');
+    } finally {
+      setPdfSending(false);
+    }
+  }
+
   return (
-    <section className="space-y-6">
+    <section ref={sectionRef} className="space-y-6">
       <h2 className="text-2xl font-bold">Cabin</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -163,14 +255,43 @@ export default function Cabin() {
               roofType={roofType}
               pitchDeg={roofType === 'flat' ? 0 : parseFloat(pitchDeg) || 0}
               overhang={parseFloat(overhang) || 0}
+              rotationDeg={parseFloat(rotationDeg) || 0}
+              windows={windows}
+              doors={doors}
+              windowWall={windowWall}
+              doorWall={doorWall}
+              wallColor={COLORSTEEL[wallColourKey]}
+              roofColor={COLORSTEEL[roofColourKey]}
               onReady={handleReady}
             />
+          </div>
+          <div className="p-3 border-t grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label className="block">
+              <span className="text-sm">Model rotation (°)</span>
+              <input className="mt-1 w-full rounded-md border p-2" type="range" min={-180} max={180} step={1} value={rotationDeg} onChange={(e) => setRotationDeg(e.target.value)} />
+            </label>
+            <label className="block">
+              <span className="text-sm">Wall colour (COLORSTEEL)</span>
+              <select className="mt-1 w-full rounded-md border p-2" value={wallColourKey} onChange={(e)=>setWallColourKey(e.target.value)}>
+                {COLORSTEEL_ENTRIES.map(([k])=> (
+                  <option key={k} value={k}>{k}</option>
+                ))}
+              </select>
+            </label>
+            <label className="block">
+              <span className="text-sm">Roof colour (COLORSTEEL)</span>
+              <select className="mt-1 w-full rounded-md border p-2" value={roofColourKey} onChange={(e)=>setRoofColourKey(e.target.value)}>
+                {COLORSTEEL_ENTRIES.map(([k])=> (
+                  <option key={k} value={k}>{k}</option>
+                ))}
+              </select>
+            </label>
           </div>
         </div>
 
         {/* Form */}
         <div className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <LabeledInput label="Length (mm)" value={length} onChange={setLength} />
             <LabeledInput label="Width (mm)" value={width} onChange={setWidth} />
             <LabeledInput label="Height (mm)" value={height} onChange={setHeight} />
@@ -214,33 +335,45 @@ export default function Cabin() {
           <div className="rounded-md border p-3">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-sm">Openings</span>
-              <span className="text-xs text-slate-500">Doors default 1980 x 860 mm; Windows 1000 x 2000 mm</span>
+              <span className="text-xs text-slate-500">Doors default 1980 x 860 mm; Windows 1200 x 900 mm</span>
             </div>
-            <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <div className="text-sm font-medium">Windows</div>
-                <div className="space-y-2 mt-1">
-                  {windows.map((w, i) => (
-                    <div key={i} className="grid grid-cols-3 gap-2 items-end">
-                      <input className="rounded-md border p-2" type="number" value={w.count} onChange={(e) => updWindow(i, 'count', e.target.value)} placeholder="Count" />
-                      <input className="rounded-md border p-2" type="number" value={w.width} onChange={(e) => updWindow(i, 'width', e.target.value)} placeholder="Width" />
-                      <input className="rounded-md border p-2" type="number" value={w.height} onChange={(e) => updWindow(i, 'height', e.target.value)} placeholder="Height" />
-                    </div>
-                  ))}
-                  <button className="text-pink-700 text-sm" onClick={() => setWindows((a) => [...a, { count: 1, width: 1000, height: 2000 }])}>+ Add Window</button>
-                </div>
-              </div>
+            <div className="mt-2 space-y-4">
               <div>
                 <div className="text-sm font-medium">Doors</div>
                 <div className="space-y-2 mt-1">
                   {doors.map((d, i) => (
-                    <div key={i} className="grid grid-cols-3 gap-2 items-end">
+                    <div key={i} className="grid grid-cols-4 gap-2 items-end">
                       <input className="rounded-md border p-2" type="number" value={d.count} onChange={(e) => updDoor(i, 'count', e.target.value)} placeholder="Count" />
                       <input className="rounded-md border p-2" type="number" value={d.width} onChange={(e) => updDoor(i, 'width', e.target.value)} placeholder="Width" />
                       <input className="rounded-md border p-2" type="number" value={d.height} onChange={(e) => updDoor(i, 'height', e.target.value)} placeholder="Height" />
+                      <select className="rounded-md border p-2" value={doorWall} onChange={(e) => setDoorWall(e.target.value as any)}>
+                        <option value="front">Front (+Z)</option>
+                        <option value="back">Back (−Z)</option>
+                        <option value="left">Left (−X)</option>
+                        <option value="right">Right (+X)</option>
+                      </select>
                     </div>
                   ))}
                   <button className="text-pink-700 text-sm" onClick={() => setDoors((a) => [...a, { count: 1, width: 860, height: 1980 }])}>+ Add Door</button>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm font-medium">Windows</div>
+                <div className="space-y-2 mt-1">
+                  {windows.map((w, i) => (
+                    <div key={i} className="grid grid-cols-4 gap-2 items-end">
+                      <input className="rounded-md border p-2" type="number" value={w.count} onChange={(e) => updWindow(i, 'count', e.target.value)} placeholder="Count" />
+                      <input className="rounded-md border p-2" type="number" value={w.width} onChange={(e) => updWindow(i, 'width', e.target.value)} placeholder="Width" />
+                      <input className="rounded-md border p-2" type="number" value={w.height} onChange={(e) => updWindow(i, 'height', e.target.value)} placeholder="Height" />
+                      <select className="rounded-md border p-2" value={windowWall} onChange={(e) => setWindowWall(e.target.value as any)}>
+                        <option value="front">Front (+Z)</option>
+                        <option value="back">Back (−Z)</option>
+                        <option value="left">Left (−X)</option>
+                        <option value="right">Right (+X)</option>
+                      </select>
+                    </div>
+                  ))}
+                  <button className="text-pink-700 text-sm" onClick={() => setWindows((a) => [...a, { count: 1, width: 1200, height: 900 }])}>+ Add Window</button>
                 </div>
               </div>
             </div>
@@ -295,6 +428,7 @@ export default function Cabin() {
             </div>
           )}
         </div>
+        
       </div>
 
       {/* Results */}
@@ -350,6 +484,29 @@ export default function Cabin() {
             </tfoot>
           </table>
         </div>
+        {/* Email PDF inline control under pricing breakdown */}
+        <div className="mt-3 flex flex-col sm:flex-row sm:items-center gap-2 justify-end">
+          <label className="block w-full sm:w-auto">
+            <span className="text-sm mr-2">Email quote to</span>
+            <input
+              className="mt-1 w-full sm:w-64 rounded-md border p-2"
+              value={emailTo}
+              onChange={(e) => setEmailTo(e.target.value)}
+              placeholder="name@example.com"
+              type="email"
+              inputMode="email"
+              aria-label="Email quote to"
+            />
+          </label>
+          <button
+            className="rounded-md bg-pink-700 text-white px-3 py-1.5 text-sm disabled:opacity-50 hover:bg-pink-800"
+            onClick={sendEmailPdf}
+            disabled={pdfSending || !emailTo}
+            aria-busy={pdfSending}
+          >
+            {pdfSending ? 'Sending…' : 'Email PDF'}
+          </button>
+        </div>
       </div>
 
       {/* Email modal */}
@@ -396,10 +553,23 @@ function renderEmailHTML(config: CabinConfig, result: ReturnType<typeof computeC
     )
     .join('');
   const warns = result.warnings.map((w) => `<li>${escapeHtml(w)}</li>`).join('');
+  const cfg = `
+    <table style="width:100%;border-collapse:collapse;margin:8px 0" cellspacing="0" cellpadding="0">
+      <tbody>
+        <tr><td>Dimensions</td><td>${config.length} x ${config.width} x ${config.height} mm</td></tr>
+        <tr><td>Roof</td><td>${config.roofType}${config.roofType !== 'flat' ? ` @ ${config.pitchDeg}°` : ''}, overhang ${config.overhang} mm</td></tr>
+        <tr><td>Spacings</td><td>Stud ${config.studSpacing} mm, Nog ${config.nogSpacing} mm, Rafter ${config.rafterSpacing} mm, Joist ${config.joistSpacing} mm, Bearer ${config.bearerSpacing} mm, Pile ${config.pileSpacing} mm</td></tr>
+        <tr><td>Cladding</td><td>${config.exteriorCladding}</td></tr>
+        <tr><td>Lining</td><td>${config.lining}${config.lining !== 'none' && config.insulated ? ' + insulated' : ''}</td></tr>
+        <tr><td>Openings</td><td>Doors ${config.openings.doors.reduce((a,d)=>a+d.count,0)}, Windows ${config.openings.windows.reduce((a,w)=>a+w.count,0)}</td></tr>
+      </tbody>
+    </table>`;
+
   return `
-    <div style="font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.4;color:#111">
+    <div style=\"font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.4;color:#111\">
       <h2 style="margin:0 0 8px 0">Cabin Quote</h2>
-      <p style="margin:0 0 8px 0">${config.length} x ${config.width} x ${config.height} mm, roof: ${config.roofType}${config.roofType!=='flat' ? ` @ ${config.pitchDeg}°` : ''}</p>
+      <p style=\"margin:0 0 8px 0\">Configuration</p>
+      ${cfg}
       ${result.warnings.length ? `<div style="background:#fff7d1;border:1px solid #f6e05e;padding:8px;margin:8px 0"><ul style="margin:0;padding-left:18px">${warns}</ul></div>` : ''}
       <table style="width:100%;border-collapse:collapse" cellspacing="0" cellpadding="0">
         <thead>

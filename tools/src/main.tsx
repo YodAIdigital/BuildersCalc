@@ -13,6 +13,7 @@ const FramingFoundation = React.lazy(() => import('./tools/FramingFoundation'));
 const UnitConverter = React.lazy(() => import('./tools/UnitConverter'));
 const GST = React.lazy(() => import('./tools/GST'));
 const SettingsGate = React.lazy(() => import('./tools/SettingsGate'));
+const Cabin = React.lazy(() => import('./tools/Cabin'));
 
 const router = createBrowserRouter(
   [
@@ -51,6 +52,14 @@ const router = createBrowserRouter(
           element: (
             <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
               <FramingFoundation />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'cabin',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <Cabin />
             </Suspense>
           ),
         },
