@@ -25,6 +25,7 @@ export type CabinConfig = {
   exteriorCladding: 'ply' | 'corrugate' | 'tray' | 'longrun' | 'fiveRib' | 'PIR' | 'cedar weatherboard' | 'standard weatherboard' | 'membrane';
   lining: 'none' | 'ply' | 'gib';
   insulated: boolean;
+  electrical?: boolean;
   sheetSizeM: { w: number; h: number }; // for sheet goods
 };
 
@@ -239,6 +240,14 @@ export function computeCabin(config: CabinConfig, settings: Settings): CabinResu
     push(`Internal lining (${config.lining})`, 'm2', liningTotalM2, liningRate, 'interior');
     if (config.insulated) {
       push('Insulation', 'm2', liningWallM2 + ceilingAreaM2, settings.insulationPerM2, 'interior');
+    }
+  }
+  // Electrical (optional)
+  if (config.electrical) {
+    if (settings.electricalFixed && settings.electricalFixed > 0) {
+      push('Electrical (est.)', 'each', 1, settings.electricalFixed, 'interior');
+    } else {
+      push('Electrical (est.)', 'm2', liningWallM2 + ceilingAreaM2, settings.electricalPerM2, 'interior');
     }
   }
 

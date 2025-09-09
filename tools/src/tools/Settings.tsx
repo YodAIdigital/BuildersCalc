@@ -155,6 +155,26 @@ export default function SettingsPage() {
             />
           </label>
           <label className="block">
+            <span>Electrical (fixed)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.electricalFixed}
+              onChange={(e) => setSettings({ electricalFixed: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
+            <span>Electrical ($/m²)</span>
+            <input
+              className="mt-1 w-full rounded-md border p-2"
+              type="number"
+              step="0.01"
+              value={settings.electricalPerM2}
+              onChange={(e) => setSettings({ electricalPerM2: parseFloat(e.target.value) || 0 })}
+            />
+          </label>
+          <label className="block">
             <span>Building Wrap ($/m²)</span>
             <input
               className="mt-1 w-full rounded-md border p-2"

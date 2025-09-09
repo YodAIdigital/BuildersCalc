@@ -28,6 +28,8 @@ export type Settings = {
     ply: number;
     gib: number;
   };
+  electricalPerM2: number;
+  electricalFixed: number;
   insulationPerM2: number;
   buildingWrapPerM2: number;
   fixingsAllowancePerM2: number;
@@ -76,6 +78,8 @@ export const defaultSettings: Settings = {
     ply: 35,
     gib: 25,
   },
+  electricalPerM2: 0,
+  electricalFixed: 2995,
   insulationPerM2: 20,
   buildingWrapPerM2: 4.5,
   fixingsAllowancePerM2: 6.0,

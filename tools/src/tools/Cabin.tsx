@@ -4,6 +4,7 @@ import Cabin3D from '../components/Cabin3D';
 import { computeCabin, type CabinConfig } from '../lib/cabin';
 import { bomToCSV } from '../lib/csv';
 import { pitchWarnings } from '../lib/roofPitch';
+import { renderCabinEmailHTML } from './cabinEmail';
 
 // Allow overriding email API in dev to hit a real backend instead of Vite stub
 const EMAIL_API = (import.meta as any).env?.VITE_EMAIL_API_URL || '/api/email-cabin';
@@ -47,10 +48,9 @@ export default function Cabin() {
   const [bearerSpacing, setBearerSpacing] = React.useState('1800');
   const [pileSpacing, setPileSpacing] = React.useState('1500');
 
-  const [windows, setWindows] = React.useState<{ count: number; width: number; height: number }[]>([
-    { count: 1, width: 1200, height: 900 },
+  const [windows, setWindows] = React.useState<{ count: number; width: number; height: number; wall: 'front' | 'back' | 'left' | 'right' }[]>([
+    { count: 1, width: 1200, height: 900, wall: 'right' },
   ]);
-  const [windowWall, setWindowWall] = React.useState<'front' | 'back' | 'left' | 'right'>('right');
   const [doors, setDoors] = React.useState<{ count: number; width: number; height: number }[]>([
     { count: 1, width: 860, height: 1980 },
   ]);
@@ -61,14 +61,24 @@ export default function Cabin() {
   );
   const [lining, setLining] = React.useState<'none' | 'ply' | 'gib'>('none');
   const [insulated, setInsulated] = React.useState(false);
+  const [electrical, setElectrical] = React.useState(false);
 
   const [sheetWm, setSheetWm] = React.useState('1.2');
   const [sheetHm, setSheetHm] = React.useState('2.4');
 
   const [rotationDeg, setRotationDeg] = React.useState('20');
+  const [panX, setPanX] = React.useState(0); // mm
+  const [panY, setPanY] = React.useState(0); // mm
+  const [zoom, setZoom] = React.useState(1); // 1 = 100%
+  function pan(dx: number, dy: number) {
+    setPanX((x) => x + dx);
+    setPanY((y) => y + dy);
+  }
 
   const [wallColourKey, setWallColourKey] = React.useState<string>('Gull Grey');
   const [roofColourKey, setRoofColourKey] = React.useState<string>('Ironsand');
+  const [frameColourKey, setFrameColourKey] = React.useState<string>('Titania');
+  const [interiorColour, setInteriorColour] = React.useState<string>('#e9e7e2');
 
   const config: CabinConfig = React.useMemo(
     () => ({
@@ -89,6 +99,7 @@ export default function Cabin() {
       exteriorCladding: exteriorCladding as any,
       lining,
       insulated,
+      electrical,
       sheetSizeM: { w: parseFloat(sheetWm) || 1.2, h: parseFloat(sheetHm) || 2.4 },
     }),
     [
@@ -112,6 +123,7 @@ export default function Cabin() {
       insulated,
       sheetWm,
       sheetHm,
+      electrical,
     ]
   );
 
@@ -121,7 +133,7 @@ export default function Cabin() {
   const rw = React.useMemo(() => pitchWarnings({ pitch: config.roofType === 'flat' ? 0 : config.pitchDeg, cladding: 'longrun' }), [config]);
 
   // Windows/doors handlers
-  function updWindow(i: number, key: 'count' | 'width' | 'height', v: string) {
+  function updWindow(i: number, key: 'count' | 'width' | 'height' | 'wall', v: string) {
     setWindows((arr) => arr.map((it, idx) => (idx === i ? { ...it, [key]: parseFloat(v) || 0 } : it)));
   }
   function updDoor(i: number, key: 'count' | 'width' | 'height', v: string) {
@@ -152,10 +164,20 @@ export default function Cabin() {
   async function sendEmail() {
     try {
       const snapshot = cabinRef.current?.snapshot?.() || null;
+      const logoDataUri = await getLogoDataUri();
+      const html = renderCabinEmailHTML(config, result, {
+        title: 'Cabin Estimate',
+        logoDataUri,
+        businessName: 'Roots & Echo Ltd',
+        phone: '021 180 1218',
+        email: 'zeke@rootsandecho.co.nz',
+      });
+
       const payload: any = {
         to: emailTo,
+        // Keep subject unchanged for regular Email flow per instruction (only PDF email subject changes)
         subject: 'Cabin quote',
-        html: renderEmailHTML(config, result),
+        html,
         attachments: snapshot
           ? [
               {
@@ -191,14 +213,38 @@ export default function Cabin() {
     });
   }
 
+  async function getLogoDataUri(): Promise<string | undefined> {
+    // Try /assets/logo.png then /tools/logo.png; embed as base64 for email reliability
+    const tryPaths = ['/assets/logo.png', '/tools/logo.png'];
+    for (const p of tryPaths) {
+      try {
+        const resp = await fetch(p, { cache: 'no-store' });
+        if (!resp.ok) continue;
+        const blob = await resp.blob();
+        const base64 = await blobToBase64(blob);
+        return `data:${blob.type || 'image/png'};base64,${base64}`;
+      } catch {
+        // ignore and try next
+      }
+    }
+    return undefined;
+  }
+
   async function sendEmailPdf() {
     try {
-      if (!sectionRef.current) {
-        alert('Unable to find content to export.');
-        return;
-      }
       setPdfSending(true);
-      const el = sectionRef.current;
+
+      // Build the same HTML as the email (with branding + disclaimer)
+      const logoDataUri = await getLogoDataUri();
+      const html = renderCabinEmailHTML(config, result, {
+        title: 'Cabin Estimate',
+        logoDataUri,
+        businessName: 'Roots & Echo Ltd',
+        phone: '021 180 1218',
+        email: 'zeke@rootsandecho.co.nz',
+      });
+
+      // Render PDF from the HTML fragment using a temporary off‑screen container
       const html2pdf = (await import('html2pdf.js')).default;
       const opt = {
         margin: 10,
@@ -207,31 +253,45 @@ export default function Cabin() {
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] },
       } as any;
-      const worker = html2pdf().set(opt).from(el).toPdf();
-      const pdf = await worker.get('pdf');
-      const blob: Blob = pdf.output('blob');
-      const b64 = await blobToBase64(blob);
 
-      const payload: any = {
-        to: emailTo,
-        subject: 'Cabin quote',
-        html: renderEmailHTML(config, result),
-        attachments: [
-          {
-            filename: 'cabin.pdf',
-            contentBase64: b64,
-            contentType: 'application/pdf',
-          },
-        ],
-      };
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.left = '-10000px';
+      container.style.top = '0';
+      container.style.width = '800px'; // approx A4 width in px at 96dpi
+      container.innerHTML = html;
+      document.body.appendChild(container);
 
-      const res = await fetch(EMAIL_API, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) throw new Error('Failed to email');
-      alert('Email sent');
+      try {
+        const worker = html2pdf().set(opt).from(container).toPdf();
+        const pdf = await worker.get('pdf');
+        const blob: Blob = pdf.output('blob');
+        const b64 = await blobToBase64(blob);
+
+        const payload: any = {
+          to: emailTo,
+          // Change subject only for the Email PDF flow per instruction
+          subject: 'Cabin Estimate',
+          html,
+          attachments: [
+            {
+              filename: 'cabin-estimate.pdf',
+              contentBase64: b64,
+              contentType: 'application/pdf',
+            },
+          ],
+        };
+
+        const res = await fetch(EMAIL_API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) throw new Error('Failed to email');
+        alert('Email sent');
+      } finally {
+        document.body.removeChild(container);
+      }
     } catch (e) {
       alert('Failed to generate or send PDF');
     } finally {
@@ -258,34 +318,85 @@ export default function Cabin() {
               rotationDeg={parseFloat(rotationDeg) || 0}
               windows={windows}
               doors={doors}
-              windowWall={windowWall}
               doorWall={doorWall}
               wallColor={COLORSTEEL[wallColourKey]}
               roofColor={COLORSTEEL[roofColourKey]}
+              cladding={exteriorCladding}
+              panX={panX}
+              panY={panY}
+              zoom={zoom}
+              frameColor={COLORSTEEL[frameColourKey]}
               onReady={handleReady}
             />
           </div>
-          <div className="p-3 border-t grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <label className="block">
-              <span className="text-sm">Model rotation (°)</span>
-              <input className="mt-1 w-full rounded-md border p-2" type="range" min={-180} max={180} step={1} value={rotationDeg} onChange={(e) => setRotationDeg(e.target.value)} />
-            </label>
-            <label className="block">
-              <span className="text-sm">Wall colour (COLORSTEEL)</span>
-              <select className="mt-1 w-full rounded-md border p-2" value={wallColourKey} onChange={(e)=>setWallColourKey(e.target.value)}>
-                {COLORSTEEL_ENTRIES.map(([k])=> (
-                  <option key={k} value={k}>{k}</option>
-                ))}
-              </select>
-            </label>
-            <label className="block">
-              <span className="text-sm">Roof colour (COLORSTEEL)</span>
-              <select className="mt-1 w-full rounded-md border p-2" value={roofColourKey} onChange={(e)=>setRoofColourKey(e.target.value)}>
-                {COLORSTEEL_ENTRIES.map(([k])=> (
-                  <option key={k} value={k}>{k}</option>
-                ))}
-              </select>
-            </label>
+          <div className="p-3 border-t space-y-3">
+            {/* Row 1: rotation + move + zoom */}
+            <div className="flex items-end gap-3">
+              {/* Rotation (left, fixed width) */}
+              <label className="block w-[320px] max-w-full">
+                <span className="text-sm">Model rotation (°)</span>
+                <input className="mt-1 w-full rounded-md border p-2" type="range" min={-180} max={180} step={1} value={rotationDeg} onChange={(e) => setRotationDeg(e.target.value)} />
+              </label>
+
+              {/* Move pad (center, fixed) */}
+              <div className="flex items-center gap-2 min-w-[160px] justify-center">
+                <span className="text-sm">Move</span>
+                <div className="grid grid-cols-3 grid-rows-3 gap-1">
+                  <div></div>
+                  <button className="h-8 w-8 rounded border leading-none" onClick={() => pan(0, 200)} title="Up">↑</button>
+                  <div></div>
+                  <button className="h-8 w-8 rounded border leading-none" onClick={() => pan(-200, 0)} title="Left">←</button>
+                  <button className="h-8 w-8 rounded border leading-none" onClick={() => { setPanX(0); setPanY(0); setZoom(1); }} title="Center">•</button>
+                  <button className="h-8 w-8 rounded border leading-none" onClick={() => pan(200, 0)} title="Right">→</button>
+                  <div></div>
+                  <button className="h-8 w-8 rounded border leading-none" onClick={() => pan(0, -200)} title="Down">↓</button>
+                  <div></div>
+                </div>
+              </div>
+
+              {/* Zoom (right, fixed width) */}
+              <label className="block w-[320px] max-w-full">
+                <span className="text-sm">Zoom</span>
+                <input className="mt-1 w-full rounded-md border p-2" type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={(e)=>setZoom(parseFloat(e.target.value)||1)} />
+              </label>
+            </div>
+            {/* Row 2: wall + roof colours */}
+            <div className="flex items-end gap-3">
+              <label className="block min-w-[220px] flex-1">
+                <span className="text-sm">Wall colour (COLORSTEEL)</span>
+                <select className="mt-1 w-full rounded-md border p-2" value={wallColourKey} onChange={(e)=>setWallColourKey(e.target.value)}>
+                  {COLORSTEEL_ENTRIES.map(([k])=> (
+                    <option key={k} value={k}>{k}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block min-w-[220px] flex-1">
+                <span className="text-sm">Roof colour (COLORSTEEL)</span>
+                <select className="mt-1 w-full rounded-md border p-2" value={roofColourKey} onChange={(e)=>setRoofColourKey(e.target.value)}>
+                  {COLORSTEEL_ENTRIES.map(([k])=> (
+                    <option key={k} value={k}>{k}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            {/* Row 3: frame + interior colours */}
+            <div className="flex items-end gap-3">
+              <label className="block min-w-[220px] flex-1">
+                <span className="text-sm">Frame colour (COLORSTEEL)</span>
+                <select className="mt-1 w-full rounded-md border p-2" value={frameColourKey} onChange={(e)=>setFrameColourKey(e.target.value)}>
+                  {COLORSTEEL_ENTRIES.map(([k])=> (
+                    <option key={k} value={k}>{k}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="block min-w-[220px] flex-1">
+                <span className="text-sm">Interior wall colour</span>
+                <div className="mt-1 flex items-center gap-2">
+                  <input type="color" className="h-9 w-10 cursor-pointer" value={interiorColour} onChange={(e)=>setInteriorColour(e.target.value)} />
+                  <input className="flex-1 rounded-md border p-2" value={interiorColour} onChange={(e)=>setInteriorColour(e.target.value)} />
+                </div>
+              </label>
+            </div>
           </div>
         </div>
 
@@ -365,7 +476,7 @@ export default function Cabin() {
                       <input className="rounded-md border p-2" type="number" value={w.count} onChange={(e) => updWindow(i, 'count', e.target.value)} placeholder="Count" />
                       <input className="rounded-md border p-2" type="number" value={w.width} onChange={(e) => updWindow(i, 'width', e.target.value)} placeholder="Width" />
                       <input className="rounded-md border p-2" type="number" value={w.height} onChange={(e) => updWindow(i, 'height', e.target.value)} placeholder="Height" />
-                      <select className="rounded-md border p-2" value={windowWall} onChange={(e) => setWindowWall(e.target.value as any)}>
+                      <select className="rounded-md border p-2" value={w.wall} onChange={(e) => updWindow(i, 'wall', e.target.value)}>
                         <option value="front">Front (+Z)</option>
                         <option value="back">Back (−Z)</option>
                         <option value="left">Left (−X)</option>
@@ -373,7 +484,7 @@ export default function Cabin() {
                       </select>
                     </div>
                   ))}
-                  <button className="text-pink-700 text-sm" onClick={() => setWindows((a) => [...a, { count: 1, width: 1200, height: 900 }])}>+ Add Window</button>
+                  <button className="text-pink-700 text-sm" onClick={() => setWindows((a) => [...a, { count: 1, width: 1200, height: 900, wall: 'right' }])}>+ Add Window</button>
                 </div>
               </div>
             </div>
@@ -390,7 +501,6 @@ export default function Cabin() {
                 <option value="PIR">PIR</option>
                 <option value="cedar weatherboard">Cedar weatherboard</option>
                 <option value="standard weatherboard">Standard weatherboard</option>
-                <option value="membrane">Membrane</option>
               </select>
             </label>
             <label className="block">
@@ -407,6 +517,13 @@ export default function Cabin() {
                 <span className="text-sm">Insulate walls + ceiling</span>
               </label>
             )}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <label className="inline-flex items-center gap-2">
+              <input type="checkbox" checked={electrical} onChange={(e) => setElectrical(e.target.checked)} />
+              <span className="text-sm">Include electrical</span>
+            </label>
           </div>
 
           <details className="rounded-md border p-3">
@@ -545,55 +662,3 @@ function LabeledInput({ label, value, onChange, disabled }: { label: string; val
   );
 }
 
-function renderEmailHTML(config: CabinConfig, result: ReturnType<typeof computeCabin>) {
-  const rows = result.items
-    .map(
-      (it) =>
-        `<tr><td>${escapeHtml(it.category)}</td><td>${escapeHtml(it.name)}</td><td>${it.unit}</td><td style="text-align:right">${it.qty}</td><td style="text-align:right">$${it.rate}</td><td style="text-align:right">$${it.subtotal}</td></tr>`
-    )
-    .join('');
-  const warns = result.warnings.map((w) => `<li>${escapeHtml(w)}</li>`).join('');
-  const cfg = `
-    <table style="width:100%;border-collapse:collapse;margin:8px 0" cellspacing="0" cellpadding="0">
-      <tbody>
-        <tr><td>Dimensions</td><td>${config.length} x ${config.width} x ${config.height} mm</td></tr>
-        <tr><td>Roof</td><td>${config.roofType}${config.roofType !== 'flat' ? ` @ ${config.pitchDeg}°` : ''}, overhang ${config.overhang} mm</td></tr>
-        <tr><td>Spacings</td><td>Stud ${config.studSpacing} mm, Nog ${config.nogSpacing} mm, Rafter ${config.rafterSpacing} mm, Joist ${config.joistSpacing} mm, Bearer ${config.bearerSpacing} mm, Pile ${config.pileSpacing} mm</td></tr>
-        <tr><td>Cladding</td><td>${config.exteriorCladding}</td></tr>
-        <tr><td>Lining</td><td>${config.lining}${config.lining !== 'none' && config.insulated ? ' + insulated' : ''}</td></tr>
-        <tr><td>Openings</td><td>Doors ${config.openings.doors.reduce((a,d)=>a+d.count,0)}, Windows ${config.openings.windows.reduce((a,w)=>a+w.count,0)}</td></tr>
-      </tbody>
-    </table>`;
-
-  return `
-    <div style=\"font-family:Inter,system-ui,Arial,sans-serif;font-size:14px;line-height:1.4;color:#111\">
-      <h2 style="margin:0 0 8px 0">Cabin Quote</h2>
-      <p style=\"margin:0 0 8px 0\">Configuration</p>
-      ${cfg}
-      ${result.warnings.length ? `<div style="background:#fff7d1;border:1px solid #f6e05e;padding:8px;margin:8px 0"><ul style="margin:0;padding-left:18px">${warns}</ul></div>` : ''}
-      <table style="width:100%;border-collapse:collapse" cellspacing="0" cellpadding="0">
-        <thead>
-          <tr>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:4px">Category</th>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:4px">Item</th>
-            <th style="text-align:left;border-bottom:1px solid #ddd;padding:4px">Unit</th>
-            <th style="text-align:right;border-bottom:1px solid #ddd;padding:4px">Qty</th>
-            <th style="text-align:right;border-bottom:1px solid #ddd;padding:4px">Rate</th>
-            <th style="text-align:right;border-bottom:1px solid #ddd;padding:4px">Subtotal</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-        <tfoot>
-          <tr><td colspan="4"></td><td style="text-align:right;padding:4px">Subtotal</td><td style="text-align:right;padding:4px">$${result.totals.exGst}</td></tr>
-          <tr><td colspan="4"></td><td style="text-align:right;padding:4px">GST</td><td style="text-align:right;padding:4px">$${result.totals.gst}</td></tr>
-          <tr><td colspan="4"></td><td style="text-align:right;padding:4px;font-weight:bold">Total</td><td style="text-align:right;padding:4px;font-weight:bold">$${result.totals.inclGst}</td></tr>
-        </tfoot>
-      </table>
-      <p style="margin-top:12px;color:#666;font-size:12px">Guidance only. Verify against NZS 3604 and manufacturer specifications.</p>
-    </div>
-  `;
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-}
