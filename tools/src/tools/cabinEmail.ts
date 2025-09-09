@@ -2,7 +2,8 @@ import { type CabinConfig } from '../lib/cabin';
 
 export type CabinEmailOptions = {
   title?: string; // Heading within the HTML body (defaults to 'Cabin Estimate')
-  logoDataUri?: string; // data:image/png;base64,... for email reliability
+  logoDataUri?: string; // data:image/png;base64,... for PDF rendering reliability
+  logoCid?: string; // Content-ID for inline email images (preferred for email clients)
   businessName?: string; // Defaults to 'Roots & Echo Ltd'
   phone?: string; // Defaults to '021 180 1218'
   email?: string; // Defaults to 'zeke@rootsandecho.co.nz'
@@ -21,7 +22,8 @@ export function renderCabinEmailHTML(
   const businessName = opts.businessName || 'Roots & Echo Ltd';
   const phone = opts.phone || '021 180 1218';
   const email = opts.email || 'zeke@rootsandecho.co.nz';
-  const logo = opts.logoDataUri || '';
+  const logoDataUri = opts.logoDataUri || '';
+  const logoCid = opts.logoCid || '';
 
   const rows = result.items
     .map(
@@ -49,12 +51,13 @@ export function renderCabinEmailHTML(
       </tbody>
     </table>`;
 
+  const logoSrc = logoDataUri ? logoDataUri : (logoCid ? `cid:${escapeHtml(logoCid)}` : '');
   const brandBlock = `
     <table role="presentation" cellspacing="0" cellpadding="0" style="width:100%;border-collapse:collapse;margin-bottom:12px">
       <tbody>
         <tr>
           <td style="vertical-align:middle;padding:0;margin:0;width:64px">
-            ${logo ? `<img src="${logo}" alt="${escapeHtml(businessName)} logo" style="height:48px;width:auto;display:block;border:0;outline:0;" />` : ''}
+            ${logoSrc ? `<img src="${logoSrc}" alt="${escapeHtml(businessName)} logo" style="height:48px;width:auto;display:block;border:0;outline:0;" />` : ''}
           </td>
           <td style="vertical-align:middle;padding:0 0 0 8px">
             <div style="font-weight:700;color:#0f172a">${escapeHtml(businessName)}</div>

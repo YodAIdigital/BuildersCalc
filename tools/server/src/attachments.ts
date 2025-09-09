@@ -2,12 +2,14 @@ export type IncomingAttachment = {
   filename?: string;
   contentBase64?: string;
   contentType?: string;
+  cid?: string; // optional for inline images
 };
 
 export type SafeAttachment = {
   filename: string;
   content: Buffer;
   contentType: string;
+  cid?: string;
 };
 
 const ALLOWED_TYPES = new Set(['image/png', 'application/pdf']);
@@ -39,7 +41,14 @@ export function validateAttachments(input: any[], opts?: { maxBytes?: number }):
       const head = buf.slice(0, 5).toString('utf8');
       if (!head.startsWith('%PDF-')) continue;
     }
-    out.push({ filename, content: buf, contentType });
+    let cid: string | undefined = undefined;
+    if (typeof a?.cid === 'string') {
+      const raw = a.cid.slice(0, 128);
+      // allow letters, digits, dots, dashes, underscores
+      const safe = raw.replace(/[^A-Za-z0-9._-]/g, '');
+      cid = safe || undefined;
+    }
+    out.push({ filename, content: buf, contentType, cid });
   }
   return out;
 }

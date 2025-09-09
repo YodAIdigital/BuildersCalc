@@ -63,6 +63,9 @@ export default function Cabin() {
   const [insulated, setInsulated] = React.useState(false);
   const [electrical, setElectrical] = React.useState(false);
 
+  // Roofing material (separate from walls). Same options as walls, excluding weatherboards.
+  const [roofCladding, setRoofCladding] = React.useState<string>('corrugate');
+
   const [sheetWm, setSheetWm] = React.useState('1.2');
   const [sheetHm, setSheetHm] = React.useState('2.4');
 
@@ -161,31 +164,54 @@ export default function Cabin() {
     cabinRef.current = api;
   }
   const [pdfSending, setPdfSending] = React.useState(false);
+  const pdfRef = React.useRef<HTMLDivElement | null>(null);
+
   async function sendEmail() {
     try {
       const snapshot = cabinRef.current?.snapshot?.() || null;
       const logoDataUri = await getLogoDataUri();
+      // Prefer CID for email clients; fall back to data URI if needed inside PDF logic only
+      let logoBase64: string | undefined;
+      let logoContentType = 'image/png';
+      if (logoDataUri) {
+        const m = /^data:([^;]+);base64,(.*)$/.exec(logoDataUri);
+        if (m) {
+          logoContentType = m[1] || 'image/png';
+          logoBase64 = m[2];
+        }
+      }
+
       const html = renderCabinEmailHTML(config, result, {
         title: 'Cabin Estimate',
-        logoDataUri,
+        logoCid: 'cabin-logo',
         businessName: 'Roots & Echo Ltd',
         phone: '021 180 1218',
         email: 'zeke@rootsandecho.co.nz',
       });
+
+      const attachments: any[] = [];
+      if (snapshot) {
+        attachments.push({
+          filename: 'cabin.png',
+          contentBase64: snapshot.replace(/^data:image\/png;base64,/, ''),
+          contentType: 'image/png',
+        });
+      }
+      if (logoBase64) {
+        attachments.push({
+          filename: 'logo.png',
+          contentBase64: logoBase64,
+          contentType: logoContentType,
+          cid: 'cabin-logo',
+        });
+      }
 
       const payload: any = {
         to: emailTo,
         // Keep subject unchanged for regular Email flow per instruction (only PDF email subject changes)
         subject: 'Cabin quote',
         html,
-        attachments: snapshot
-          ? [
-              {
-                filename: 'cabin.png',
-                contentBase64: snapshot.replace(/^data:image\/png;base64,/, ''),
-              },
-            ]
-          : undefined,
+        attachments: attachments.length ? attachments : undefined,
       };
       const res = await fetch(EMAIL_API, {
         method: 'POST',
@@ -234,7 +260,7 @@ export default function Cabin() {
     try {
       setPdfSending(true);
 
-      // Build the same HTML as the email (with branding + disclaimer)
+      // Build the same HTML as the email (with branding + disclaimer) — use data URI for PDF rendering
       const logoDataUri = await getLogoDataUri();
       const html = renderCabinEmailHTML(config, result, {
         title: 'Cabin Estimate',
@@ -244,54 +270,55 @@ export default function Cabin() {
         email: 'zeke@rootsandecho.co.nz',
       });
 
-      // Render PDF from the HTML fragment using a temporary off‑screen container
+      // Populate a persistent off-screen container for html2pdf rendering
+      if (!pdfRef.current) {
+        const node = document.createElement('div');
+        node.style.position = 'fixed';
+        node.style.left = '-10000px';
+        node.style.top = '0';
+        node.style.width = '800px';
+        node.style.background = '#ffffff';
+        node.style.color = '#0f172a';
+        document.body.appendChild(node);
+        pdfRef.current = node;
+      }
+      pdfRef.current.innerHTML = html;
+
       const html2pdf = (await import('html2pdf.js')).default;
       const opt = {
         margin: 10,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: Math.min(2, (window as any).devicePixelRatio || 1), useCORS: true },
+        html2canvas: { scale: Math.min(2, (window as any).devicePixelRatio || 1), useCORS: true, backgroundColor: '#ffffff' },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak: { mode: ['css', 'legacy'] },
       } as any;
 
-      const container = document.createElement('div');
-      container.style.position = 'fixed';
-      container.style.left = '-10000px';
-      container.style.top = '0';
-      container.style.width = '800px'; // approx A4 width in px at 96dpi
-      container.innerHTML = html;
-      document.body.appendChild(container);
+      const worker = html2pdf().set(opt).from(pdfRef.current).toPdf();
+      const pdf = await worker.get('pdf');
+      const blob: Blob = pdf.output('blob');
+      const b64 = await blobToBase64(blob);
 
-      try {
-        const worker = html2pdf().set(opt).from(container).toPdf();
-        const pdf = await worker.get('pdf');
-        const blob: Blob = pdf.output('blob');
-        const b64 = await blobToBase64(blob);
+      const payload: any = {
+        to: emailTo,
+        // Change subject only for the Email PDF flow per instruction
+        subject: 'Cabin Estimate',
+        html,
+        attachments: [
+          {
+            filename: 'cabin-estimate.pdf',
+            contentBase64: b64,
+            contentType: 'application/pdf',
+          },
+        ],
+      };
 
-        const payload: any = {
-          to: emailTo,
-          // Change subject only for the Email PDF flow per instruction
-          subject: 'Cabin Estimate',
-          html,
-          attachments: [
-            {
-              filename: 'cabin-estimate.pdf',
-              contentBase64: b64,
-              contentType: 'application/pdf',
-            },
-          ],
-        };
-
-        const res = await fetch(EMAIL_API, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-        if (!res.ok) throw new Error('Failed to email');
-        alert('Email sent');
-      } finally {
-        document.body.removeChild(container);
-      }
+      const res = await fetch(EMAIL_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('Failed to email');
+      alert('Email sent');
     } catch (e) {
       alert('Failed to generate or send PDF');
     } finally {
@@ -322,10 +349,12 @@ export default function Cabin() {
               wallColor={COLORSTEEL[wallColourKey]}
               roofColor={COLORSTEEL[roofColourKey]}
               cladding={exteriorCladding}
+              roofCladding={roofCladding}
               panX={panX}
               panY={panY}
               zoom={zoom}
               frameColor={COLORSTEEL[frameColourKey]}
+              interiorColor={interiorColour}
               onReady={handleReady}
             />
           </div>
@@ -504,6 +533,16 @@ export default function Cabin() {
               </select>
             </label>
             <label className="block">
+              <span className="text-sm">Roofing material</span>
+              <select value={roofCladding} onChange={(e) => setRoofCladding(e.target.value)} className="mt-1 w-full rounded-md border p-2">
+                <option value="ply">Ply</option>
+                <option value="corrugate">Corrugate</option>
+                <option value="tray">Tray (longrun)</option>
+                <option value="five rib">5 rib</option>
+                <option value="PIR">PIR</option>
+              </select>
+            </label>
+            <label className="block">
               <span className="text-sm">Internal lining</span>
               <select value={lining} onChange={(e) => setLining(e.target.value as any)} className="mt-1 w-full rounded-md border p-2">
                 <option value="none">None</option>
@@ -649,6 +688,9 @@ export default function Cabin() {
       <p className="text-xs text-slate-500">
         Guidance only. Verify against NZS 3604 and manufacturer specifications.
       </p>
+    {/* Off-screen container used for PDF rendering of the email HTML */}
+    {/* Intentionally kept attached to document for stability during html2pdf capture */}
+    <div aria-hidden="true" ref={pdfRef as any} />
     </section>
   );
 }

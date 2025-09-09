@@ -11,7 +11,7 @@ export type SendEmailInput = {
   text: string;
   html?: string;
   headers?: Record<string, string>;
-  attachments?: { filename: string; content: Buffer | string; contentType?: string }[];
+  attachments?: { filename: string; content: Buffer | string; contentType?: string; cid?: string }[];
 };
 
 let cachedTransport: ReturnType<typeof nodemailer.createTransport> | null = null;

@@ -1,7 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Edges } from '@react-three/drei';
-import { Shape } from 'three';
 
 export type Cabin3DProps = {
   length: number; // mm
@@ -18,9 +17,15 @@ export type Cabin3DProps = {
   roofColor?: string;
   frameColor?: string;
   cladding?: string; // walls reflect chosen material
+  roofCladding?: string; // roof material (separate from walls)
   panX?: number; // mm
   panY?: number; // mm
   zoom?: number; // 1 = 100%
+  /**
+   * Interior wall colour (flat, matte). Used for the inside faces of walls and gable infills.
+   * Defaults to a light off‑white if not provided.
+   */
+  interiorColor?: string;
   onReady?: (api: { snapshot: () => string | null }) => void;
 };
 
@@ -99,8 +104,8 @@ function makeMonoGeometry(length: number, width: number, height: number, over: n
   return geo;
 }
 
-type RoofExtras = { roofTex?: { map?: any; normalMap?: any; roughnessMap?: any } };
-function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofColor, roofTex }: Cabin3DProps & RoofExtras) {
+type RoofExtras = { roofTex?: { map?: any; normalMap?: any; roughnessMap?: any }, roofMetalness?: number, roofRoughness?: number };
+function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofColor, roofTex, roofMetalness, roofRoughness }: Cabin3DProps & RoofExtras) {
   const pitch = roofType === 'flat' ? 0 : pitchDeg;
   const run = roofType === 'dual' ? width / 2 : width; // horizontal run per side
   const theta = (pitch * Math.PI) / 180; // rad
@@ -123,11 +128,11 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
       <group>
         {/* Roof planes */}
         <mesh geometry={leftGeo} renderOrder={1}>
-          <meshStandardMaterial color={roofColor} normalMap={roofTex?.normalMap} normalScale={[2, 2]} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
+          <meshStandardMaterial color={roofColor} map={roofTex?.map} normalMap={roofTex?.normalMap} roughnessMap={roofTex?.roughnessMap} normalScale={[2, 2]} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
           <Edges color="#e5e5e5" threshold={25} />
         </mesh>
         <mesh geometry={rightGeo} renderOrder={1}>
-          <meshStandardMaterial color={roofColor} normalMap={roofTex?.normalMap} normalScale={[2, 2]} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
+          <meshStandardMaterial color={roofColor} map={roofTex?.map} normalMap={roofTex?.normalMap} roughnessMap={roofTex?.roughnessMap} normalScale={[2, 2]} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
           <Edges color="#e5e5e5" threshold={25} />
         </mesh>
 
@@ -135,7 +140,7 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
         {ridgeLen > 0 && (
           <mesh position={[0, ridgeY + capThick / 2, 0]} renderOrder={2}>
             <boxGeometry args={[ridgeLen, capThick, capWide]} />
-            <meshStandardMaterial color={roofColor} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-2} />
+            <meshStandardMaterial color={roofColor} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-4} polygonOffsetUnits={-2} />
           </mesh>
         )}
 
@@ -150,7 +155,7 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
               return (
                 <mesh key={`bar-${zsgn}`} position={[0, centerY, centerZ]} rotation={[rotX, 0, 0]} renderOrder={2}>
                   <boxGeometry args={[capThick, capWide, barLen]} />
-                  <meshStandardMaterial color={roofColor} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-2} />
+                  <meshStandardMaterial color={roofColor} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-2} />
                 </mesh>
               );
             })}
@@ -171,7 +176,7 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
     return (
       <group>
         <mesh geometry={monoGeo} renderOrder={1}>
-          <meshStandardMaterial color={roofColor} normalMap={roofTex?.normalMap} normalScale={[2, 2]} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
+          <meshStandardMaterial color={roofColor} map={roofTex?.map} normalMap={roofTex?.normalMap} roughnessMap={roofTex?.roughnessMap} normalScale={[2, 2]} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
           <Edges color="#e5e5e5" threshold={25} />
         </mesh>
         {/* Barge caps at both ends */}
@@ -185,7 +190,7 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
               return (
                 <mesh key={`mbar-${zsgn}`} position={[0, centerY, centerZ]} rotation={[rotX, 0, 0]} renderOrder={2}>
                   <boxGeometry args={[capThick, capWide, barLen]} />
-                  <meshStandardMaterial color={roofColor} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-2} />
+                  <meshStandardMaterial color={roofColor} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-3} polygonOffsetUnits={-2} />
                 </mesh>
               );
             })}
@@ -199,13 +204,13 @@ function RoofGeom({ length, width, height, roofType, pitchDeg, overhang, roofCol
   return (
     <mesh position={[0, height + 1, 0]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={1}>
       <planeGeometry args={[length + 2 * over, width + 2 * over]} />
-      <meshStandardMaterial color={roofColor} normalMap={roofTex?.normalMap} normalScale={[2, 2]} metalness={0.7} roughness={0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
+      <meshStandardMaterial color={roofColor} map={roofTex?.map} normalMap={roofTex?.normalMap} roughnessMap={roofTex?.roughnessMap} normalScale={[2, 2]} metalness={roofMetalness ?? 0.7} roughness={roofRoughness ?? 0.35} polygonOffset polygonOffsetFactor={-2} polygonOffsetUnits={-1} side={DoubleSide} />
       <Edges color="#e5e5e5" threshold={25} />
     </mesh>
   );
 }
 
-import { RepeatWrapping, BufferAttribute, Color, DoubleSide } from 'three';
+import { RepeatWrapping, BufferAttribute, Color, DoubleSide, BackSide } from 'three';
 import { textureSpecForCladding, normalizeCladding, applyTint } from './textures/spec';
 import { makeStripeNormalTexture, makeWoodAlbedoTexture } from './textures/procedural';
 
@@ -237,7 +242,7 @@ export function CabinModel(props: Cabin3DProps) {
 }
 
 function CabinScene(props: Cabin3DProps) {
-  const { length, width, height, roofType, pitchDeg, overhang, rotationDeg, windows = [], doors = [], doorWall = 'front', wallColor = '#757575', roofColor = '#7f7f7f', frameColor = '#262626', cladding = 'corrugate', panX = 0, panY = 0, zoom = 1 } = props;
+  const { length, width, height, roofType, pitchDeg, overhang, rotationDeg, windows = [], doors = [], doorWall = 'front', wallColor = '#757575', roofColor = '#7f7f7f', frameColor = '#262626', cladding = 'corrugate', roofCladding = 'corrugate', panX = 0, panY = 0, zoom = 1, interiorColor = '#e9e7e2' } = props;
   const wallThickness = 90; // mm visual only
   const wallGap = 10; // mm shorter to avoid intersection with roof
   const wallVisualHeight = Math.max(0, height - wallGap);
@@ -271,7 +276,16 @@ function CabinScene(props: Cabin3DProps) {
     normalMap: cloneTex(spec.type === 'metal' ? metalNormalTile : spec.type === 'wood' ? woodNormalTile : undefined),
     map: spec.type === 'ply' ? makeWoodAlbedoTexture(256) : undefined,
   }), [spec.type, metalNormalTile, woodNormalTile]);
-  const roofSet: any = useMemo(() => ({ normalMap: cloneTex(roofNormalTile) }), [roofNormalTile]);
+  // Roof textures based on selected roofing material
+  const roofCladdingKey = normalizeCladding(roofCladding);
+  const roofSpec = useMemo(() => textureSpecForCladding(roofCladdingKey), [roofCladdingKey]);
+  const roofSet: any = useMemo(() => {
+    if (roofSpec.type === 'metal') return { normalMap: cloneTex(metalNormalTile) };
+    if (roofSpec.type === 'wood') return { map: makeWoodAlbedoTexture(256), normalMap: cloneTex(woodNormalTile) };
+    if (roofSpec.type === 'ply') return { map: makeWoodAlbedoTexture(256) };
+    // PIR/membrane: flat appearance
+    return {};
+  }, [roofSpec.type, metalNormalTile, woodNormalTile]);
 
   // Configure repeats and rotations (swap repeats if rotated by 90°)
   function setup(set: any, repeatU: number, repeatV: number, rotationRad: number) {
@@ -304,14 +318,13 @@ function CabinScene(props: Cabin3DProps) {
   setup(wallLeftSet, sideRepeatU, wallRepeatV, wallsRotation);
   setup(wallRightSet, sideRepeatU, wallRepeatV, wallsRotation);
 
-  // Roof texture configuration (corrugate always)
-  // Orient ribs along slope → rotate 90° if stripes are horizontal by default
+  // Roof texture configuration based on selected roofing material
   const runForSlope = roofType === 'dual' ? width / 2 : width; // mm
   const thetaRad = (roofType === 'flat' ? 0 : pitchDeg) * Math.PI / 180;
   const slopeRise = roofType === 'flat' ? 0 : runForSlope * Math.tan(thetaRad);
   const slopeLen = Math.sqrt(runForSlope * runForSlope + slopeRise * slopeRise);
-  const roofRepeatU = Math.max(1, (length + 2 * overhang) / 76);
-  const roofRepeatV = Math.max(1, slopeLen / 1000);
+  const roofRepeatU = Math.max(1, (length + 2 * overhang) / Math.max(1, roofSpec.repeats.mmPerU));
+  const roofRepeatV = Math.max(1, slopeLen / Math.max(1, roofSpec.repeats.mmPerV));
   setup(roofSet, roofRepeatU, roofRepeatV, 0);
 
   // Derive wall material color with tinting rules
@@ -361,6 +374,7 @@ function CabinScene(props: Cabin3DProps) {
                   <meshStandardMaterial color="#f2f2f2" />
                 </mesh>
                 {/* Walls as simple boxes around origin */}
+                {/* Front wall (exterior) */}
                 <mesh position={[0, wallVisualHeight / 2, -width / 2]} castShadow>
                   <boxGeometry args={[length, wallVisualHeight, wallThickness]} />
                   <meshStandardMaterial
@@ -372,6 +386,13 @@ function CabinScene(props: Cabin3DProps) {
                     roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
                   />
                 </mesh>
+                {/* Front wall (interior) — BackSide renders the inward faces only */}
+                <mesh position={[0, wallVisualHeight / 2, -width / 2]}>
+                  <boxGeometry args={[length, wallVisualHeight, wallThickness]} />
+                  <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                </mesh>
+
+                {/* Back wall (exterior) */}
                 <mesh position={[0, wallVisualHeight / 2, width / 2]} castShadow>
                   <boxGeometry args={[length, wallVisualHeight, wallThickness]} />
                   <meshStandardMaterial
@@ -383,6 +404,13 @@ function CabinScene(props: Cabin3DProps) {
                     roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
                   />
                 </mesh>
+                {/* Back wall (interior) */}
+                <mesh position={[0, wallVisualHeight / 2, width / 2]}>
+                  <boxGeometry args={[length, wallVisualHeight, wallThickness]} />
+                  <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                </mesh>
+
+                {/* Left wall (exterior) */}
                 <mesh position={[-length / 2, wallVisualHeight / 2, 0]} castShadow>
                   <boxGeometry args={[wallThickness, wallVisualHeight, width]} />
                   <meshStandardMaterial
@@ -394,6 +422,13 @@ function CabinScene(props: Cabin3DProps) {
                     roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
                   />
                 </mesh>
+                {/* Left wall (interior) */}
+                <mesh position={[-length / 2, wallVisualHeight / 2, 0]}>
+                  <boxGeometry args={[wallThickness, wallVisualHeight, width]} />
+                  <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                </mesh>
+
+                {/* Right wall (exterior) */}
                 <mesh position={[length / 2, wallVisualHeight / 2, 0]} castShadow>
                   <boxGeometry args={[wallThickness, wallVisualHeight, width]} />
                   <meshStandardMaterial
@@ -405,61 +440,94 @@ function CabinScene(props: Cabin3DProps) {
                     roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
                   />
                 </mesh>
+                {/* Right wall (interior) */}
+                <mesh position={[length / 2, wallVisualHeight / 2, 0]}>
+                  <boxGeometry args={[wallThickness, wallVisualHeight, width]} />
+                  <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                </mesh>
                 {/* Gable infill to roof peak */}
                 {roofType === 'dual' && rise > 0 && (
                   <>
                     {/* Right end gable (x +) */}
-                    <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)} position={[length / 2, 0, 0]}>
-                      <meshStandardMaterial
-                        color={wallMatColor}
-                        map={wallFrontSet.map}
-                        normalMap={wallFrontSet.normalMap}
-                        roughnessMap={wallFrontSet.roughnessMap}
-                        metalness={spec.type === 'metal' ? 0.7 : 0.0}
-                        roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
-                      />
-                      <Edges color="#2a2a2a" threshold={10} />
-                    </mesh>
+                    <group position={[length / 2, 0, 0]}>
+                      {/* Exterior */}
+                      <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)}>
+                        <meshStandardMaterial
+                          color={wallMatColor}
+                          map={wallFrontSet.map}
+                          normalMap={wallFrontSet.normalMap}
+                          roughnessMap={wallFrontSet.roughnessMap}
+                          metalness={spec.type === 'metal' ? 0.7 : 0.0}
+                          roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
+                        />
+                        <Edges color="#2a2a2a" threshold={10} />
+                      </mesh>
+                      {/* Interior (flat, matte) */}
+                      <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)}>
+                        <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                      </mesh>
+                    </group>
                     {/* Left end gable (x -) */}
-                    <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)} position={[-length / 2, 0, 0]}>
-                      <meshStandardMaterial
-                        color={wallMatColor}
-                        map={wallBackSet.map}
-                        normalMap={wallBackSet.normalMap}
-                        roughnessMap={wallBackSet.roughnessMap}
-                        metalness={spec.type === 'metal' ? 0.7 : 0.0}
-                        roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
-                      />
-                      <Edges color="#2a2a2a" threshold={10} />
-                    </mesh>
+                    <group position={[-length / 2, 0, 0]}>
+                      {/* Exterior */}
+                      <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)}>
+                        <meshStandardMaterial
+                          color={wallMatColor}
+                          map={wallBackSet.map}
+                          normalMap={wallBackSet.normalMap}
+                          roughnessMap={wallBackSet.roughnessMap}
+                          metalness={spec.type === 'metal' ? 0.7 : 0.0}
+                          roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
+                        />
+                        <Edges color="#2a2a2a" threshold={10} />
+                      </mesh>
+                      {/* Interior (flat, matte) */}
+                      <mesh geometry={makeDualEndPrism(width, wallVisualHeight, rise, wallThickness)}>
+                        <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                      </mesh>
+                    </group>
                   </>
                 )}
                 {roofType === 'mono' && rise > 0 && (
                   <>
                     {/* Right end (+X) high at -Z */}
-                    <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)} position={[length / 2, 0, 0]}>
-                      <meshStandardMaterial
-                        color={wallMatColor}
-                        map={wallLeftSet.map}
-                        normalMap={wallLeftSet.normalMap}
-                        roughnessMap={wallLeftSet.roughnessMap}
-                        metalness={spec.type === 'metal' ? 0.7 : 0.0}
-                        roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
-                      />
-                      <Edges color="#2a2a2a" threshold={10} />
-                    </mesh>
+                    <group position={[length / 2, 0, 0]}>
+                      {/* Exterior */}
+                      <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)}>
+                        <meshStandardMaterial
+                          color={wallMatColor}
+                          map={wallLeftSet.map}
+                          normalMap={wallLeftSet.normalMap}
+                          roughnessMap={wallLeftSet.roughnessMap}
+                          metalness={spec.type === 'metal' ? 0.7 : 0.0}
+                          roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
+                        />
+                        <Edges color="#2a2a2a" threshold={10} />
+                      </mesh>
+                      {/* Interior (flat, matte) */}
+                      <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)}>
+                        <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                      </mesh>
+                    </group>
                     {/* Left end (−X) high at -Z */}
-                    <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)} position={[-length / 2, 0, 0]}>
-                      <meshStandardMaterial
-                        color={wallMatColor}
-                        map={wallRightSet.map}
-                        normalMap={wallRightSet.normalMap}
-                        roughnessMap={wallRightSet.roughnessMap}
-                        metalness={spec.type === 'metal' ? 0.7 : 0.0}
-                        roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
-                      />
-                      <Edges color="#2a2a2a" threshold={10} />
-                    </mesh>
+                    <group position={[-length / 2, 0, 0]}>
+                      {/* Exterior */}
+                      <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)}>
+                        <meshStandardMaterial
+                          color={wallMatColor}
+                          map={wallRightSet.map}
+                          normalMap={wallRightSet.normalMap}
+                          roughnessMap={wallRightSet.roughnessMap}
+                          metalness={spec.type === 'metal' ? 0.7 : 0.0}
+                          roughness={spec.type === 'metal' ? 0.35 : spec.type === 'wood' ? 0.7 : spec.type === 'membrane' ? 0.85 : 0.5}
+                        />
+                        <Edges color="#2a2a2a" threshold={10} />
+                      </mesh>
+                      {/* Interior (flat, matte) */}
+                      <mesh geometry={makeMonoEndPrism(width, wallVisualHeight, rise, wallThickness, true)}>
+                        <meshStandardMaterial color={interiorColor} metalness={0} roughness={0.9} side={BackSide} />
+                      </mesh>
+                    </group>
                   </>
                 )}
 
@@ -480,7 +548,7 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`door-${doorWall}-${i}`} position={[x, sill + door.height / 2, zCenter]}>
                             <boxGeometry args={[door.width, door.height, depth]} />
-                            <meshStandardMaterial color="#9ec5ff" />
+                            <meshStandardMaterial color="#9ec5ff" side={DoubleSide} />
                           </mesh>
                         );
                         // Frame (4 sides)
@@ -489,25 +557,25 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`doorfL-${doorWall}-${i}`} position={[x - (door.width / 2 + ft / 2), yCenter, zCenter]}>
                             <boxGeometry args={[ft, door.height + ft * 2, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfR-${doorWall}-${i}`} position={[x + (door.width / 2 + ft / 2), yCenter, zCenter]}>
                             <boxGeometry args={[ft, door.height + ft * 2, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfT-${doorWall}-${i}`} position={[x, yCenter + (door.height / 2 + ft / 2), zCenter]}>
                             <boxGeometry args={[door.width + ft * 2, ft, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfB-${doorWall}-${i}`} position={[x, yCenter - (door.height / 2 + ft / 2), zCenter]}>
                             <boxGeometry args={[door.width + ft * 2, ft, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                       });
@@ -520,7 +588,7 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`door-${doorWall}-${i}`} position={[xCenter, sill + door.height / 2, z]}>
                             <boxGeometry args={[depth, door.height, door.width]} />
-                            <meshStandardMaterial color="#9ec5ff" />
+                            <meshStandardMaterial color="#9ec5ff" side={DoubleSide} />
                           </mesh>
                         );
                         // Frame (4 sides) for side wall door
@@ -529,25 +597,25 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`doorfL-${doorWall}-${i}`} position={[xCenter, yCenter, z - (door.width / 2 + ft / 2)]}>
                             <boxGeometry args={[frameDepth, door.height + ft * 2, ft]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfR-${doorWall}-${i}`} position={[xCenter, yCenter, z + (door.width / 2 + ft / 2)]}>
                             <boxGeometry args={[frameDepth, door.height + ft * 2, ft]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfT-${doorWall}-${i}`} position={[xCenter, yCenter + (door.height / 2 + ft / 2), z]}>
                             <boxGeometry args={[frameDepth, ft, door.width + ft * 2]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`doorfB-${doorWall}-${i}`} position={[xCenter, yCenter - (door.height / 2 + ft / 2), z]}>
                             <boxGeometry args={[frameDepth, ft, door.width + ft * 2]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                       });
@@ -575,7 +643,7 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`win-${wall}-${wi}-${i}`} position={[x, sill + win.height / 2, zCenter]}>
                             <boxGeometry args={[win.width, win.height, depth]} />
-                            <meshStandardMaterial color="#cfe7ff" />
+                            <meshStandardMaterial color="#cfe7ff" side={DoubleSide} />
                           </mesh>
                         );
                         const yCenter = sill + win.height / 2;
@@ -583,25 +651,25 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`winfL-${wall}-${wi}-${i}`} position={[x - (win.width / 2 + ft / 2), yCenter, zCenter]}>
                             <boxGeometry args={[ft, win.height + ft * 2, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfR-${wall}-${wi}-${i}`} position={[x + (win.width / 2 + ft / 2), yCenter, zCenter]}>
                             <boxGeometry args={[ft, win.height + ft * 2, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfT-${wall}-${wi}-${i}`} position={[x, yCenter + (win.height / 2 + ft / 2), zCenter]}>
                             <boxGeometry args={[win.width + ft * 2, ft, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfB-${wall}-${wi}-${i}`} position={[x, yCenter - (win.height / 2 + ft / 2), zCenter]}>
                             <boxGeometry args={[win.width + ft * 2, ft, frameDepth]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                       });
@@ -614,7 +682,7 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`win-${wall}-${wi}-${i}`} position={[xCenter, sill + win.height / 2, z]}>
                             <boxGeometry args={[depth, win.height, win.width]} />
-                            <meshStandardMaterial color="#cfe7ff" />
+                            <meshStandardMaterial color="#cfe7ff" side={DoubleSide} />
                           </mesh>
                         );
                         const yCenter = sill + win.height / 2;
@@ -622,25 +690,25 @@ function CabinScene(props: Cabin3DProps) {
                         positions.push(
                           <mesh key={`winfL-${wall}-${wi}-${i}`} position={[xCenter, yCenter, z - (win.width / 2 + ft / 2)]}>
                             <boxGeometry args={[frameDepth, win.height + ft * 2, ft]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfR-${wall}-${wi}-${i}`} position={[xCenter, yCenter, z + (win.width / 2 + ft / 2)]}>
                             <boxGeometry args={[frameDepth, win.height + ft * 2, ft]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfT-${wall}-${wi}-${i}`} position={[xCenter, yCenter + (win.height / 2 + ft / 2), z]}>
                             <boxGeometry args={[frameDepth, ft, win.width + ft * 2]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                         positions.push(
                           <mesh key={`winfB-${wall}-${wi}-${i}`} position={[xCenter, yCenter - (win.height / 2 + ft / 2), z]}>
                             <boxGeometry args={[frameDepth, ft, win.width + ft * 2]} />
-                            <meshStandardMaterial color={frameColor} roughness={0.6} />
+                            <meshStandardMaterial color={frameColor} roughness={0.6} side={DoubleSide} />
                           </mesh>
                         );
                       });
@@ -650,7 +718,7 @@ function CabinScene(props: Cabin3DProps) {
                 })()}
 
                 {/* Roof */}
-                <RoofGeom {...props} roofTex={roofSet as any} />
+                <RoofGeom {...props} roofTex={roofSet as any} roofMetalness={roofSpec.type === 'metal' ? 0.7 : 0.0} roofRoughness={roofSpec.type === 'metal' ? 0.35 : roofSpec.type === 'wood' ? 0.7 : roofSpec.type === 'ply' ? 0.65 : 0.5} />
               </group>
             );
           })()}
