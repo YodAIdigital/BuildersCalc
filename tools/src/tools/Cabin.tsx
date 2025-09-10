@@ -183,7 +183,7 @@ export default function Cabin() {
 
       const html = renderCabinEmailHTML(config, result, {
         title: 'Cabin Estimate',
-        logoCid: 'cabin-logo',
+        logoCid: logoBase64 ? 'cabin-logo' : undefined,
         businessName: 'Roots & Echo Ltd',
         phone: '021 180 1218',
         email: 'zeke@rootsandecho.co.nz',
@@ -270,17 +270,10 @@ export default function Cabin() {
         email: 'zeke@rootsandecho.co.nz',
       });
 
-      // Populate a persistent off-screen container for html2pdf rendering
+      // Populate the persistent off-screen container for html2pdf rendering
       if (!pdfRef.current) {
-        const node = document.createElement('div');
-        node.style.position = 'fixed';
-        node.style.left = '-10000px';
-        node.style.top = '0';
-        node.style.width = '800px';
-        node.style.background = '#ffffff';
-        node.style.color = '#0f172a';
-        document.body.appendChild(node);
-        pdfRef.current = node;
+        alert('PDF renderer not ready. Please reload and try again.');
+        return;
       }
       pdfRef.current.innerHTML = html;
 
@@ -690,7 +683,11 @@ export default function Cabin() {
       </p>
     {/* Off-screen container used for PDF rendering of the email HTML */}
     {/* Intentionally kept attached to document for stability during html2pdf capture */}
-    <div aria-hidden="true" ref={pdfRef as any} />
+    <div
+      aria-hidden="true"
+      ref={pdfRef as any}
+      style={{ position: 'fixed', left: '-10000px', top: 0, width: '800px', background: '#ffffff', color: '#0f172a' }}
+    />
     </section>
   );
 }

@@ -12,7 +12,7 @@ export type SafeAttachment = {
   cid?: string;
 };
 
-const ALLOWED_TYPES = new Set(['image/png', 'application/pdf']);
+const ALLOWED_TYPES = new Set(['image/png', 'image/jpeg', 'application/pdf']);
 
 function sanitizeFilename(s: string | undefined): string {
   const base = (s || 'attachment').replace(/[\r\n]+/g, '').slice(0, 64);
