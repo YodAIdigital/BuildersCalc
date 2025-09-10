@@ -76,6 +76,46 @@ app.put('/api/settings', smallJson, async (req, res) => {
   res.status(204).end();
 });
 
+// Render HTML to PDF (server-side) for reliable PDF generation
+app.post('/api/render-pdf', largeJson, async (req, res) => {
+  try {
+    const body = req.body as any;
+    const html = typeof body?.html === 'string' ? body.html : '';
+    if (!html || html.length > 500_000) return res.status(400).json({ error: 'Invalid html' });
+
+    let puppeteer: any;
+    try {
+      puppeteer = await import('puppeteer');
+    } catch {
+      return res.status(501).json({ error: 'PDF rendering not available on server (puppeteer not installed).' });
+    }
+
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ],
+    });
+    try {
+      const page = await browser.newPage();
+      // Wrap into full document to avoid quirks
+      const fullHtml = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><style>html,body{margin:0;padding:16px;background:#fff;color:#0f172a;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;font-size:14px;}</style></head><body>${html}</body></html>`;
+      await page.setContent(fullHtml, { waitUntil: ['domcontentloaded','networkidle0'] });
+      const pdfBuffer: Buffer = await page.pdf({ format: 'A4', printBackground: true, margin: { top: '10mm', right: '10mm', bottom: '10mm', left: '10mm' } });
+      await page.close();
+      const b64 = pdfBuffer.toString('base64');
+      res.status(200).json({ contentBase64: b64, contentType: 'application/pdf' });
+    } finally {
+      await browser.close();
+    }
+  } catch {
+    return res.status(500).json({ error: 'Failed to render PDF' });
+  }
+});
+
 // Email a cabin quote
 app.post('/api/email-cabin', largeJson, async (req, res) => {
   try {
@@ -109,6 +149,12 @@ app.post('/api/email-cabin', largeJson, async (req, res) => {
     const safeAttachments = validateAttachments(attachments, { maxBytes });
 
     const { sendEmail } = await import('./email.js');
+
+    // Basic metadata logging for troubleshooting (no content logged)
+    try {
+      // eslint-disable-next-line no-console
+      console.log('[email-cabin] to=%s subject=%s attachments=%o', to, subject, safeAttachments.map(a => ({ filename: a.filename, contentType: a.contentType, cid: a.cid, size: a.content?.length })));
+    } catch {}
 
     await sendEmail({
       to,

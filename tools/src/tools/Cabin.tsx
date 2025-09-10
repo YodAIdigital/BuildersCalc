@@ -240,8 +240,13 @@ export default function Cabin() {
   }
 
   async function getLogoDataUri(): Promise<string | undefined> {
-    // Try /assets/logo.png then /tools/logo.png; embed as base64 for email reliability
-    const tryPaths = ['/assets/logo.png', '/tools/logo.png'];
+    // Try multiple common logo locations and formats
+    const tryPaths = [
+      '/assets/logo.png', '/tools/logo.png',
+      '/assets/logo.jpg', '/tools/logo.jpg',
+      '/assets/logo.jpeg', '/tools/logo.jpeg',
+      '/assets/logo.svg', '/tools/logo.svg',
+    ];
     for (const p of tryPaths) {
       try {
         const resp = await fetch(p, { cache: 'no-store' });
@@ -277,6 +282,30 @@ export default function Cabin() {
       }
       pdfRef.current.innerHTML = html;
 
+      // Prefer server-side PDF rendering if available (more reliable on some browsers)
+      try {
+        const resp = await fetch('/api/render-pdf', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html }) });
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data?.contentBase64) {
+            const b64 = data.contentBase64 as string;
+            const payload: any = {
+              to: emailTo,
+              subject: 'Cabin Estimate',
+              html,
+              attachments: [
+                { filename: 'cabin-estimate.pdf', contentBase64: b64, contentType: 'application/pdf' },
+              ],
+            };
+            const res = await fetch(EMAIL_API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!res.ok) throw new Error('Failed to email');
+            alert('Email sent');
+            return;
+          }
+        }
+      } catch { /* fallthrough to client-side */ }
+
+      // Client-side fallback
       const html2pdf = (await import('html2pdf.js')).default;
       const opt = {
         margin: 10,
@@ -286,7 +315,7 @@ export default function Cabin() {
         pagebreak: { mode: ['css', 'legacy'] },
       } as any;
 
-      const worker = html2pdf().set(opt).from(pdfRef.current).toPdf();
+      const worker = html2pdf().set(opt).from(html).toPdf();
       const pdf = await worker.get('pdf');
       const blob: Blob = pdf.output('blob');
       const b64 = await blobToBase64(blob);
