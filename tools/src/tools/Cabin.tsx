@@ -354,7 +354,7 @@ export default function Cabin() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* 3D */}
-        <div className="rounded-md border bg-white">
+        <div className="rounded-md border surface-card">
           <div className="p-2 border-b text-sm font-semibold">3D Preview</div>
           <div className="h-[360px]">
             <Cabin3D
@@ -386,7 +386,7 @@ export default function Cabin() {
               {/* Rotation (left, fixed width) */}
               <label className="block w-[320px] max-w-full">
                 <span className="text-sm">Model rotation (°)</span>
-                <input className="mt-1 w-full rounded-md border p-2" type="range" min={-180} max={180} step={1} value={rotationDeg} onChange={(e) => setRotationDeg(e.target.value)} />
+                <input className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="range" min={-180} max={180} step={1} value={rotationDeg} onChange={(e) => setRotationDeg(e.target.value)} />
               </label>
 
               {/* Move pad (center, fixed) */}
@@ -408,14 +408,14 @@ export default function Cabin() {
               {/* Zoom (right, fixed width) */}
               <label className="block w-[320px] max-w-full">
                 <span className="text-sm">Zoom</span>
-                <input className="mt-1 w-full rounded-md border p-2" type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={(e)=>setZoom(parseFloat(e.target.value)||1)} />
+                <input className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="range" min={0.5} max={2} step={0.05} value={zoom} onChange={(e)=>setZoom(parseFloat(e.target.value)||1)} />
               </label>
             </div>
             {/* Row 2: wall + roof colours */}
             <div className="flex items-end gap-3">
               <label className="block min-w-[220px] flex-1">
                 <span className="text-sm">Wall colour (COLORSTEEL)</span>
-                <select className="mt-1 w-full rounded-md border p-2" value={wallColourKey} onChange={(e)=>setWallColourKey(e.target.value)}>
+                <select className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={wallColourKey} onChange={(e)=>setWallColourKey(e.target.value)}>
                   {COLORSTEEL_ENTRIES.map(([k])=> (
                     <option key={k} value={k}>{k}</option>
                   ))}
@@ -423,7 +423,7 @@ export default function Cabin() {
               </label>
               <label className="block min-w-[220px] flex-1">
                 <span className="text-sm">Roof colour (COLORSTEEL)</span>
-                <select className="mt-1 w-full rounded-md border p-2" value={roofColourKey} onChange={(e)=>setRoofColourKey(e.target.value)}>
+                <select className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={roofColourKey} onChange={(e)=>setRoofColourKey(e.target.value)}>
                   {COLORSTEEL_ENTRIES.map(([k])=> (
                     <option key={k} value={k}>{k}</option>
                   ))}
@@ -434,7 +434,7 @@ export default function Cabin() {
             <div className="flex items-end gap-3">
               <label className="block min-w-[220px] flex-1">
                 <span className="text-sm">Frame colour (COLORSTEEL)</span>
-                <select className="mt-1 w-full rounded-md border p-2" value={frameColourKey} onChange={(e)=>setFrameColourKey(e.target.value)}>
+                <select className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={frameColourKey} onChange={(e)=>setFrameColourKey(e.target.value)}>
                   {COLORSTEEL_ENTRIES.map(([k])=> (
                     <option key={k} value={k}>{k}</option>
                   ))}
@@ -444,7 +444,7 @@ export default function Cabin() {
                 <span className="text-sm">Interior wall colour</span>
                 <div className="mt-1 flex items-center gap-2">
                   <input type="color" className="h-9 w-10 cursor-pointer" value={interiorColour} onChange={(e)=>setInteriorColour(e.target.value)} />
-                  <input className="flex-1 rounded-md border p-2" value={interiorColour} onChange={(e)=>setInteriorColour(e.target.value)} />
+                  <input className="flex-1 rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={interiorColour} onChange={(e)=>setInteriorColour(e.target.value)} />
                 </div>
               </label>
             </div>
@@ -465,7 +465,7 @@ export default function Cabin() {
               <select
                 value={roofType}
                 onChange={(e) => setRoofType(e.target.value as any)}
-                className="mt-1 w-full rounded-md border p-2"
+                className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600"
               >
                 <option value="flat">Flat</option>
                 <option value="mono">Mono Pitch</option>
@@ -505,10 +505,10 @@ export default function Cabin() {
                 <div className="space-y-2 mt-1">
                   {doors.map((d, i) => (
                     <div key={i} className="grid grid-cols-4 gap-2 items-end">
-                      <input className="rounded-md border p-2" type="number" value={d.count} onChange={(e) => updDoor(i, 'count', e.target.value)} placeholder="Count" />
-                      <input className="rounded-md border p-2" type="number" value={d.width} onChange={(e) => updDoor(i, 'width', e.target.value)} placeholder="Width" />
-                      <input className="rounded-md border p-2" type="number" value={d.height} onChange={(e) => updDoor(i, 'height', e.target.value)} placeholder="Height" />
-                      <select className="rounded-md border p-2" value={doorWall} onChange={(e) => setDoorWall(e.target.value as any)}>
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={d.count} onChange={(e) => updDoor(i, 'count', e.target.value)} placeholder="Count" />
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={d.width} onChange={(e) => updDoor(i, 'width', e.target.value)} placeholder="Width" />
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={d.height} onChange={(e) => updDoor(i, 'height', e.target.value)} placeholder="Height" />
+                      <select className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={doorWall} onChange={(e) => setDoorWall(e.target.value as any)}>
                         <option value="front">Front (+Z)</option>
                         <option value="back">Back (−Z)</option>
                         <option value="left">Left (−X)</option>
@@ -524,10 +524,10 @@ export default function Cabin() {
                 <div className="space-y-2 mt-1">
                   {windows.map((w, i) => (
                     <div key={i} className="grid grid-cols-4 gap-2 items-end">
-                      <input className="rounded-md border p-2" type="number" value={w.count} onChange={(e) => updWindow(i, 'count', e.target.value)} placeholder="Count" />
-                      <input className="rounded-md border p-2" type="number" value={w.width} onChange={(e) => updWindow(i, 'width', e.target.value)} placeholder="Width" />
-                      <input className="rounded-md border p-2" type="number" value={w.height} onChange={(e) => updWindow(i, 'height', e.target.value)} placeholder="Height" />
-                      <select className="rounded-md border p-2" value={w.wall} onChange={(e) => updWindow(i, 'wall', e.target.value)}>
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={w.count} onChange={(e) => updWindow(i, 'count', e.target.value)} placeholder="Count" />
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={w.width} onChange={(e) => updWindow(i, 'width', e.target.value)} placeholder="Width" />
+                      <input className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={w.height} onChange={(e) => updWindow(i, 'height', e.target.value)} placeholder="Height" />
+                      <select className="rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" value={w.wall} onChange={(e) => updWindow(i, 'wall', e.target.value)}>
                         <option value="front">Front (+Z)</option>
                         <option value="back">Back (−Z)</option>
                         <option value="left">Left (−X)</option>
@@ -544,7 +544,7 @@ export default function Cabin() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <label className="block">
               <span className="text-sm">Exterior cladding</span>
-              <select value={exteriorCladding} onChange={(e) => setExteriorCladding(e.target.value)} className="mt-1 w-full rounded-md border p-2">
+              <select value={exteriorCladding} onChange={(e) => setExteriorCladding(e.target.value)} className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600">
                 <option value="ply">Ply</option>
                 <option value="corrugate">Corrugate</option>
                 <option value="tray">Tray (longrun)</option>
@@ -556,7 +556,7 @@ export default function Cabin() {
             </label>
             <label className="block">
               <span className="text-sm">Roofing material</span>
-              <select value={roofCladding} onChange={(e) => setRoofCladding(e.target.value)} className="mt-1 w-full rounded-md border p-2">
+              <select value={roofCladding} onChange={(e) => setRoofCladding(e.target.value)} className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600">
                 <option value="ply">Ply</option>
                 <option value="corrugate">Corrugate</option>
                 <option value="tray">Tray (longrun)</option>
@@ -566,7 +566,7 @@ export default function Cabin() {
             </label>
             <label className="block">
               <span className="text-sm">Internal lining</span>
-              <select value={lining} onChange={(e) => setLining(e.target.value as any)} className="mt-1 w-full rounded-md border p-2">
+              <select value={lining} onChange={(e) => setLining(e.target.value as any)} className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600">
                 <option value="none">None</option>
                 <option value="ply">Ply</option>
                 <option value="gib">GIB</option>
@@ -610,7 +610,7 @@ export default function Cabin() {
       </div>
 
       {/* Results */}
-      <div className="rounded-md border bg-white p-4">
+      <div className="rounded-md border surface-card p-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-semibold">Materials & Costs</h3>
           <div className="flex items-center gap-2">
@@ -633,7 +633,7 @@ export default function Cabin() {
             </thead>
             <tbody>
               {result.items.map((it, i) => (
-                <tr key={i} className="odd:bg-slate-50">
+                <tr key={i} className="odd:bg-slate-900/40 even:bg-slate-900/20">
                   <td className="p-2">{it.category}</td>
                   <td className="p-2">{it.name}</td>
                   <td className="p-2">{it.unit}</td>
@@ -667,7 +667,7 @@ export default function Cabin() {
           <label className="block w-full sm:w-auto">
             <span className="text-sm mr-2">Email quote to</span>
             <input
-              className="mt-1 w-full sm:w-64 rounded-md border p-2"
+              className="mt-1 w-full sm:w-64 rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600"
               value={emailTo}
               onChange={(e) => setEmailTo(e.target.value)}
               placeholder="name@example.com"
@@ -725,7 +725,7 @@ function LabeledInput({ label, value, onChange, disabled }: { label: string; val
   return (
     <label className="block">
       <span className="text-sm">{label}</span>
-      <input className="mt-1 w-full rounded-md border p-2" type="number" value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />
+      <input className="mt-1 w-full rounded-md border p-2 bg-slate-800 text-slate-100 border-slate-600" type="number" value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} />
     </label>
   );
 }

@@ -152,7 +152,7 @@ export default function FramingFoundation() {
           </div>
           <div className="space-y-3">
             {walls.map((w, i) => (
-              <div key={i} className="rounded-md border bg-white p-3">
+              <div key={i} className="rounded-md border bg-slate-600 p-3">
                 <div className="flex items-end gap-3">
                   <label className="block flex-1">
                     <span className="text-sm">Wall Length (mm)</span>
@@ -247,7 +247,7 @@ export default function FramingFoundation() {
         </div>
       )}
 
-      <div className="rounded-md border bg-white p-4">
+      <div className="card-panel p-4">
         <h3 className="font-semibold mb-2">Quantities & Cost Estimate</h3>
         <div className="grid grid-cols-2 gap-2 text-sm">
           <div>Total Area:</div>
@@ -270,7 +270,7 @@ export default function FramingFoundation() {
               <div className="font-semibold text-pink-700">{result.pileCount}</div>
             </>
           )}
-          <div className="col-span-2 my-2 border-t"></div>
+          <div className="col-span-2 my-2 border-t border-slate-500"></div>
           <div>Timber Cost:</div>
           <div className="font-semibold text-pink-700">${result.costs.timberCost}</div>
           {application === 'wall' && result.costs.openingFramingCost > 0 && (
@@ -305,7 +305,7 @@ export default function FramingFoundation() {
               <div className="font-semibold text-pink-700">${result.costs.paintCost}</div>
             </>
           )}
-          <div className="col-span-2 my-2 border-t"></div>
+          <div className="col-span-2 my-2 border-t border-slate-500"></div>
           <div className="font-semibold">Total Estimated Cost:</div>
           <div className="font-bold">${result.costs.grandTotal}</div>
         </div>

@@ -13,8 +13,8 @@ export default function Layout() {
     ['/gst', 'GST'],
   ];
   return (
-    <div className="min-h-dvh flex flex-col">
-      <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
+    <div className="tools-shell app-gradient min-h-dvh flex flex-col">
+      <header className="tools-header">
         <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
           <Link to="/" className="flex items-center gap-2">
             {/* Prefer the main site logo from /assets, fall back to the tools PWA icon if not available */}
@@ -38,7 +38,7 @@ export default function Layout() {
           {/* Mobile menu toggle */}
           <button
             type="button"
-            className="ml-auto inline-flex items-center justify-center rounded-md p-2 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 lg:hidden"
+            className="ml-auto inline-flex items-center justify-center rounded-md p-2 text-cyan-100 hover:bg-[#083848]/80 focus:outline-none focus:ring-2 focus:ring-[#5B2A86] lg:hidden"
             aria-expanded={mobileOpen}
             aria-controls="tools-mobile-nav"
             aria-label="Toggle navigation"
@@ -57,7 +57,7 @@ export default function Layout() {
                 title={to === '/settings' ? 'Settings' : typeof label === 'string' ? label : undefined}
                 aria-label={to === '/settings' ? 'Settings' : undefined}
                 className={({ isActive }) =>
-                  `rounded-md px-2 py-1 hover:bg-slate-100 ${isActive ? 'bg-slate-200 font-semibold' : ''}`
+                  `nav-pill ${isActive ? 'nav-pill--active' : ''}`
                 }
               >
                 {label}
@@ -66,7 +66,7 @@ export default function Layout() {
           </nav>
         </div>
         {/* Mobile navigation panel */}
-        <div id="tools-mobile-nav" className={`lg:hidden ${mobileOpen ? '' : 'hidden'} border-t bg-white`}>
+        <div id="tools-mobile-nav" className={`lg:hidden ${mobileOpen ? '' : 'hidden'} border-t border-[#0d3949] bg-[#03242f]/95 backdrop-blur`}>
           <div className="mx-auto max-w-6xl px-4 py-2 flex flex-col gap-1">
             {links.map(([to, label]) => (
               <NavLink
@@ -75,7 +75,7 @@ export default function Layout() {
                 end={to === '/'}
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `block rounded-md px-2 py-2 text-sm hover:bg-slate-100 ${isActive ? 'bg-slate-200 font-semibold' : ''}`
+                  `block rounded-md px-2 py-2 text-sm nav-pill nav-pill--mobile ${isActive ? 'nav-pill--active' : ''}`
                 }
               >
                 {label}
@@ -84,17 +84,19 @@ export default function Layout() {
           </div>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-        <Outlet />
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-12">
+        <div className="glass-panel rounded-[2rem] border border-[rgba(34,104,121,0.35)] px-5 py-6 shadow-[0_35px_80px_-60px_rgba(3,15,23,0.9)] sm:px-8 sm:py-8">
+          <Outlet />
+        </div>
       </main>
-      <footer className="border-t bg-white">
+      <footer className="tools-footer">
         <div className="mx-auto max-w-6xl px-4 py-4 text-sm flex items-center justify-between">
-          <span>© {new Date().getFullYear()} Roots & Echo Ltd</span>
+          <span className="text-cyan-200">© {new Date().getFullYear()} Roots & Echo Ltd</span>
           <div className="flex items-center gap-3">
             <Link
               to="/settings"
               aria-label="Settings"
-              className="inline-flex items-center justify-center rounded-md px-1 pt-0.5 pb-1 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="inline-flex items-center justify-center rounded-md px-1 pt-0.5 pb-1 text-cyan-100 hover:bg-[#083848]/80 hover:text-[#C2B7FF] focus:outline-none focus:ring-2 focus:ring-[#5B2A86]"
             >
               <span
                 className="material-symbols-outlined text-current text-sm leading-none align-text-bottom relative top-[1px]"
@@ -103,7 +105,7 @@ export default function Layout() {
                 settings
               </span>
             </Link>
-            <a href="/" className="text-pink-700 hover:underline">
+            <a href="/" className="text-[#B547A0] hover:text-[#D164C1] hover:underline">
               Back to homepage
             </a>
           </div>

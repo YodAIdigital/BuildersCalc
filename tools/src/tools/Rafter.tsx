@@ -49,13 +49,13 @@ export default function Rafter() {
             <h3 className="font-semibold mb-2 text-sm">Results</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>Common Rafter Length:</div>
-              <div className="font-semibold text-pink-700">{r.common} mm</div>
+              <div className="font-semibold text-[#B547A0]">{r.common} mm</div>
               <div>Total Rafter Length:</div>
-              <div className="font-semibold text-pink-700">{r.total} mm</div>
+              <div className="font-semibold text-[#B547A0]">{r.total} mm</div>
               <div>Plumb Cut Angle:</div>
-              <div className="font-semibold text-pink-700">{r.plumb}°</div>
+              <div className="font-semibold text-[#B547A0]">{r.plumb}°</div>
               <div>Birdsmouth Cut Angle:</div>
-              <div className="font-semibold text-pink-700">{r.birdsmouth}°</div>
+              <div className="font-semibold text-[#B547A0]">{r.birdsmouth}°</div>
             </div>
           </div>
         </div>
@@ -63,3 +63,4 @@ export default function Rafter() {
     </section>
   );
 }
+

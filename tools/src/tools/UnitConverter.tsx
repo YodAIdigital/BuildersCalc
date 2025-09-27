@@ -38,6 +38,13 @@ import {
   toIn,
 } from '../lib/build';
 
+const panelClasses =
+  'card-panel rounded-3xl px-5 py-6 shadow-[0_32px_72px_-55px_rgba(2,12,18,0.88)]';
+const inputClasses =
+  'mt-1 w-full rounded-xl border border-white/10 bg-white/12 px-3 py-2 text-sm text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] placeholder:text-cyan-200/60 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,118,233,0.45)] focus-visible:border-[rgba(142,118,233,0.45)]';
+const selectClasses = `${inputClasses} pr-9`;
+const labelTextClass = 'text-sm text-cyan-100';
+
 export default function UnitConverter() {
   const [mm, setMm] = React.useState('');
   const [m, setM] = React.useState('');
@@ -128,7 +135,7 @@ export default function UnitConverter() {
         {/* Left column stack */}
         <div data-testid="unit-fields-panel" className="space-y-4">
           {/* Length */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Length</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label className="block">
@@ -171,7 +178,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Area */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Area</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <label className="block">
@@ -222,7 +229,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Volume + Bags */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Volume & Premix Bags</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <label className="block">
@@ -266,14 +273,14 @@ export default function UnitConverter() {
             </div>
             <div className="mt-2 text-sm">
               <span className="text-slate-600">Bags needed: </span>
-              <span className="font-semibold text-pink-700">
+              <span className="font-semibold text-[#B547A0]">
                 {bagsNeeded(parseFloat(volM3) || 0, parseFloat(bagYieldM3) || 0)}
               </span>
             </div>
           </div>
 
           {/* Scale */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Drawing Scale</h3>
             <div className="grid grid-cols-3 gap-3 items-end text-sm">
               <label className="block">
@@ -331,7 +338,7 @@ export default function UnitConverter() {
         {/* Right column stack */}
         <div className="space-y-4" data-testid="screw-conversions-panel">
           {/* Diameter (Screws/Nuts) */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Diameter (Screws/Nuts)</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
               <label className="block">
@@ -345,7 +352,7 @@ export default function UnitConverter() {
               </label>
               <div>
                 <div className="text-sm text-slate-600">Fractional Inches (approx)</div>
-                <div className="text-lg font-semibold text-pink-700">
+                <div className="text-lg font-semibold text-[#B547A0]">
                   {decimalToFractionInches((parseFloat(diaMm) || 0) / 25.4)}
                 </div>
               </div>
@@ -353,7 +360,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Drainage fall */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Drainage Fall</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <label className="block text-sm">
@@ -405,7 +412,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Screw gauge and pilot */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Screw Gauge ↔ mm + Pilot</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm items-end">
               <label className="block">
@@ -454,7 +461,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Threads: metric pitch ↔ TPI + UNC/UNF */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Threads: Metric ↔ TPI</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
               <label className="block">
@@ -511,7 +518,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Drill mapping */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Drill Size Mapping</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm items-end">
               <label className="block">
@@ -561,7 +568,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Timber nominal ↔ actual */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Timber/Lumber: Nominal ↔ Actual</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm items-end">
               <label className="block">
@@ -618,7 +625,7 @@ export default function UnitConverter() {
           </div>
 
           {/* Sheet effective cover */}
-          <div className="rounded-md border bg-white p-4">
+          <div className="card-panel p-4">
             <h3 className="font-semibold mb-2">Sheet Effective Cover</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
               <label className="block">
@@ -649,7 +656,7 @@ export default function UnitConverter() {
                 return (
                   <div>
                     Effective cover: <span className="font-semibold">{effective > 0 ? effective.toFixed(1) : '—'} mm</span><br />
-                    Sheets needed: <span className="font-semibold text-pink-700">{count}</span>
+                    Sheets needed: <span className="font-semibold text-[#B547A0]">{count}</span>
                   </div>
                 );
               })()}
@@ -660,3 +667,4 @@ export default function UnitConverter() {
     </section>
   );
 }
+

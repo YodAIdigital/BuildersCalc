@@ -161,7 +161,7 @@ export default function Trigonometry() {
             </label>
           </div>
           {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
-          <div className="bg-white rounded-md border p-3 mt-3">
+          <div className="card-panel p-3 mt-3">
             <h3 className="font-semibold mb-2 text-sm">Results</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>Side A:</div>

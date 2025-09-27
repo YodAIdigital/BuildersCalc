@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Roots & Echo Ltd — Central Otago Custom Cabins | Cromwell & Queenstown</title>
   <meta name="description" content="Handcrafted custom cabins built locally in Cromwell and Queenstown. Warm, energy-smart designs for Central Otago life. Call Zeke 021 180 1218." />
-  <meta name="theme-color" content="#0f172a" />
+  <meta name="theme-color" content="#021b27" />
   <meta property="og:title" content="Roots & Echo Ltd — Central Otago Custom Cabins" />
   <meta property="og:description" content="Handcrafted custom cabins in Cromwell & Queenstown. Built for Central Otago life. Call Zeke 021 180 1218." />
   <meta property="og:type" content="website" />
@@ -16,7 +16,49 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;600&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
+    :root {
+      color-scheme: dark;
+    }
+    body {
+      background: radial-gradient(120% 120% at 50% -20%, #0d4f63 0%, #063645 45%, #021520 100%);
+      background-attachment: fixed;
+    }
     .section-offset { scroll-margin-top: 6rem; }
+    .glass-panel {
+      background: linear-gradient(135deg, rgba(11, 60, 74, 0.72), rgba(4, 24, 32, 0.72));
+      border: 1px solid rgba(34, 104, 121, 0.35);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 35px 80px -60px rgba(3, 15, 23, 0.9);
+    }
+    .glass-panel-soft {
+      background: linear-gradient(145deg, rgba(6, 42, 52, 0.7), rgba(3, 22, 29, 0.68));
+      border: 1px solid rgba(32, 96, 112, 0.28);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 30px 60px -55px rgba(2, 12, 18, 0.85);
+    }
+    .gradient-veil {
+      background: linear-gradient(145deg, rgba(3, 30, 38, 0.93), rgba(3, 22, 30, 0.88));
+    }
+    .accent-button {
+      background-color: #5B2A86;
+      color: #ffffff;
+      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .accent-button:hover {
+      background-color: #4A2170;
+      transform: translateY(-1px);
+    }
+    .accent-button:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(142, 118, 233, 0.45);
+    }
+    .accent-link {
+      color: #9F8CFF;
+      transition: color 0.2s ease;
+    }
+    .accent-link:hover {
+      color: #C2B7FF;
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -31,227 +73,255 @@
   }
   </script>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased">
-  <header class="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+<body class="min-h-screen text-cyan-50 antialiased">
+  <header class="sticky top-0 z-50 border-b border-[#0d3949] bg-[#031d26]/80 backdrop-blur">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
-        <a href="#home" class="flex items-center gap-3 font-bold text-slate-900">
+        <a href="#home" class="flex items-center gap-3 font-bold text-cyan-50">
           <img src="./assets/logo.png" alt="Roots & Echo Ltd logo" width="40" height="40" decoding="async" fetchpriority="high" class="h-10 w-auto select-none" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='./tools/public/logo.png';}else{this.style.display='none';this.nextElementSibling.classList.remove('sr-only');}">
           <span class="sr-only">Roots & Echo Ltd</span>
         </a>
-        <button id="mobile-toggle" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-600" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
+        <button id="mobile-toggle" class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-cyan-100 transition hover:bg-[#083848]/80 focus:outline-none focus:ring-2 focus:ring-[#5B2A86]" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation">
           <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
         <nav id="primary-nav" class="hidden lg:flex items-center gap-6">
-          <a href="#about" class="nav-link text-sm font-medium text-slate-700 hover:text-amber-700">About</a>
-          <a href="#gallery" class="nav-link text-sm font-medium text-slate-700 hover:text-amber-700">Gallery</a>
-          <a href="#testimonials" class="nav-link text-sm font-medium text-slate-700 hover:text-amber-700">Testimonials</a>
-          <a href="#faqs" class="nav-link text-sm font-medium text-slate-700 hover:text-amber-700">FAQs</a>
-          <a href="#contact" class="nav-link text-sm font-medium text-slate-700 hover:text-amber-700">Contact</a>
-          <a href="tel:0211801218" class="hidden sm:inline-flex items-center gap-2 rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-600">
+          <a href="#about" class="nav-link text-sm font-medium text-cyan-100 transition-colors duration-200 hover:text-[#C2B7FF]">About</a>
+          <a href="#gallery" class="nav-link text-sm font-medium text-cyan-100 transition-colors duration-200 hover:text-[#C2B7FF]">Gallery</a>
+          <a href="#testimonials" class="nav-link text-sm font-medium text-cyan-100 transition-colors duration-200 hover:text-[#C2B7FF]">Testimonials</a>
+          <a href="#faqs" class="nav-link text-sm font-medium text-cyan-100 transition-colors duration-200 hover:text-[#C2B7FF]">FAQs</a>
+          <a href="#contact" class="nav-link text-sm font-medium text-cyan-100 transition-colors duration-200 hover:text-[#C2B7FF]">Contact</a>
+          <a href="tel:0211801218" class="hidden sm:inline-flex items-center gap-2 rounded-md accent-button px-3 py-2 text-sm font-semibold shadow-lg">
             <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.53 15.53 0 006.59 6.59l2.2-2.2a1 1 0 011.01-.24 12.35 12.35 0 003.88.62 1 1 0 011 1V20a1 1 0 01-1 1C10.07 21 3 13.93 3 5a1 1 0 011-1h2.44a1 1 0 011 1 12.35 12.35 0 00.62 3.88 1 1 0 01-.24 1.01l-2.2 2.2z"/></svg>
             Call Zeke 021 180 1218
           </a>
         </nav>
       </div>
     </div>
-    <div id="mobile-panel" class="lg:hidden hidden border-t border-slate-200 bg-white">
-      <div class="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-2">
-        <a href="#about" class="nav-link block py-2">About</a>
-        <a href="#gallery" class="nav-link block py-2">Gallery</a>
-        <a href="#testimonials" class="nav-link block py-2">Testimonials</a>
-        <a href="#faqs" class="nav-link block py-2">FAQs</a>
-        <a href="#contact" class="nav-link block py-2">Contact</a>
-        <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white shadow hover:bg-amber-700">Call Zeke 021 180 1218</a>
+    <div id="mobile-panel" class="lg:hidden hidden border-t border-[#0d3949] bg-[#03242f]/95 backdrop-blur">
+      <div class="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-2 text-cyan-100">
+        <a href="#about" class="nav-link block py-2 transition hover:text-[#C2B7FF]">About</a>
+        <a href="#gallery" class="nav-link block py-2 transition hover:text-[#C2B7FF]">Gallery</a>
+        <a href="#testimonials" class="nav-link block py-2 transition hover:text-[#C2B7FF]">Testimonials</a>
+        <a href="#faqs" class="nav-link block py-2 transition hover:text-[#C2B7FF]">FAQs</a>
+        <a href="#contact" class="nav-link block py-2 transition hover:text-[#C2B7FF]">Contact</a>
+        <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md accent-button px-3 py-2 text-sm font-semibold shadow-lg">Call Zeke 021 180 1218</a>
       </div>
     </div>
   </header>
   <main id="home">
-    <section class="relative overflow-hidden bg-slate-900">
-      <img src="./assets/customcabins.jpg" alt="Warm timber cabin in Central Otago landscape" class="absolute inset-0 h-full w-full object-cover opacity-50">
-      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
-        <div class="max-w-2xl">
-          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white">Handcrafted Custom Cabins, Built for Central Otago Life</h1>
-          <p class="mt-4 text-lg text-slate-100">Locally built in Cromwell and Queenstown with warm, energy-smart materials and friendly service from first sketch to delivery.</p>
+    <section class="relative overflow-hidden gradient-veil">
+      <video autoplay loop muted playsinline class="absolute inset-0 h-full w-full object-cover opacity-25">
+        <source src="./assets/Logo_Glitch_Video.mp4" type="video/mp4">
+        <img src="./assets/customcabins.jpg" alt="Warm timber cabin in Central Otago landscape" class="absolute inset-0 h-full w-full object-cover opacity-40">
+      </video>
+      <div class="absolute inset-0 bg-gradient-to-b from-[#031b25]/95 via-transparent to-[#010d13]"></div>
+      <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 sm:py-28">
+        <div class="max-w-2xl glass-panel rounded-3xl px-8 py-10 sm:px-10 sm:py-12">
+          <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-[#F2FBFF]">Handcrafted Custom Cabins, Built for Central Otago Life</h1>
+          <p class="mt-4 text-lg text-cyan-100">Locally built in Cromwell and Queenstown with warm, energy-smart materials and friendly service from first sketch to delivery.</p>
           <div class="mt-8 flex flex-col sm:flex-row gap-3">
-            <a href="#contact" class="inline-flex items-center justify-center rounded-md bg-amber-600 px-5 py-3 text-base font-semibold text-white shadow hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500">Get a quote</a>
-            <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md bg-white/10 px-5 py-3 text-base font-semibold text-white ring-1 ring-white/50 hover:bg-white/20">Call Zeke 021 180 1218</a>
+            <a href="#contact" class="inline-flex items-center justify-center rounded-md accent-button px-5 py-3 text-base font-semibold shadow-lg">Get a quote</a>
+            <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md border border-[#2a6d80]/70 bg-white/10 px-5 py-3 text-base font-semibold text-cyan-50 shadow-lg backdrop-blur transition hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-[#2b6f83]">Call Zeke 021 180 1218</a>
           </div>
         </div>
       </div>
     </section>
-    <section id="about" class="section-offset mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <div class="grid lg:grid-cols-2 gap-10 items-center">
-        <div class="order-2 lg:order-1">
-          <h2 class="text-3xl font-bold text-slate-900">Built by locals who love the high country</h2>
-          <p class="mt-4 text-slate-700">We craft warm, durable cabins for Central Otago conditions — from quiet Cromwell backyards to Queenstown lakesides. Every build is custom: sizes, cladding, insulation, off-grid options, and beautiful finishes that feel like home.</p>
-          <ul class="mt-6 space-y-3">
-            <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-amber-600 text-white flex items-center justify-center">✓</span><span>Custom layouts from 10–30m²: studios, sleepouts, and tiny homes.</span></li>
-            <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-amber-600 text-white flex items-center justify-center">✓</span><span>Energy-smart: double glazing, insulation options, and low-maintenance cladding.</span></li>
-            <li class="flex items-start gap-3"><span class="mt-1 h-5 w-5 rounded-full bg-amber-600 text-white flex items-center justify-center">✓</span><span>Friendly build process: clear pricing, regular updates, on-time delivery.</span></li>
-          </ul>
-        </div>
-        <div class="order-1 lg:order-2">
-          <img src="./assets/overview.jpg" alt="Cabin exterior overview" class="rounded-xl shadow-lg ring-1 ring-slate-900/10">
-        </div>
-      </div>
-    </section>
-    <section id="gallery" class="section-offset bg-white py-16">
+    <section id="about" class="section-offset py-16">
       <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="flex items-end justify-between gap-4">
-          <h2 class="text-3xl font-bold text-slate-900">Gallery</h2>
-          <a href="#contact" class="hidden sm:inline-flex text-sm font-semibold text-amber-700 hover:text-amber-800">Enquire about a design →</a>
-        </div>
-        <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <!-- Gallery uses local images from ./assets/gallary. Add more images here as needed. -->
-          <img src="./assets/gallary/lounge.jpg" alt="Lounge interior with timber finishes" class="h-64 w-full object-cover rounded-lg shadow-md" loading="lazy">
-          <img src="./assets/gallary/kitchen.jpg" alt="Compact kitchen with cabinetry" class="h-64 w-full object-cover rounded-lg shadow-md" loading="lazy">
-          <img src="./assets/gallary/stove.jpg" alt="Wood stove heating detail" class="h-64 w-full object-cover rounded-lg shadow-md" loading="lazy">
-        </div>
-      </div>
-    </section>
-    <section id="testimonials" class="section-offset mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <div class="max-w-2xl">
-        <h2 class="text-3xl font-bold text-slate-900">Kind words from locals</h2>
-        <p class="mt-2 text-slate-600">Comments from our customers</p>
-      </div>
-      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <figure class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="flex items-center gap-1 text-amber-600" aria-label="5 out of 5 stars">★★★★★</div>
-          <blockquote class="mt-3 text-slate-700">Such a great looking cabin. Exceeded my epectations. Thank you.</blockquote>
-          <figcaption class="mt-4 text-sm font-medium text-slate-900">— Jib, Geraldine</figcaption>
-        </figure>
-        <figure class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="flex items-center gap-1 text-amber-600" aria-label="5 out of 5 stars">★★★★★</div>
-          <blockquote class="mt-3 text-slate-700">Clear pricing and great communication. Delivered on time and looks amazing.</blockquote>
-          <figcaption class="mt-4 text-sm font-medium text-slate-900">— Alex, Queenstown</figcaption>
-        </figure>
-        <figure class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <div class="flex items-center gap-1 text-amber-600" aria-label="5 out of 5 stars">★★★★★</div>
-          <blockquote class="mt-3 text-slate-700">Outstanding job by Zeke and the team in brining my vision to life.</blockquote>
-          <figcaption class="mt-4 text-sm font-medium text-slate-900">— Leon, Dalefield</figcaption>
-        </figure>
-      </div>
-    </section>
-    <section id="faqs" class="section-offset bg-white py-16">
-     <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-       <h2 class="text-3xl font-bold text-slate-900">FAQs</h2>
-       <div class="mt-6 divide-y divide-slate-200 rounded-xl border border-slate-200 bg-white">
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             What sizes can you build?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">Common footprints range 10–30m². We design to suit your site and purpose, including height rules and transport limits.</p>
-         </details>
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             Do you handle consent?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">Many cabins are exempt. If consent is required, we can coordinate plans and work with local professionals.</p>
-         </details>
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             Can you do off‑grid?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">Yes — solar, composting toilets, rainwater, and efficient heating options are available.</p>
-         </details>
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             Who builds your cabins?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">Zeke is a qualified builder and personally oversees each build from frame to finish, supported by trusted local partners.</p>
-         </details>
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             Do you use certified trades for services?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">Yes. Certified tradespeople complete any plumbing, gasfitting, and electrical work as required, with appropriate compliance documentation supplied.</p>
-         </details>
-         <details class="group p-6">
-           <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-slate-900">
-             How are cabins delivered and sited?
-             <span class="ml-4 text-slate-500 group-open:rotate-180 transition"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
-           </summary>
-           <p class="mt-3 text-slate-700">We can arrange a Hiab crane truck to place the cabin on site. We’re also happy to assist with siting advice and coordination on delivery day—just let us know access details and your preferred location.</p>
-         </details>
-       </div>
-     </div>
-    </section>
-    <section id="contact" class="section-offset mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-      <div class="grid lg:grid-cols-2 gap-8">
-        <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 class="text-3xl font-bold text-slate-900">Let’s chat about your cabin</h2>
-          <p class="mt-2 text-slate-600">Tell us a bit about your site and ideas. We’ll come back with friendly advice and an indicative price.</p>
-          <form id="contact-form" class="mt-6 space-y-4" novalidate>
-            <div>
-              <input id="name" name="name" type="text" required autocomplete="name" placeholder="Name" aria-label="Name" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600" />
-            </div>
-            <div>
-              <input id="email" name="email" type="email" required autocomplete="email" placeholder="Email" aria-label="Email" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600" />
-            </div>
-            <div>
-              <input id="phone" name="phone" type="tel" inputmode="tel" pattern="[0-9 +()-]{8,}" required placeholder="Phone" aria-label="Phone" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600" />
-            </div>
-            <div>
-              <textarea id="message" name="message" rows="5" required placeholder="Your message. Please provide as much information as possible" aria-label="Message" class="block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-slate-900 shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-600"></textarea>
-            </div>
-            <div class="hidden">
-              <label for="company">Company</label>
-              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
-            </div>
-            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-              <button type="submit" class="inline-flex items-center justify-center rounded-md bg-amber-600 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-600">Send enquiry</button>
-              <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md bg-slate-100 px-5 py-2.5 text-sm font-semibold text-slate-900 ring-1 ring-slate-300 hover:bg-slate-200">Or call Zeke 021 180 1218</a>
-            </div>
-            <p id="form-status" class="sr-only" aria-live="polite"></p>
-          </form>
-        </div>
-        <div class="flex flex-col gap-6 h-full">
-          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-semibold text-slate-900">Based in Cromwell & Queenstown</h3>
-            <p class="mt-2 text-slate-700">We build locally and deliver across Central Otago. On-site installs, transportable options, and off‑grid setups available.</p>
-            <dl class="mt-4 space-y-2">
-              <div class="flex items-center gap-3"><span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-amber-700 ring-1 ring-slate-300"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">location_on</span></span><span>Central Otago, New Zealand</span></div>
-              <div class="flex items-center gap-3"><span class="inline-flex h-8 w-8 items-center justify-center rounded-md bg-slate-100 text-amber-700 ring-1 ring-slate-300"><span class="material-symbols-outlined text-[20px]" aria-hidden="true">call</span></span><a href="tel:0211801218" class="text-amber-700 hover:text-amber-800 font-semibold">021 180 1218</a></div>
-            </dl>
+        <div class="grid gap-10 lg:grid-cols-2 items-center">
+          <div class="order-2 lg:order-1 glass-panel-soft rounded-3xl p-8 sm:p-10 shadow-2xl">
+            <h2 class="text-3xl font-bold text-[#F2FBFF]">Built by locals who love the high country</h2>
+            <p class="mt-4 text-cyan-100">We craft warm, durable cabins for Central Otago conditions — from quiet Cromwell backyards to Queenstown lakesides. Every build is custom: sizes, cladding, insulation, off-grid options, and beautiful finishes that feel like home.</p>
+            <ul class="mt-6 space-y-3">
+              <li class="flex items-start gap-4">
+                <span class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#5B2A86] text-white shadow-lg">✓</span>
+                <span class="text-cyan-100">Custom layouts from 10–30m²: studios, sleepouts, and tiny homes.</span>
+              </li>
+              <li class="flex items-start gap-4">
+                <span class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#5B2A86] text-white shadow-lg">✓</span>
+                <span class="text-cyan-100">Energy-smart: double glazing, insulation options, and low-maintenance cladding.</span>
+              </li>
+              <li class="flex items-start gap-4">
+                <span class="mt-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#5B2A86] text-white shadow-lg">✓</span>
+                <span class="text-cyan-100">Friendly build process: clear pricing, regular updates, on-time delivery.</span>
+              </li>
+            </ul>
           </div>
-          <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-semibold text-slate-900">Typical process</h3>
-            <ol class="mt-3 list-decimal pl-6 text-slate-700 space-y-1">
-              <li>Design chat and quote</li>
-              <li>Finalise layout & materials</li>
-              <li>Build in our workshop</li>
-              <li>Deliver and install on site</li>
-            </ol>
+          <div class="order-1 lg:order-2 flex justify-center">
+            <img src="./assets/overview.jpg" alt="Cabin exterior overview" class="rounded-3xl border border-[#226477]/50 shadow-[0_35px_60px_-45px_rgba(0,0,0,0.8)]">
           </div>
-          <div class="block lg:flex-1">
-            <div class="h-full flex items-center justify-center gap-16">
-              <div class="flex flex-col items-center">
-                <img src="./assets/lbp-logo.png" alt="LBP Licensed Building Practitioner" class="h-16 w-auto select-none" onerror="this.style.display='none'">
-                <span class="mt-1 text-sm text-slate-700">No:BP168027</span>
+        </div>
+      </div>
+    </section>
+    <section id="gallery" class="section-offset py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="glass-panel-soft rounded-3xl p-8 sm:p-10 shadow-2xl">
+          <div class="flex items-end justify-between gap-4">
+            <h2 class="text-3xl font-bold text-[#F2FBFF]">Gallery</h2>
+            <a href="#contact" class="hidden sm:inline-flex text-sm font-semibold accent-link">Enquire about a design →</a>
+          </div>
+          <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <img src="./assets/gallary/lounge.jpg" alt="Lounge interior with timber finishes" class="h-64 w-full rounded-xl object-cover shadow-2xl ring-1 ring-[#1f5a6b]/40" loading="lazy">
+            <img src="./assets/gallary/kitchen.jpg" alt="Compact kitchen with cabinetry" class="h-64 w-full rounded-xl object-cover shadow-2xl ring-1 ring-[#1f5a6b]/40" loading="lazy">
+            <img src="./assets/gallary/stove.jpg" alt="Wood stove heating detail" class="h-64 w-full rounded-xl object-cover shadow-2xl ring-1 ring-[#1f5a6b]/40" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="testimonials" class="section-offset py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="glass-panel-soft rounded-3xl p-8 sm:p-10 shadow-2xl">
+          <div class="max-w-2xl">
+            <h2 class="text-3xl font-bold text-[#F2FBFF]">Kind words from locals</h2>
+            <p class="mt-2 text-cyan-100">Comments from our customers</p>
+          </div>
+          <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <figure class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-2xl">
+              <div class="flex items-center gap-1 text-[#9F8CFF]" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote class="mt-3 text-cyan-100">Such a great looking cabin. Exceeded my expectations. Thank you.</blockquote>
+              <figcaption class="mt-4 text-sm font-medium text-cyan-200">— Jib, Geraldine</figcaption>
+            </figure>
+            <figure class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-2xl">
+              <div class="flex items-center gap-1 text-[#9F8CFF]" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote class="mt-3 text-cyan-100">Clear pricing and great communication. Delivered on time and looks amazing.</blockquote>
+              <figcaption class="mt-4 text-sm font-medium text-cyan-200">— Alex, Queenstown</figcaption>
+            </figure>
+            <figure class="glass-panel rounded-2xl p-6 shadow-xl transition hover:shadow-2xl">
+              <div class="flex items-center gap-1 text-[#9F8CFF]" aria-label="5 out of 5 stars">★★★★★</div>
+              <blockquote class="mt-3 text-cyan-100">Outstanding job by Zeke and the team in bringing my vision to life.</blockquote>
+              <figcaption class="mt-4 text-sm font-medium text-cyan-200">— Leon, Dalefield</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="faqs" class="section-offset py-16">
+      <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <div class="glass-panel-soft rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <h2 class="text-3xl font-bold text-[#F2FBFF]">FAQs</h2>
+          <div class="mt-6 divide-y divide-[#1e5868]/60 rounded-xl border border-[#1e5868]/60 bg-[#031d26]/60 backdrop-blur">
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                What sizes can you build?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">Common footprints range 10–30m². We design to suit your site and purpose, including height rules and transport limits.</p>
+            </details>
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                Do you handle consent?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">Many cabins are exempt. If consent is required, we can coordinate plans and work with local professionals.</p>
+            </details>
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                Can you do off‑grid?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">Yes — solar, composting toilets, rainwater, and efficient heating options are available.</p>
+            </details>
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                Who builds your cabins?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">Zeke is a qualified builder and personally oversees each build from frame to finish, supported by trusted local partners.</p>
+            </details>
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                Do you use certified trades for services?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">Yes. Certified tradespeople complete any plumbing, gasfitting, and electrical work as required, with appropriate compliance documentation supplied.</p>
+            </details>
+            <details class="group p-6">
+              <summary class="flex cursor-pointer list-none items-center justify-between font-medium text-[#F2FBFF]">
+                How are cabins delivered and sited?
+                <span class="ml-4 text-cyan-200 transition group-open:rotate-180"><svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 011.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"/></svg></span>
+              </summary>
+              <p class="mt-3 text-cyan-100">We can arrange a Hiab crane truck to place the cabin on site. We're also happy to assist with siting advice and coordination on delivery day—just let us know access details and your preferred location.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="contact" class="section-offset py-16">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="glass-panel-soft grid gap-8 rounded-3xl p-8 sm:p-10 shadow-2xl lg:grid-cols-2">
+          <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-xl">
+            <h2 class="text-3xl font-bold text-[#F2FBFF]">Let's chat about your cabin</h2>
+            <p class="mt-2 text-cyan-100">Tell us a bit about your site and ideas. We'll come back with friendly advice and an indicative price.</p>
+            <form id="contact-form" class="mt-6 space-y-4" novalidate>
+              <div>
+                <input id="name" name="name" type="text" required autocomplete="name" placeholder="Name" aria-label="Name" class="block w-full rounded-md border border-[#287089]/60 bg-[#041c26]/70 px-3 py-2 text-cyan-50 shadow-sm placeholder-[#76b6c9] focus:outline-none focus:ring-2 focus:ring-[#8F79E8]" />
               </div>
-              <img src="./assets/logo.png" alt="Roots & Echo Ltd logo" class="h-16 w-auto select-none opacity-80" onerror="this.style.display='none'">
+              <div>
+                <input id="email" name="email" type="email" required autocomplete="email" placeholder="Email" aria-label="Email" class="block w-full rounded-md border border-[#287089]/60 bg-[#041c26]/70 px-3 py-2 text-cyan-50 shadow-sm placeholder-[#76b6c9] focus:outline-none focus:ring-2 focus:ring-[#8F79E8]" />
+              </div>
+              <div>
+                <input id="phone" name="phone" type="tel" inputmode="tel" pattern="[0-9 +()-]{8,}" required placeholder="Phone" aria-label="Phone" class="block w-full rounded-md border border-[#287089]/60 bg-[#041c26]/70 px-3 py-2 text-cyan-50 shadow-sm placeholder-[#76b6c9] focus:outline-none focus:ring-2 focus:ring-[#8F79E8]" />
+              </div>
+              <div>
+                <textarea id="message" name="message" rows="5" required placeholder="Your message. Please provide as much information as possible" aria-label="Message" class="block w-full rounded-md border border-[#287089]/60 bg-[#041c26]/70 px-3 py-2 text-cyan-50 shadow-sm placeholder-[#76b6c9] focus:outline-none focus:ring-2 focus:ring-[#8F79E8]"></textarea>
+              </div>
+              <div class="hidden">
+                <label for="company">Company</label>
+                <input id="company" name="company" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <button type="submit" class="inline-flex items-center justify-center rounded-md accent-button px-5 py-2.5 text-sm font-semibold shadow-lg">Send enquiry</button>
+                <a href="tel:0211801218" class="inline-flex items-center justify-center rounded-md border border-[#2a6d80]/70 px-5 py-2.5 text-sm font-semibold text-cyan-50 shadow-lg transition hover:bg-[#123946] focus:outline-none focus:ring-2 focus:ring-[#2b6f83]">Or call Zeke 021 180 1218</a>
+              </div>
+              <p id="form-status" class="sr-only" aria-live="polite"></p>
+            </form>
+          </div>
+          <div class="flex flex-col gap-6">
+            <div class="glass-panel rounded-3xl p-6 shadow-xl">
+              <h3 class="text-xl font-semibold text-[#F2FBFF]">Based in Cromwell & Queenstown</h3>
+              <p class="mt-2 text-cyan-100">We build locally and deliver across Central Otago. On-site installs, transportable options, and off‑grid setups available.</p>
+              <dl class="mt-4 space-y-3">
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#072c36]/80 text-[#9F8CFF] ring-1 ring-[#1f5a6b]/50"><span class="material-symbols-outlined text-[22px]" aria-hidden="true">location_on</span></span>
+                  <span class="text-cyan-100">Central Otago, New Zealand</span>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span class="inline-flex h-9 w-9 items-center justify-center rounded-md bg-[#072c36]/80 text-[#9F8CFF] ring-1 ring-[#1f5a6b]/50"><span class="material-symbols-outlined text-[22px]" aria-hidden="true">call</span></span>
+                  <a href="tel:0211801218" class="font-semibold accent-link">021 180 1218</a>
+                </div>
+              </dl>
+            </div>
+            <div class="glass-panel rounded-3xl p-6 shadow-xl">
+              <h3 class="text-xl font-semibold text-[#F2FBFF]">Typical process</h3>
+              <ol class="mt-3 list-decimal space-y-1 pl-6 text-cyan-100">
+                <li>Design chat and quote</li>
+                <li>Finalise layout & materials</li>
+                <li>Build in our workshop</li>
+                <li>Deliver and install on site</li>
+              </ol>
+            </div>
+            <div class="flex flex-1 items-center justify-center gap-16 rounded-3xl border border-[#1f5a6b]/50 bg-[#031d26]/60 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+              <div class="flex flex-col items-center text-center">
+                <img src="./assets/lbp-logo.png" alt="LBP Licensed Building Practitioner" class="h-16 w-auto select-none drop-shadow-[0_15px_40px_rgba(0,0,0,0.45)]" onerror="this.style.display='none'">
+                <span class="mt-2 text-sm text-cyan-200">No:BP168027</span>
+              </div>
+              <img src="./assets/logo.png" alt="Roots & Echo Ltd logo" class="h-16 w-auto select-none opacity-80 drop-shadow-[0_15px_40px_rgba(0,0,0,0.35)]" onerror="this.style.display='none'">
             </div>
           </div>
         </div>
       </div>
     </section>
   </main>
-  <footer class="border-t border-slate-200 bg-white">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+  <footer class="border-t border-[#0d3949] bg-[#02141b]/90">
+    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-          <p class="text-sm text-slate-600">© <span id="year"></span> Roots & Echo Ltd. All rights reserved.</p>
+        <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+          <p class="text-sm text-cyan-200 opacity-80">© <span id="year"></span> Roots & Echo Ltd. All rights reserved.</p>
         </div>
         <div class="flex items-center gap-4">
-          <a href="./tools/" class="text-sm font-semibold text-amber-700 hover:text-amber-800">Builders Tools</a>
-          <a href="tel:0211801218" class="text-sm font-semibold text-amber-700 hover:text-amber-800">Call Zeke 021 180 1218</a>
-          <a href="#home" class="text-sm text-slate-600 hover:text-slate-900">Back to top ↑</a>
+          <a href="./tools/" class="text-sm font-semibold accent-link">Builders Tools</a>
+          <a href="tel:0211801218" class="text-sm font-semibold accent-link">Call Zeke 021 180 1218</a>
+          <a href="#home" class="text-sm text-cyan-100 transition hover:text-cyan-50">Back to top ↑</a>
         </div>
       </div>
     </div>
@@ -273,7 +343,6 @@
         });
       });
     }
-    // Contact form
     var form = document.getElementById('contact-form');
     var status = document.getElementById('form-status');
     var yearSpan = document.getElementById('year');
@@ -300,8 +369,8 @@
           if (submitBtn) submitBtn.disabled = true;
           if (status) {
             status.classList.remove('sr-only');
-            status.classList.remove('text-green-700');
-            status.classList.add('mt-3', 'text-sm', 'text-slate-700');
+            status.classList.remove('text-emerald-300', 'text-rose-300');
+            status.classList.add('mt-3', 'text-sm', 'text-cyan-200');
             status.textContent = 'Sending…';
           }
           var resp = await fetch('/api/contact', {
@@ -311,16 +380,16 @@
           });
           if (!resp.ok) throw new Error('Request failed');
           if (status) {
-            status.classList.remove('text-slate-700');
-            status.classList.add('text-green-700');
+            status.classList.remove('text-cyan-200', 'text-rose-300');
+            status.classList.add('text-emerald-300');
             status.textContent = 'Thanks — we’ll be in touch soon. For anything urgent call Zeke on 021 180 1218.';
           }
           form.reset();
         } catch (err) {
           if (status) {
             status.classList.remove('sr-only');
-            status.classList.remove('text-green-700');
-            status.classList.add('mt-3', 'text-sm', 'text-red-700');
+            status.classList.remove('text-emerald-300', 'text-cyan-200');
+            status.classList.add('mt-3', 'text-sm', 'text-rose-300');
             status.textContent = 'Sorry, something went wrong sending your message. Please call Zeke on 021 180 1218.';
           }
         } finally {
@@ -332,4 +401,3 @@
   </script>
 </body>
 </html>
-

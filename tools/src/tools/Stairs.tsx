@@ -3,6 +3,9 @@ import { calcStairs } from '../lib/stairs';
 import StairsDiagram from '../components/StairsDiagram';
 import { round } from '../lib/trig';
 
+const inputClasses =
+  'mt-1 w-full rounded-xl border border-white/10 bg-white/10 px-3 py-2 text-sm text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] placeholder:text-cyan-200/60 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(142,118,233,0.45)] focus-visible:border-[rgba(142,118,233,0.45)]';
+
 export default function Stairs() {
   // Editable fields (strings for inputs)
   const [totalRiseStr, setTotalRiseStr] = React.useState('');
@@ -169,9 +172,9 @@ export default function Stairs() {
   }, [out, lastEdited]);
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-2xl font-bold">Stairs</h2>
-      <div className="grid gap-6 lg:grid-cols-2 items-start">
+    <section className="space-y-6">
+      <h2 className="text-3xl font-semibold text-[#F2FBFF]">Stairs</h2>
+      <div className="grid gap-8 lg:grid-cols-2 items-start">
         <div className="w-full">
           <StairsDiagram
             risers={out.risers}
@@ -183,112 +186,114 @@ export default function Stairs() {
           />
         </div>
         <div className="w-full">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <label className="block">
-              <span className="text-sm">Total Rise (mm)</span>
-              <input
-                value={totalRiseStr}
-                onChange={(e) => {
-                  setTotalRiseStr(e.target.value);
-                  setLastEdited('totalRise');
-                }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
-                type="number"
-              />
+          <div className="glass-panel-soft rounded-3xl px-5 py-6 shadow-[0_30px_70px_-55px_rgba(2,12,18,0.85)]">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="text-sm text-cyan-100">Total Rise (mm)</span>
+                <input
+                  value={totalRiseStr}
+                  onChange={(e) => {
+                    setTotalRiseStr(e.target.value);
+                    setLastEdited('totalRise');
+                  }}
+                  className={inputClasses}
+                  type="number"
+                />
+              </label>
+              <label className="block">
+                <span className="text-sm text-cyan-100">Risers (count)</span>
+                <input
+                  value={risersStr}
+                  onChange={(e) => {
+                    setRisersStr(e.target.value);
+                    setLastEdited('risers');
+                  }}
+                  className={inputClasses}
+                  type="number"
+                  step="1"
+                />
             </label>
             <label className="block">
-              <span className="text-sm">Risers (count)</span>
-              <input
-                value={risersStr}
-                onChange={(e) => {
-                  setRisersStr(e.target.value);
-                  setLastEdited('risers');
-                }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
-                type="number"
-                step="1"
-              />
-            </label>
-            <label className="block">
-              <span className="text-sm">Treads (count)</span>
+              <span className="text-sm text-cyan-100">Treads (count)</span>
               <input
                 value={treadsStr}
                 onChange={(e) => {
                   setTreadsStr(e.target.value);
                   setLastEdited('treads');
                 }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                className={inputClasses}
                 type="number"
                 step="1"
               />
             </label>
             <label className="block">
-              <span className="text-sm">Riser Height (mm)</span>
+              <span className="text-sm text-cyan-100">Riser Height (mm)</span>
               <input
                 value={riserHeightStr}
                 onChange={(e) => {
                   setRiserHeightStr(e.target.value);
                   setLastEdited('riserHeight');
                 }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                className={inputClasses}
                 type="number"
               />
             </label>
             <label className="block">
-              <span className="text-sm">Tread Going (mm)</span>
+              <span className="text-sm text-cyan-100">Tread Going (mm)</span>
               <input
                 value={goingStr}
                 onChange={(e) => {
                   setGoingStr(e.target.value);
                   setLastEdited('going');
                 }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                className={inputClasses}
                 type="number"
               />
             </label>
             <label className="block">
-              <span className="text-sm">Total Run (mm)</span>
+              <span className="text-sm text-cyan-100">Total Run (mm)</span>
               <input
                 value={totalRunStr}
                 onChange={(e) => {
                   setTotalRunStr(e.target.value);
                   setLastEdited('totalRun');
                 }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                className={inputClasses}
                 type="number"
               />
             </label>
             <label className="block">
-              <span className="text-sm">Stair Angle (°)</span>
+              <span className="text-sm text-cyan-100">Stair Angle (°)</span>
               <input
                 value={angleStr}
                 onChange={(e) => {
                   setAngleStr(e.target.value);
                   setLastEdited('angle');
                 }}
-                className="mt-1 w-full rounded-md border px-2 py-1.5 text-sm"
+                className={inputClasses}
                 type="number"
                 step="0.1"
               />
             </label>
           </div>
-          <div className="bg-white rounded-md border p-3 mt-3">
-            <h3 className="font-semibold mb-2 text-sm">Results</h3>
+        </div>
+          <div className="card-panel p-4 mt-4 rounded-3xl shadow-[0_35px_80px_-60px_rgba(3,15,23,0.85)]">
+            <h3 className="text-lg font-semibold text-[#F2FBFF] mb-3">Results</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
               <div>Number of Risers:</div>
-              <div className="font-semibold text-pink-700">{out.risers}</div>
+              <div className="font-semibold text-[#B547A0]">{out.risers}</div>
               <div>Riser Height:</div>
-              <div className="font-semibold text-pink-700">{out.riserHeight} mm</div>
+              <div className="font-semibold text-[#B547A0]">{out.riserHeight} mm</div>
               <div>Number of Treads:</div>
-              <div className="font-semibold text-pink-700">{out.treads}</div>
+              <div className="font-semibold text-[#B547A0]">{out.treads}</div>
               <div>Tread Going:</div>
-              <div className="font-semibold text-pink-700">{out.going} mm</div>
+              <div className="font-semibold text-[#B547A0]">{out.going} mm</div>
               <div>Total Run:</div>
-              <div className="font-semibold text-pink-700">{out.totalRun} mm</div>
+              <div className="font-semibold text-[#B547A0]">{out.totalRun} mm</div>
               <div>Stair Angle:</div>
-              <div className="font-semibold text-pink-700">{out.angle}°</div>
+              <div className="font-semibold text-[#B547A0]">{out.angle}°</div>
             </div>
-            <p className={`mt-3 text-sm ${out.compliant ? 'text-green-700' : 'text-red-700'}`}>
+            <p className={`mt-3 text-sm ${out.compliant ? 'text-green-400' : 'text-red-400'}`}>
               {out.compliant ? '✓ Compliant' : `✗ ${out.notes}`}
             </p>
           </div>
@@ -297,3 +302,4 @@ export default function Stairs() {
     </section>
   );
 }
+

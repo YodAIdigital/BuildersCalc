@@ -1,0 +1,72 @@
+#root {
+  color-scheme: dark !important;
+}
+
+/* Base input appearance */
+#root input,
+#root select,
+#root textarea {
+  background-color: rgba(4, 24, 32, 0.88) !important;
+  color: #e2f6ff !important;
+  border-color: rgba(34, 104, 121, 0.45) !important;
+  -webkit-text-fill-color: #e2f6ff;
+  caret-color: #9f8cff;
+  box-shadow: inset 0 0 0 1px rgba(7, 55, 69, 0.35), 0 10px 25px -18px rgba(0, 0, 0, 0.6);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  background-clip: padding-box;
+}
+
+/* Placeholder tint */
+#root input::placeholder,
+#root textarea::placeholder {
+  color: rgba(158, 210, 224, 0.55);
+}
+
+/* Focus state */
+#root input:focus,
+#root select:focus,
+#root textarea:focus {
+  outline: none;
+  border-color: rgba(142, 118, 233, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(142, 118, 233, 0.35), inset 0 0 0 1px rgba(142, 118, 233, 0.45);
+  background-color: rgba(6, 32, 42, 0.95) !important;
+}
+
+/* Hover */
+#root input:hover:not(:disabled),
+#root select:hover:not(:disabled),
+#root textarea:hover:not(:disabled) {
+  border-color: rgba(49, 135, 160, 0.6) !important;
+}
+
+/* Disabled state */
+#root input:disabled,
+#root select:disabled,
+#root textarea:disabled {
+  background-color: rgba(8, 32, 42, 0.55) !important;
+  color: rgba(144, 196, 208, 0.6) !important;
+  -webkit-text-fill-color: rgba(144, 196, 208, 0.6);
+  border-color: rgba(28, 86, 104, 0.35) !important;
+}
+
+/* Autofill overrides */
+#root input:-webkit-autofill,
+#root select:-webkit-autofill,
+#root textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px rgba(6, 32, 42, 0.95) inset !important;
+  -webkit-text-fill-color: #e2f6ff !important;
+  caret-color: #9f8cff !important;
+}
+
+/* Checkbox and radio tweaks */
+#root input[type='checkbox'],
+#root input[type='radio'] {
+  accent-color: #5b2a86;
+}
+
+/* Buttons rendered as inputs */
+#root input[type='submit'],
+#root input[type='button'],
+#root button {
+  border-color: rgba(34, 104, 121, 0.45);
+}

@@ -13,7 +13,7 @@ const RoofRafter = React.lazy(() => import('./tools/RoofRafter'));
 const Cabin = React.lazy(() => import('./tools/Cabin'));
 function Header() {
   return (
-    <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
+    <header className="tools-header">
       <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
         {/* Brand link intentionally uses an anchor to route to the marketing homepage at "/" outside the /tools router scope. */}
         <a
@@ -29,7 +29,7 @@ function Header() {
             decoding="async"
             fetchPriority="high"
           />
-          <span className="font-bold">Builder's Tools</span>
+          <span className="font-bold text-cyan-50">Builder's Tools</span>
         </a>
         <nav className="ml-auto flex flex-wrap items-center gap-2 text-sm">
           {[
@@ -47,7 +47,7 @@ function Header() {
               to={to}
               end={to === '/'}
               className={({ isActive }) =>
-                `rounded-md px-2 py-1 hover:bg-slate-100 ${isActive ? 'bg-slate-200 font-semibold' : ''}`
+                `nav-pill ${isActive ? 'nav-pill--active' : ''}`
               }
             >
               {label}
@@ -61,11 +61,18 @@ function Header() {
 
 export default function App() {
   return (
-    <div className="min-h-dvh flex flex-col">
+    <div className="tools-shell app-gradient min-h-dvh flex flex-col">
       <Header />
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6">
-        <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
-          <Routes>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:py-12">
+        <div className="glass-panel rounded-[2rem] border border-[rgba(34,104,121,0.35)] px-5 py-6 shadow-[0_35px_80px_-60px_rgba(3,15,23,0.9)] sm:px-8 sm:py-8">
+          <Suspense
+            fallback={
+              <div className="rounded-2xl border border-white/10 bg-white/8 px-6 py-12 text-center text-cyan-200">
+                Loading…
+              </div>
+            }
+          >
+            <Routes>
             <Route path="/" element={<Trigonometry />} />
             <Route path="/cabin" element={<Cabin />} />
             <Route path="/roof-rafter" element={<RoofRafter />} />
@@ -78,11 +85,12 @@ export default function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </Suspense>
+        </div>
       </main>
-      <footer className="border-t bg-white">
+      <footer className="tools-footer">
         <div className="mx-auto max-w-6xl px-4 py-4 text-sm flex items-center justify-between">
-          <span>© {new Date().getFullYear()} Roots & Echo Ltd</span>
-          <a href="/" className="text-pink-700 hover:underline">
+          <span className="text-cyan-200">© {new Date().getFullYear()} Roots & Echo Ltd</span>
+          <a href="/" className="text-[#B547A0] hover:text-[#D164C1] hover:underline">
             Back to homepage
           </a>
         </div>

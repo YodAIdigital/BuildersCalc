@@ -2,18 +2,18 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 import Layout from './Layout';
 import './index.css';
-import './styles/forms-light.css';
+import './styles/forms-dark.css';
 import { SettingsProvider } from './hooks/useSettings';
 import React, { Suspense } from 'react';
 
 const Trigonometry = React.lazy(() => import('./tools/Trigonometry'));
+const Cabin = React.lazy(() => import('./tools/Cabin'));
 const RoofRafter = React.lazy(() => import('./tools/RoofRafter'));
 const Stairs = React.lazy(() => import('./tools/Stairs'));
 const FramingFoundation = React.lazy(() => import('./tools/FramingFoundation'));
 const UnitConverter = React.lazy(() => import('./tools/UnitConverter'));
 const GST = React.lazy(() => import('./tools/GST'));
 const SettingsGate = React.lazy(() => import('./tools/SettingsGate'));
-const Cabin = React.lazy(() => import('./tools/Cabin'));
 
 const router = createBrowserRouter(
   [
@@ -26,6 +26,14 @@ const router = createBrowserRouter(
           element: (
             <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
               <Trigonometry />
+            </Suspense>
+          ),
+        },
+        {
+          path: 'cabin',
+          element: (
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <Cabin />
             </Suspense>
           ),
         },
@@ -52,14 +60,6 @@ const router = createBrowserRouter(
           element: (
             <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
               <FramingFoundation />
-            </Suspense>
-          ),
-        },
-        {
-          path: 'cabin',
-          element: (
-            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
-              <Cabin />
             </Suspense>
           ),
         },

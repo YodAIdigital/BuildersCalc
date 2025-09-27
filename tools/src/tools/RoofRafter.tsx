@@ -290,37 +290,37 @@ export default function RoofRafter() {
                 <h3 className="font-semibold mb-2 text-sm">Results</h3>
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div>Rise:</div>
-                  <div className="font-semibold text-pink-700">{solved.rise} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.rise} mm</div>
                   <div>Half-span:</div>
-                  <div className="font-semibold text-pink-700">{solved.halfSpan} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.halfSpan} mm</div>
                   <div>Span:</div>
-                  <div className="font-semibold text-pink-700">{solved.span} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.span} mm</div>
                   <div>Pitch:</div>
-                  <div className="font-semibold text-pink-700">{solved.pitch}°</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.pitch}°</div>
                   <div>Common:</div>
-                  <div className="font-semibold text-pink-700">{solved.common} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.common} mm</div>
                   <div>Common (to ridge face):</div>
-                  <div className="font-semibold text-pink-700">{solved.commonAtRidge} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.commonAtRidge} mm</div>
                   <div>Overhang (slope):</div>
-                  <div className="font-semibold text-pink-700">{solved.overhangSlope} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.overhangSlope} mm</div>
                   <div>Total Rafter:</div>
-                  <div className="font-semibold text-pink-700">{solved.total} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.total} mm</div>
                   <div>Plumb Cut:</div>
-                  <div className="font-semibold text-pink-700">{solved.plumb}°</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.plumb}°</div>
                   <div>Birdsmouth Cut:</div>
-                  <div className="font-semibold text-pink-700">{solved.birdsmouth}°</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.birdsmouth}°</div>
                   <div>Seat Cut (horizontal):</div>
-                  <div className="font-semibold text-pink-700">{solved.seatLength} mm</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.seatLength} mm</div>
                   <div>Roof Area (per side):</div>
-                  <div className="font-semibold text-pink-700">{areaPerSideM2.toFixed(2)} m²</div>
+                  <div className="font-semibold text-[#B547A0]">{areaPerSideM2.toFixed(2)} m²</div>
                   <div>Roof Area (total):</div>
-                  <div className="font-semibold text-pink-700">{areaTotalM2.toFixed(2)} m²</div>
+                  <div className="font-semibold text-[#B547A0]">{areaTotalM2.toFixed(2)} m²</div>
                   <div>Sheets Needed (per side):</div>
-                  <div className="font-semibold text-pink-700">{sheetsPerSide}</div>
+                  <div className="font-semibold text-[#B547A0]">{sheetsPerSide}</div>
                   <div>Sheets Needed (total):</div>
-                  <div className="font-semibold text-pink-700">{sheetsTotal}</div>
+                  <div className="font-semibold text-[#B547A0]">{sheetsTotal}</div>
                   <div>Rafter Count (per side):</div>
-                  <div className="font-semibold text-pink-700">{solved.rafterCountPerSide}</div>
+                  <div className="font-semibold text-[#B547A0]">{solved.rafterCountPerSide}</div>
                 </div>
               </div>
 
@@ -355,51 +355,51 @@ export default function RoofRafter() {
                     return (
                       <>
                         <div>Ridge Length:</div>
-                        <div className="font-semibold text-pink-700">{ridgeM.toFixed(2)} m</div>
+                        <div className="font-semibold text-[#B547A0]">{ridgeM.toFixed(2)} m</div>
                         <div>Gutter/Fascia (both eaves):</div>
-                        <div className="font-semibold text-pink-700">{eavesM.toFixed(2)} m</div>
+                        <div className="font-semibold text-[#B547A0]">{eavesM.toFixed(2)} m</div>
                         <div>Barge (both gables):</div>
-                        <div className="font-semibold text-pink-700">{bargeM.toFixed(2)} m</div>
+                        <div className="font-semibold text-[#B547A0]">{bargeM.toFixed(2)} m</div>
 
                         <div>Total Roof Area:</div>
-                        <div className="font-semibold text-pink-700">
+                        <div className="font-semibold text-[#B547A0]">
                           {areaTotalM2.toFixed(2)} m²
                         </div>
                         <div>Total Sheets:</div>
-                        <div className="font-semibold text-pink-700">{sheetsTotal}</div>
+                        <div className="font-semibold text-[#B547A0]">{sheetsTotal}</div>
 
                         <div>Sheet Cost per sheet:</div>
-                        <div className="font-semibold text-pink-700">${sheetPrice}</div>
+                        <div className="font-semibold text-[#B547A0]">${sheetPrice}</div>
                         <div>Sheet Cost (total):</div>
-                        <div className="font-semibold text-pink-700">
+                        <div className="font-semibold text-[#B547A0]">
                           ${sheetCostTotal.toFixed(2)}
                         </div>
                         <div>Underlay Cost:</div>
-                        <div className="font-semibold text-pink-700">
+                        <div className="font-semibold text-[#B547A0]">
                           ${underlayCost.toFixed(2)}
                         </div>
                         <div>Gutter Cost:</div>
-                        <div className="font-semibold text-pink-700">${gutterCost.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${gutterCost.toFixed(2)}</div>
                         <div>Fascia Cost:</div>
-                        <div className="font-semibold text-pink-700">${fasciaCost.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${fasciaCost.toFixed(2)}</div>
                         <div>Ridge Capping Cost:</div>
-                        <div className="font-semibold text-pink-700">
+                        <div className="font-semibold text-[#B547A0]">
                           ${ridgeCapCost.toFixed(2)}
                         </div>
                         <div>Barge Capping Cost:</div>
-                        <div className="font-semibold text-pink-700">
+                        <div className="font-semibold text-[#B547A0]">
                           ${bargeCapCost.toFixed(2)}
                         </div>
                         <div>Labour Cost:</div>
-                        <div className="font-semibold text-pink-700">${labourCost.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${labourCost.toFixed(2)}</div>
 
                         <div className="col-span-2 my-1 border-t"></div>
                         <div>Subtotal (excl. GST):</div>
-                        <div className="font-semibold text-pink-700">${subTotal.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${subTotal.toFixed(2)}</div>
                         <div>GST ({Math.round((settings.gstRate || 0) * 100)}%):</div>
-                        <div className="font-semibold text-pink-700">${gst.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${gst.toFixed(2)}</div>
                         <div>Total Incl. GST:</div>
-                        <div className="font-semibold text-pink-700">${totalIncl.toFixed(2)}</div>
+                        <div className="font-semibold text-[#B547A0]">${totalIncl.toFixed(2)}</div>
                       </>
                     );
                   })()}
@@ -417,3 +417,4 @@ export default function RoofRafter() {
     </section>
   );
 }
+
